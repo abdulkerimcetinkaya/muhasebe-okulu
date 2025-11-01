@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - MuhasebeOkulu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Ortak CSS -->
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+
+    <!-- Ortak JS -->
+    <script src="http://localhost:8080/assets/js/common.js"></script>
+    <script src="http://localhost:8080/assets/js/api.js"></script>
+    <script src="http://localhost:8080/assets/js/auth.js"></script>
+
+    <!-- Page-specific JS -->
+    <script src="http://localhost:8080/assets/js/pages/quiz-detail.js"></script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .option-card {
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .option-card:hover {
+            border-color: #1e293b;
+            background-color: #f8fafc;
+        }
+        .option-card.selected {
+            border-color: #1e293b;
+            background-color: #1e293b;
+            color: white;
+        }
+        .option-card.selected .option-letter {
+            background-color: white;
+            color: #1e293b;
+        }
+        .option-card.correct {
+            border-color: #16a34a;
+            background-color: #dcfce7;
+        }
+        .option-card.wrong {
+            border-color: #dc2626;
+            background-color: #fee2e2;
+        }
+        .progress-bar {
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased scroll-smooth">
+<div class="relative min-h-screen">
+    <!-- Arka Plan -->
+    <div class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:6rem_4rem]">
+        <div class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(520px_520px_at_50%_160px,rgba(30,41,59,0.08),rgba(30,41,59,0.03),transparent)]"></div>
+    </div>
+
+    <!-- Header - Quiz Detay Navbar (Sadece geri butonu ve timer) -->
+    <header class="sticky top-0 z-40 w-full backdrop-blur-sm bg-white/80">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 border-b border-slate-200/80">
+                <a href="quizzes.html" class="flex items-center gap-2 px-3 py-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-all">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                    <span class="text-sm font-medium">Quiz'e Dön</span>
+                </a>
+                <div id="timerDisplay" class="hidden px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium flex items-center gap-2">
+                    <i data-lucide="clock" class="w-4 h-4"></i>
+                    <span id="timerText">--:--</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-16">
+            <div class="w-16 h-16 border-4 border-slate-200 border-t-slate-800 rounded-full animate-spin mx-auto mb-4"></div>
+            <p class="text-slate-600">Quiz yükleniyor...</p>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quizContainer" class="hidden">
+            <!-- Quiz Header -->
+            <div class="bg-white rounded-lg border border-slate-200 p-6 mb-6">
+                <h1 id="quizTitle" class="text-2xl font-bold text-slate-900 mb-2"></h1>
+                <p id="quizDescription" class="text-slate-600 mb-4"></p>
+                <div class="flex items-center gap-4 text-sm text-slate-500">
+                    <span id="quizQuestionCount"></span>
+                    <span id="quizPoints"></span>
+                    <span id="quizDifficulty"></span>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between text-sm text-slate-600 mb-2">
+                    <span>İlerleme</span>
+                    <span id="progressText">0/0</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2">
+                    <div id="progressBar" class="progress-bar bg-slate-800 h-2 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div id="questionCard" class="bg-white rounded-lg border border-slate-200 p-6 mb-6">
+                <div class="flex items-start justify-between mb-4">
+                    <div>
+                        <span id="questionNumber" class="text-sm font-medium text-slate-500"></span>
+                        <h2 id="questionText" class="text-lg font-semibold text-slate-900 mt-2"></h2>
+                    </div>
+                    <span id="questionPoints" class="px-3 py-1 bg-slate-100 text-slate-700 rounded-lg text-sm font-medium"></span>
+                </div>
+
+                <!-- Options -->
+                <div id="optionsContainer" class="space-y-3">
+                    <!-- Options will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex justify-between items-center">
+                <button id="prevButton" onclick="previousQuestion()" class="px-6 py-3 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <i data-lucide="chevron-left" class="w-4 h-4 inline mr-2"></i>
+                    Önceki
+                </button>
+                <button id="nextButton" onclick="nextQuestion()" class="px-6 py-3 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Sonraki
+                    <i data-lucide="chevron-right" class="w-4 h-4 inline ml-2"></i>
+                </button>
+                <button id="submitButton" onclick="submitQuiz()" class="hidden px-6 py-3 bg-green-600 text-white rounded-lg font-medium hover:bg-green-700 transition-colors">
+                    Tamamla
+                    <i data-lucide="check" class="w-4 h-4 inline ml-2"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" class="hidden">
+            <div class="bg-white rounded-lg border border-slate-200 p-8 text-center mb-6">
+                <div id="resultIcon" class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center">
+                    <i data-lucide="check-circle" class="w-12 h-12"></i>
+                </div>
+                <h2 id="resultTitle" class="text-2xl font-bold text-slate-900 mb-2"></h2>
+                <p id="resultMessage" class="text-slate-600 mb-6"></p>
+
+                <!-- Score Details -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div class="p-4 bg-slate-50 rounded-lg">
+                        <div id="resultScore" class="text-2xl font-bold text-slate-900"></div>
+                        <div class="text-sm text-slate-600">Puan</div>
+                    </div>
+                    <div class="p-4 bg-green-50 rounded-lg">
+                        <div id="resultCorrect" class="text-2xl font-bold text-green-700"></div>
+                        <div class="text-sm text-slate-600">Doğru</div>
+                    </div>
+                    <div class="p-4 bg-red-50 rounded-lg">
+                        <div id="resultWrong" class="text-2xl font-bold text-red-700"></div>
+                        <div class="text-sm text-slate-600">Yanlış</div>
+                    </div>
+                    <div class="p-4 bg-blue-50 rounded-lg">
+                        <div id="resultPercentage" class="text-2xl font-bold text-blue-700"></div>
+                        <div class="text-sm text-slate-600">Başarı</div>
+                    </div>
+                </div>
+
+                <!-- Question Results -->
+                <div id="questionResults" class="text-left mb-6">
+                    <!-- Detailed results will be shown here -->
+                </div>
+
+                <div class="flex gap-4 justify-center">
+                    <a href="quizzes.html" class="px-6 py-3 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors">
+                        Quizlere Dön
+                    </a>
+                    <button onclick="location.reload()" class="px-6 py-3 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 transition-colors">
+                        Tekrar Çöz
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

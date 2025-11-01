@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem Çözümü - MuhasebeOkulu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Ortak CSS -->
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+    
+    <!-- Ortak JS -->
+    <script src="http://localhost:8080/assets/js/common.js"></script>
+    <script src="http://localhost:8080/assets/js/api.js"></script>
+    <script src="http://localhost:8080/assets/js/auth.js"></script>
+
+    <!-- Page-specific JS -->
+    <script src="http://localhost:8080/assets/js/pages/problem-detail.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            overflow-y: hidden;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: #f8fafc;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #94a3b8;
+        }
+
+        /* Okunabilir metin stilleri */
+        .readable-text {
+            line-height: 1.8;
+            font-size: 15px;
+            color: #334155;
+            max-width: 65ch;
+        }
+
+        .readable-text p {
+            margin-bottom: 1em;
+        }
+
+        .readable-text strong {
+            font-weight: 600;
+            color: #0f172a;
+        }
+
+        .readable-text em {
+            font-style: italic;
+            color: #475569;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            letter-spacing: 0.025em;
+            text-transform: uppercase;
+            margin-bottom: 0.75rem;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased">
+    <div class="relative flex flex-col h-screen">
+    <!-- Header -->
+        <header class="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-sm flex-shrink-0">
+            <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 border-b border-slate-200/80">
+                    <div class="flex items-center gap-6">
+                        <button onclick="goBack()"
+                            class="flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors">
+                            <i data-lucide="arrow-left" class="w-5 h-5" style="stroke-width: 1.5;"></i>
+                            <span class="hidden sm:inline text-sm font-medium">Geri</span>
+                        </button>
+                    <a href="index.html" class="flex items-center gap-2">
+                            <div
+                                class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter">
+                                MO</div>
+                            <span
+                                class="hidden sm:inline text-lg font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                        </a>
+                        <div class="hidden md:flex items-center gap-2 text-sm text-slate-500">
+                            <a href="problems.html" class="hover:text-slate-900">Problemler</a>
+                            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                            <span class="font-medium text-slate-800" id="breadcrumbTitle">Problem</span>
+                        </div>
+                </div>
+                <div class="flex items-center gap-2" id="authButtons">
+                        <a href="login.html"
+                            class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md transition-colors">Giriş
+                            Yap</a>
+                        <a href="register.html"
+                            class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm">Kayıt
+                            Ol</a>
+                </div>
+                <div class="flex items-center gap-2 hidden" id="userProfileMenu">
+                    <div class="relative">
+                            <button onclick="toggleProfileDropdown()"
+                                class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                                <div
+                                    class="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                <span id="userInitial">U</span>
+                            </div>
+                            <span id="userNameButton" class="hidden md:block w-auto whitespace-nowrap">Hoşgeldin, Kullanıcı</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </button>
+
+                            <div id="profileDropdown"
+                                class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50 border border-slate-200">
+                            <div class="py-1">
+                                <div class="px-4 py-3 border-b border-slate-200">
+                                    <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-10 h-10 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                            <span id="userInitialDropdown">U</span>
+                                        </div>
+                                        <div>
+                                                <div class="text-sm font-medium text-slate-900" id="userName">Kullanıcı
+                                                </div>
+                                            <div class="text-xs text-slate-500" id="userRole">Öğrenci</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="adminPanelLink" class="hidden">
+                                        <a href="admin-dashboard.html"
+                                            class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50">
+                                            <i data-lucide="shield" class="w-4 h-4 mr-3"></i>
+                                            Admin Panel
+                                        </a>
+                                </div>
+                                    <a href="#" onclick="logout(event)"
+                                        class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                    <i data-lucide="log-out" class="w-4 h-4 mr-3"></i>
+                                    Çıkış Yap
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow flex flex-col lg:flex-row overflow-hidden">
+            <!-- Left Panel: Problem Description -->
+            <div
+                class="w-full lg:w-1/2 xl:w-5/12 p-6 overflow-y-auto custom-scrollbar border-b lg:border-b-0 lg:border-r border-slate-200">
+                <div class="max-w-3xl mx-auto">
+                    <div class="space-y-6">
+                <div>
+                            <h1 id="problemTitle" class="text-2xl font-semibold text-slate-900 mb-4">Problem Başlığı
+                            </h1>
+                            <div class="flex items-center gap-4 mb-4">
+                                <span id="problemDifficulty"
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Kolay</span>
+                                <span id="problemTags" class="text-sm text-slate-500"></span>
+                </div>
+            </div>
+
+                        <div>
+                            <h3 class="section-title">Soru</h3>
+                            <div id="problemContent" class="readable-text bg-white p-6 rounded-lg border border-slate-200">
+                                <!-- Problem içeriği -->
+                    </div>
+                </div>
+
+                        <div id="hintSection" class="hidden">
+                            <h3 class="section-title">İpucu</h3>
+                            <div id="problemHint"
+                                class="readable-text bg-blue-50 p-6 rounded-lg border border-blue-200">
+                                <!-- İpucu -->
+                    </div>
+                </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Solution Editor -->
+            <div class="w-full lg:w-1/2 xl:w-7/12 flex flex-col bg-white">
+                <!-- Tabs -->
+                <div class="flex-shrink-0 border-b border-slate-200">
+                    <div class="px-6">
+                        <nav class="-mb-px flex space-x-6">
+                            <button class="py-3 px-1 border-b-2 border-slate-800 text-sm font-semibold text-slate-800">
+                                Çözüm
+                            </button>
+                        </nav>
+                    </div>
+                    </div>
+
+                <!-- Editor Area -->
+                <div class="flex-grow p-6 overflow-y-auto custom-scrollbar">
+                    <div class="space-y-6">
+                        <!-- Journal Entry Table -->
+                        <div class="border border-slate-200 rounded-lg">
+                            <!-- Table Header -->
+                            <div
+                                class="grid grid-cols-12 items-center p-3 bg-slate-50 border-b border-slate-200 text-sm font-medium text-slate-600">
+                                <div class="col-span-2">Hesap Kodu</div>
+                                <div class="col-span-4">Hesap Adı</div>
+                                <div class="col-span-2 text-right">Borç (₺)</div>
+                                <div class="col-span-2 text-right">Alacak (₺)</div>
+                                <div class="col-span-2"></div>
+                            </div>
+                            <!-- Table Body -->
+                            <div id="journalEntries" class="divide-y divide-slate-200">
+                                <!-- Kayıtlar buraya yüklenecek -->
+                            </div>
+                            <!-- Add Row Button -->
+                            <div class="border-t border-slate-200">
+                                <button id="addRowBtn"
+                                    class="w-full flex items-center justify-center gap-2 p-3 text-sm font-medium text-blue-600 hover:bg-blue-50 transition-colors">
+                                    <i data-lucide="plus" class="w-4 h-4" style="stroke-width: 1.5;"></i>
+                                    Satır Ekle
+                                </button>
+                            </div>
+                            <!-- Totals & Balance -->
+                            <div
+                                class="flex flex-wrap justify-between items-center gap-y-2 gap-x-4 p-3 bg-slate-50 border-t border-slate-200 text-sm font-medium">
+                                <div class="flex items-center gap-x-6 gap-y-2">
+                                    <div class="font-semibold text-slate-800">Toplam</div>
+                                    <div class="flex items-center gap-4 text-slate-600">
+                                        <div class="flex items-baseline gap-1.5">
+                                            <span class="text-slate-500">Borç:</span>
+                                            <span id="debit-total" class="font-semibold text-slate-800">0,00</span>
+                                        </div>
+                                        <div class="flex items-baseline gap-1.5">
+                                            <span class="text-slate-500">Alacak:</span>
+                                            <span id="credit-total" class="font-semibold text-slate-800">0,00</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="balance" class="flex items-center gap-2 text-slate-500">
+                                    <i data-lucide="minus-circle" class="w-4 h-4" style="stroke-width: 1.5;"></i>
+                                    <span>Kayıt Boş</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+
+                <!-- Action Bar -->
+                <div class="flex-shrink-0 p-4 bg-white/60 backdrop-blur-sm border-t border-slate-200">
+                    <div class="flex justify-end items-center gap-3">
+                        <button onclick="submitEntry()"
+                            class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-md shadow-sm transition-colors flex items-center gap-2">
+                            <i data-lucide="send" class="w-4 h-4" style="stroke-width: 1.5;"></i>
+                            Gönder ve Kontrol Et
+                        </button>
+                    </div>
+                </div>
+            </div>
+    </main>
+</div>
+
+<!-- Hata Modal -->
+<div id="errorModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+        <h3 class="text-lg font-bold text-red-600 mb-2">❌ Hata</h3>
+        <p id="errorMessage" class="text-gray-700 mb-4"></p>
+        <button onclick="closeErrorModal()" class="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md">
+            Tamam
+        </button>
+    </div>
+</div>
+
+    <!-- Başarı Modal -->
+    <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 class="text-lg font-bold text-green-600 mb-2">✅ Başarılı</h3>
+            <p id="successMessage" class="text-gray-700 mb-4"></p>
+            <div class="flex gap-2">
+                <button onclick="closeSuccessModal()"
+                    class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-md">
+                    Kapat
+                </button>
+                <a href="problems.html"
+                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-2 rounded-md text-center">
+                    Problemlere Dön
+                </a>
+            </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div id="errorModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div class="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <i data-lucide="alert-circle" class="w-6 h-6 text-red-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-gray-900">Hata</h3>
+                <p id="errorModalMessage" class="text-sm text-gray-600 mt-1"></p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="closeErrorModal()"
+                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 py-2 rounded-md font-medium transition-colors">
+                Kapat
+            </button>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>

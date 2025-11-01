@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizler - MuhasebeOkulu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Ortak CSS -->
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+
+    <!-- Ortak JS -->
+    <script src="http://localhost:8080/assets/js/common.js"></script>
+    <script src="http://localhost:8080/assets/js/api.js"></script>
+    <script src="http://localhost:8080/assets/js/auth.js"></script>
+
+    <!-- Page-specific JS -->
+    <script src="http://localhost:8080/assets/js/pages/quizzes.js"></script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased scroll-smooth">
+<div class="relative min-h-screen">
+    <!-- Arka Plan -->
+    <div class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:6rem_4rem]">
+        <div class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(520px_520px_at_50%_160px,rgba(30,41,59,0.08),rgba(30,41,59,0.03),transparent)]"></div>
+    </div>
+
+    <!-- Header - Standart Öğrenci Navbar -->
+    <header class="sticky top-0 z-40 w-full backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 border-b border-slate-200/80">
+
+                <!-- Logo + Navigation Links (Ortalanmış) -->
+                <div class="flex items-center justify-between w-full">
+                    <!-- Logo -->
+                    <a href="index.html" class="flex items-center gap-2 group">
+                        <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
+                        <span class="text-lg font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                    </a>
+
+                    <!-- Navigation Links (Ortalanmış - sadece giriş yapan kullanıcılar için) -->
+                    <nav id="userNavLinks" class="hidden md:flex items-center justify-center gap-6 absolute left-1/2 transform -translate-x-1/2">
+                        <a href="dashboard.html" id="navDashboard" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Dashboard</a>
+                        <a href="problems.html" id="navProblems" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Problemler</a>
+                        <a href="quizzes.html" id="navQuizzes" class="text-sm font-medium text-slate-900">Quiz</a>
+                        <a href="study.html" id="navStudy" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Öğren</a>
+                        <a href="profile.html" id="navProfile" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Profilim</a>
+                    </nav>
+                </div>
+
+                <!-- Auth Buttons / Profile Menu -->
+                <div class="flex items-center gap-2">
+                    <!-- Giriş Yapmamış Kullanıcılar İçin -->
+                    <div id="guestAuthButtons" class="flex items-center gap-2">
+                        <a href="login.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md transition-colors whitespace-nowrap">Giriş Yap</a>
+                        <a href="register.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm whitespace-nowrap">Kayıt Ol</a>
+                    </div>
+
+                    <!-- Giriş Yapmış Kullanıcılar İçin -->
+                    <div id="userProfileMenu" class="hidden relative">
+                        <button onclick="CommonUtils.toggleUserDropdown()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                            <span id="userDisplayName">Hoşgeldin, Kullanıcı</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1">
+                            <a href="profile.html" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                                <i data-lucide="user" class="w-4 h-4"></i>
+                                Profilim
+                            </a>
+                            <hr class="my-1 border-slate-200">
+                            <button onclick="CommonUtils.logout()" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                <i data-lucide="log-out" class="w-4 h-4"></i>
+                                Çıkış Yap
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Quizler</h1>
+            <p class="text-slate-600">Bilginizi test edin</p>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex gap-4 mb-6">
+            <button onclick="filterQuizzes('all')" id="filter-all" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium">
+                Tüm Quizler
+            </button>
+            <button onclick="filterQuizzes('completed')" id="filter-completed" class="px-4 py-2 bg-white border border-slate-200 text-slate-600 rounded-lg text-sm font-medium hover:bg-slate-50">
+                Tamamlananlar
+            </button>
+        </div>
+
+        <!-- Quizzes Grid -->
+        <div id="quizzesGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Quizzes will be loaded here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-16">
+            <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="clipboard-list" class="w-8 h-8 text-slate-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-slate-900 mb-2">Henüz quiz yok</h3>
+            <p class="text-slate-600">Şu anda aktif quiz bulunmuyor</p>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>

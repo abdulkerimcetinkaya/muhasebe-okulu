@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Yönetimi - MuhasebeOkulu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Ortak CSS -->
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+
+    <!-- Ortak JS -->
+    <script src="http://localhost:8080/assets/js/common.js"></script>
+    <script src="http://localhost:8080/assets/js/api.js"></script>
+    <script src="http://localhost:8080/assets/js/auth.js"></script>
+
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; }
+        .tab-active {
+            border-bottom: 2px solid #1e293b;
+            color: #1e293b;
+            font-weight: 600;
+        }
+        .tab-inactive {
+            color: #64748b;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased scroll-smooth">
+<div class="relative min-h-screen">
+    <!-- Arka Plan -->
+    <div class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:6rem_4rem]">
+        <div class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(520px_520px_at_50%_160px,rgba(30,41,59,0.08),rgba(30,41,59,0.03),transparent)]"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 w-full backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 border-b border-slate-200/80">
+                <div class="flex items-center justify-between w-full">
+                    <a href="admin-dashboard.html" class="flex items-center gap-2 group">
+                        <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
+                        <span class="text-lg font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                    </a>
+                    <nav class="hidden md:flex items-center justify-center gap-6 absolute left-1/2 transform -translate-x-1/2">
+                        <a href="admin-dashboard.html" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Dashboard</a>
+                        <a href="admin.html" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Admin Panel</a>
+                        <a href="admin-quizzes.html" class="text-sm font-medium text-slate-900">Quiz Yönetimi</a>
+                    </nav>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <button onclick="CommonUtils.toggleUserDropdown()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                            <div class="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm font-medium" id="userInitial">A</div>
+                            <span id="userDisplayName" class="hidden md:block w-auto whitespace-nowrap">Hoşgeldin, Admin</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg z-50 border border-slate-200">
+                            <div class="py-1">
+                                <div class="px-4 py-3 border-b border-slate-200">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm font-medium">
+                                            <span id="userInitialDropdown">A</span>
+                                        </div>
+                                        <div>
+                                            <div class="text-sm font-medium text-slate-900" id="userName">Admin</div>
+                                            <div class="text-xs text-slate-500" id="userRole">Yönetici</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <a href="#" onclick="CommonUtils.logout(event)" class="flex items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50">
+                                    <i data-lucide="log-out" class="w-4 h-4 mr-3"></i>
+                                    Çıkış Yap
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Quiz Yönetimi</h1>
+            <p class="text-slate-600">Quizleri, soruları ve konuları yönetin</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="border-b border-slate-200 mb-6">
+            <nav class="flex gap-8">
+                <button onclick="switchTab('topics')" id="tab-topics" class="pb-4 px-1 text-sm tab-active transition-colors">
+                    Konular
+                </button>
+                <button onclick="switchTab('quizzes')" id="tab-quizzes" class="pb-4 px-1 text-sm tab-inactive hover:text-slate-900 transition-colors">
+                    Quizler
+                </button>
+                <button onclick="switchTab('questions')" id="tab-questions" class="pb-4 px-1 text-sm tab-inactive hover:text-slate-900 transition-colors">
+                    Sorular
+                </button>
+            </nav>
+        </div>
+
+        <!-- Topics Tab Content -->
+        <div id="content-topics" class="tab-content">
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-slate-900">Konu Listesi</h2>
+                    <button onclick="showTopicModal()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Yeni Konu
+                    </button>
+                </div>
+                <div id="topicsList" class="space-y-3">
+                    <!-- Topics will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Quizzes Tab Content -->
+        <div id="content-quizzes" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-semibold text-slate-900">Quiz Listesi</h2>
+                    <button onclick="showQuizModal()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Yeni Quiz
+                    </button>
+                </div>
+                <div id="quizzesList" class="space-y-3">
+                    <!-- Quizzes will be loaded here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Questions Tab Content -->
+        <div id="content-questions" class="tab-content hidden">
+            <div class="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
+                <h2 class="text-xl font-semibold text-slate-900 mb-6">Soru Yönetimi</h2>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Quiz Seç</label>
+                    <select id="quizSelect" onchange="loadQuizQuestions()" class="w-full max-w-md px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent">
+                        <option value="">Quiz seçin...</option>
+                    </select>
+                </div>
+                <div id="questionsContainer" class="hidden">
+                    <button onclick="showQuestionModal()" class="mb-4 px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors flex items-center gap-2">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Yeni Soru Ekle
+                    </button>
+                    <div id="questionsList" class="space-y-4">
+                        <!-- Questions will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Topic Modal -->
+    <div id="topicModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-md w-full p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-slate-900" id="topicModalTitle">Yeni Konu</h3>
+                <button onclick="closeTopicModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="topicForm" onsubmit="saveTopic(event)">
+                <input type="hidden" id="topicId">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Konu Adı *</label>
+                        <input type="text" id="topicName" required maxlength="200" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Açıklama</label>
+                        <textarea id="topicDescription" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent"></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeTopicModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                        İptal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div id="quizModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-slate-900" id="quizModalTitle">Yeni Quiz</h3>
+                <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="quizForm" onsubmit="saveQuiz(event)">
+                <input type="hidden" id="quizId">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Quiz Başlığı *</label>
+                        <input type="text" id="quizTitle" required maxlength="200" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Açıklama</label>
+                        <textarea id="quizDescription" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Konu</label>
+                        <select id="quizTopicId" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent">
+                            <option value="">Konu seçin...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Zorluk Seviyesi *</label>
+                        <select id="quizDifficulty" required class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent">
+                            <option value="1">Kolay</option>
+                            <option value="2">Orta</option>
+                            <option value="3">Zor</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Süre (Dakika)</label>
+                        <input type="number" id="quizTimeLimitMinutes" min="1" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Geçme Yüzdesi * (%)</label>
+                        <input type="number" id="quizPassPercentage" required min="0" max="100" value="70" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="flex items-center gap-2">
+                            <input type="checkbox" id="quizIsActive" checked class="w-4 h-4 text-slate-800 border-slate-300 rounded focus:ring-slate-800">
+                            <span class="text-sm font-medium text-slate-700">Aktif</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeQuizModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                        İptal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Question Modal -->
+    <div id="questionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-slate-900" id="questionModalTitle">Yeni Soru</h3>
+                <button onclick="closeQuestionModal()" class="text-slate-400 hover:text-slate-600">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="questionForm" onsubmit="saveQuestion(event)">
+                <input type="hidden" id="questionId">
+                <input type="hidden" id="questionQuizId">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Soru Metni *</label>
+                        <textarea id="questionText" required rows="4" maxlength="2000" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Puan *</label>
+                            <input type="number" id="questionPoints" required min="1" max="100" value="10" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Sıra</label>
+                            <input type="number" id="questionOrder" min="1" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <!-- Options -->
+                    <div>
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="block text-sm font-medium text-slate-700">Şıklar *</label>
+                            <button type="button" onclick="addOption()" class="text-sm text-slate-600 hover:text-slate-800 flex items-center gap-1">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                Şık Ekle
+                            </button>
+                        </div>
+                        <div id="optionsContainer" class="space-y-3">
+                            <!-- Options will be added here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-6">
+                    <button type="button" onclick="closeQuestionModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                        İptal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+                        Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Auth check
+    document.addEventListener('DOMContentLoaded', function() {
+        if (!AuthService.checkAuth()) {
+            window.location.href = 'login.html';
+            return;
+        }
+
+        if (!AuthService.isAdmin()) {
+            alert('Bu sayfaya erişim yetkiniz yok!');
+            window.location.href = 'index.html';
+            return;
+        }
+
+        // Initialize
+        CommonUtils.updateProfileMenu();
+        lucide.createIcons();
+        loadTopics();
+        loadTopicsForSelect();
+        loadQuizzesForSelect();
+    });
+
+    let currentTab = 'topics';
+    let editingTopicId = null;
+    let editingQuizId = null;
+    let editingQuestionId = null;
+    let selectedQuizId = null;
+
+    // Tab Switching
+    function switchTab(tab) {
+        currentTab = tab;
+
+        // Update tab buttons
+        document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+            btn.classList.remove('tab-active');
+            btn.classList.add('tab-inactive');
+        });
+        document.getElementById(`tab-${tab}`).classList.remove('tab-inactive');
+        document.getElementById(`tab-${tab}`).classList.add('tab-active');
+
+        // Update content
+        document.querySelectorAll('[id^="content-"]').forEach(content => {
+            content.classList.add('hidden');
+        });
+        document.getElementById(`content-${tab}`).classList.remove('hidden');
+
+        // Load data based on tab
+        if (tab === 'topics') loadTopics();
+        else if (tab === 'quizzes') loadQuizzes();
+
+        lucide.createIcons();
+    }
+
+    // ==================== TOPICS ====================
+
+    async function loadTopics() {
+        try {
+            const response = await APIService.get('/api/admin/quizzes/topics');
+            const topics = await response.json();
+
+            const topicsList = document.getElementById('topicsList');
+            if (topics.length === 0) {
+                topicsList.innerHTML = '<p class="text-slate-500 text-sm text-center py-8">Henüz konu eklenmemiş</p>';
+                return;
+            }
+
+            topicsList.innerHTML = topics.map(topic => `
+                <div class="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors">
+                    <div>
+                        <h4 class="font-semibold text-slate-900">${topic.name}</h4>
+                        <p class="text-sm text-slate-600 mt-1">${topic.description || 'Açıklama yok'}</p>
+                        <p class="text-xs text-slate-500 mt-2">${topic.quizCount} quiz</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="editTopic(${topic.id})" class="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+                            <i data-lucide="edit-2" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deleteTopic(${topic.id})" class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        } catch (error) {
+            console.error('Konular yüklenirken hata:', error);
+            alert('Konular yüklenemedi!');
+        }
+    }
+
+    async function loadTopicsForSelect() {
+        try {
+            const response = await APIService.get('/api/admin/quizzes/topics');
+            const topics = await response.json();
+
+            const select = document.getElementById('quizTopicId');
+            select.innerHTML = '<option value="">Konu seçin...</option>' +
+                topics.map(topic => `<option value="${topic.id}">${topic.name}</option>`).join('');
+        } catch (error) {
+            console.error('Konular yüklenirken hata:', error);
+        }
+    }
+
+    function showTopicModal(topicId = null) {
+        editingTopicId = topicId;
+        const modal = document.getElementById('topicModal');
+        const title = document.getElementById('topicModalTitle');
+
+        if (topicId) {
+            title.textContent = 'Konu Düzenle';
+            // Load topic data (will be implemented)
+        } else {
+            title.textContent = 'Yeni Konu';
+            document.getElementById('topicForm').reset();
+        }
+
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+    }
+
+    function closeTopicModal() {
+        document.getElementById('topicModal').classList.add('hidden');
+        editingTopicId = null;
+        document.getElementById('topicForm').reset();
+    }
+
+    async function saveTopic(event) {
+        event.preventDefault();
+
+        const data = {
+            name: document.getElementById('topicName').value,
+            description: document.getElementById('topicDescription').value
+        };
+
+        try {
+            let response;
+            if (editingTopicId) {
+                response = await APIService.put(`/api/admin/quizzes/topics/${editingTopicId}`, data);
+            } else {
+                response = await APIService.post('/api/admin/quizzes/topics', data);
+            }
+
+            if (response.ok) {
+                alert(editingTopicId ? 'Konu güncellendi!' : 'Konu oluşturuldu!');
+                closeTopicModal();
+                loadTopics();
+                loadTopicsForSelect();
+            } else {
+                const error = await response.json();
+                alert('Hata: ' + (error.message || 'Konu kaydedilemedi!'));
+            }
+        } catch (error) {
+            console.error('Konu kaydetme hatası:', error);
+            alert('Bir hata oluştu!');
+        }
+    }
+
+    async function editTopic(id) {
+        try {
+            const response = await APIService.get(`/api/admin/quizzes/topics/${id}`);
+            const topic = await response.json();
+
+            document.getElementById('topicId').value = topic.id;
+            document.getElementById('topicName').value = topic.name;
+            document.getElementById('topicDescription').value = topic.description || '';
+
+            showTopicModal(id);
+        } catch (error) {
+            console.error('Konu yükleme hatası:', error);
+            alert('Konu yüklenemedi!');
+        }
+    }
+
+    async function deleteTopic(id) {
+        if (!confirm('Bu konuyu silmek istediğinizden emin misiniz?')) return;
+
+        try {
+            const response = await APIService.delete(`/api/admin/quizzes/topics/${id}`);
+            if (response.ok) {
+                alert('Konu silindi!');
+                loadTopics();
+                loadTopicsForSelect();
+            } else {
+                alert('Konu silinemedi!');
+            }
+        } catch (error) {
+            console.error('Konu silme hatası:', error);
+            alert('Bir hata oluştu!');
+        }
+    }
+
+    // ==================== QUIZZES ====================
+
+    async function loadQuizzes() {
+        try {
+            const response = await APIService.get('/api/admin/quizzes?page=0&size=50');
+            const data = await response.json();
+            const quizzes = data.content || [];
+
+            const quizzesList = document.getElementById('quizzesList');
+            if (quizzes.length === 0) {
+                quizzesList.innerHTML = '<p class="text-slate-500 text-sm text-center py-8">Henüz quiz eklenmemiş</p>';
+                return;
+            }
+
+            const difficultyLabels = { 1: 'Kolay', 2: 'Orta', 3: 'Zor' };
+            const difficultyColors = { 1: 'bg-green-100 text-green-800', 2: 'bg-yellow-100 text-yellow-800', 3: 'bg-red-100 text-red-800' };
+
+            quizzesList.innerHTML = quizzes.map(quiz => `
+                <div class="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h4 class="font-semibold text-slate-900">${quiz.title}</h4>
+                            <span class="px-2 py-1 text-xs font-medium rounded ${difficultyColors[quiz.difficulty]}">${difficultyLabels[quiz.difficulty]}</span>
+                            ${quiz.isActive ? '<span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded">Aktif</span>' : '<span class="px-2 py-1 text-xs font-medium bg-slate-100 text-slate-800 rounded">Pasif</span>'}
+                        </div>
+                        <p class="text-sm text-slate-600">${quiz.description || 'Açıklama yok'}</p>
+                        <div class="flex items-center gap-4 mt-2 text-xs text-slate-500">
+                            ${quiz.topicName ? `<span><i data-lucide="folder" class="w-3 h-3 inline"></i> ${quiz.topicName}</span>` : ''}
+                            <span><i data-lucide="file-text" class="w-3 h-3 inline"></i> ${quiz.questionCount} soru</span>
+                            <span><i data-lucide="star" class="w-3 h-3 inline"></i> ${quiz.totalPoints} puan</span>
+                            ${quiz.timeLimitMinutes ? `<span><i data-lucide="clock" class="w-3 h-3 inline"></i> ${quiz.timeLimitMinutes} dk</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="editQuiz(${quiz.id})" class="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+                            <i data-lucide="edit-2" class="w-4 h-4"></i>
+                        </button>
+                        <button onclick="deleteQuiz(${quiz.id})" class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
+                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        } catch (error) {
+            console.error('Quizler yüklenirken hata:', error);
+            alert('Quizler yüklenemedi!');
+        }
+    }
+
+    async function loadQuizzesForSelect() {
+        try {
+            const response = await APIService.get('/api/admin/quizzes/active');
+            const quizzes = await response.json();
+
+            const select = document.getElementById('quizSelect');
+            select.innerHTML = '<option value="">Quiz seçin...</option>' +
+                quizzes.map(quiz => `<option value="${quiz.id}">${quiz.title}</option>`).join('');
+        } catch (error) {
+            console.error('Quizler yüklenirken hata:', error);
+        }
+    }
+
+    function showQuizModal(quizId = null) {
+        editingQuizId = quizId;
+        const modal = document.getElementById('quizModal');
+        const title = document.getElementById('quizModalTitle');
+
+        if (quizId) {
+            title.textContent = 'Quiz Düzenle';
+        } else {
+            title.textContent = 'Yeni Quiz';
+            document.getElementById('quizForm').reset();
+        }
+
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+    }
+
+    function closeQuizModal() {
+        document.getElementById('quizModal').classList.add('hidden');
+        editingQuizId = null;
+        document.getElementById('quizForm').reset();
+    }
+
+    async function saveQuiz(event) {
+        event.preventDefault();
+
+        const data = {
+            title: document.getElementById('quizTitle').value,
+            description: document.getElementById('quizDescription').value,
+            topicId: document.getElementById('quizTopicId').value || null,
+            difficulty: parseInt(document.getElementById('quizDifficulty').value),
+            timeLimitMinutes: document.getElementById('quizTimeLimitMinutes').value || null,
+            passPercentage: parseInt(document.getElementById('quizPassPercentage').value),
+            isActive: document.getElementById('quizIsActive').checked
+        };
+
+        try {
+            let response;
+            if (editingQuizId) {
+                response = await APIService.put(`/api/admin/quizzes/${editingQuizId}`, data);
+            } else {
+                response = await APIService.post('/api/admin/quizzes', data);
+            }
+
+            if (response.ok) {
+                alert(editingQuizId ? 'Quiz güncellendi!' : 'Quiz oluşturuldu!');
+                closeQuizModal();
+                loadQuizzes();
+                loadQuizzesForSelect();
+            } else {
+                const error = await response.json();
+                alert('Hata: ' + (error.message || 'Quiz kaydedilemedi!'));
+            }
+        } catch (error) {
+            console.error('Quiz kaydetme hatası:', error);
+            alert('Bir hata oluştu!');
+        }
+    }
+
+    async function editQuiz(id) {
+        try {
+            const response = await APIService.get(`/api/admin/quizzes/${id}`);
+            const quiz = await response.json();
+
+            document.getElementById('quizId').value = quiz.id;
+            document.getElementById('quizTitle').value = quiz.title;
+            document.getElementById('quizDescription').value = quiz.description || '';
+            document.getElementById('quizTopicId').value = quiz.topicId || '';
+            document.getElementById('quizDifficulty').value = quiz.difficulty;
+            document.getElementById('quizTimeLimitMinutes').value = quiz.timeLimitMinutes || '';
+            document.getElementById('quizPassPercentage').value = quiz.passPercentage;
+            document.getElementById('quizIsActive').checked = quiz.isActive;
+
+            showQuizModal(id);
+        } catch (error) {
+            console.error('Quiz yükleme hatası:', error);
+            alert('Quiz yüklenemedi!');
+        }
+    }
+
+    async function deleteQuiz(id) {
+        if (!confirm('Bu quizi silmek istediğinizden emin misiniz?')) return;
+
+        try {
+            const response = await APIService.delete(`/api/admin/quizzes/${id}`);
+            if (response.ok) {
+                alert('Quiz silindi!');
+                loadQuizzes();
+                loadQuizzesForSelect();
+            } else {
+                alert('Quiz silinemedi!');
+            }
+        } catch (error) {
+            console.error('Quiz silme hatası:', error);
+            alert('Bir hata oluştu!');
+        }
+    }
+
+    // ==================== QUESTIONS ====================
+
+    async function loadQuizQuestions() {
+        const quizId = document.getElementById('quizSelect').value;
+        selectedQuizId = quizId;
+
+        if (!quizId) {
+            document.getElementById('questionsContainer').classList.add('hidden');
+            return;
+        }
+
+        document.getElementById('questionsContainer').classList.remove('hidden');
+
+        try {
+            const response = await APIService.get(`/api/admin/quizzes/${quizId}`);
+            const quiz = await response.json();
+            const questions = quiz.questions || [];
+
+            const questionsList = document.getElementById('questionsList');
+            if (questions.length === 0) {
+                questionsList.innerHTML = '<p class="text-slate-500 text-sm text-center py-8">Bu quiz için henüz soru eklenmemiş</p>';
+                return;
+            }
+
+            questionsList.innerHTML = questions.map(question => `
+                <div class="p-4 border border-slate-200 rounded-lg">
+                    <div class="flex justify-between items-start mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="text-xs font-medium text-slate-500">Soru #${question.questionOrder || question.id}</span>
+                                <span class="px-2 py-1 text-xs font-medium bg-slate-100 text-slate-700 rounded">${question.points} puan</span>
+                            </div>
+                            <p class="text-sm font-medium text-slate-900">${question.questionText}</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="editQuestion(${question.id})" class="p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+                                <i data-lucide="edit-2" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="deleteQuestion(${question.id})" class="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="space-y-2 mt-3">
+                        ${question.options.map((option, idx) => `
+                            <div class="flex items-center gap-2 text-sm ${option.isCorrect ? 'text-green-700 font-medium' : 'text-slate-600'}">
+                                <span class="w-5 h-5 rounded-full border ${option.isCorrect ? 'bg-green-100 border-green-500' : 'border-slate-300'} flex items-center justify-center text-xs">
+                                    ${String.fromCharCode(65 + idx)}
+                                </span>
+                                ${option.optionText}
+                                ${option.isCorrect ? '<i data-lucide="check" class="w-4 h-4 ml-2"></i>' : ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('');
+
+            lucide.createIcons();
+        } catch (error) {
+            console.error('Sorular yüklenirken hata:', error);
+            alert('Sorular yüklenemedi!');
+        }
+    }
+
+    let optionCounter = 0;
+
+    function showQuestionModal(questionId = null) {
+        editingQuestionId = questionId;
+        const modal = document.getElementById('questionModal');
+        const title = document.getElementById('questionModalTitle');
+
+        if (questionId) {
+            title.textContent = 'Soru Düzenle';
+        } else {
+            title.textContent = 'Yeni Soru';
+            document.getElementById('questionForm').reset();
+            document.getElementById('questionQuizId').value = selectedQuizId;
+            // Add 4 empty options
+            document.getElementById('optionsContainer').innerHTML = '';
+            optionCounter = 0;
+            for (let i = 0; i < 4; i++) {
+                addOption();
+            }
+        }
+
+        modal.classList.remove('hidden');
+        lucide.createIcons();
+    }
+
+    function closeQuestionModal() {
+        document.getElementById('questionModal').classList.add('hidden');
+        editingQuestionId = null;
+        document.getElementById('questionForm').reset();
+    }
+
+    function addOption() {
+        const container = document.getElementById('optionsContainer');
+        const optionId = optionCounter++;
+        const optionLetter = String.fromCharCode(65 + container.children.length);
+
+        const optionDiv = document.createElement('div');
+        optionDiv.className = 'flex items-center gap-3 p-3 border border-slate-200 rounded-lg';
+        optionDiv.id = `option-${optionId}`;
+        optionDiv.innerHTML = `
+            <span class="w-6 h-6 rounded-full border border-slate-300 flex items-center justify-center text-xs font-medium">${optionLetter}</span>
+            <input type="text"
+                   class="flex-1 px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-800 focus:border-transparent text-sm"
+                   placeholder="Şık metni"
+                   data-option-text
+                   required>
+            <label class="flex items-center gap-2 text-sm text-slate-700 whitespace-nowrap">
+                <input type="radio" name="correctOption" value="${optionId}" class="w-4 h-4 text-slate-800" data-option-correct>
+                Doğru
+            </label>
+            ${container.children.length > 1 ? `
+            <button type="button" onclick="removeOption(${optionId})" class="p-2 text-slate-400 hover:text-red-600">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+            ` : ''}
+        `;
+
+        container.appendChild(optionDiv);
+        lucide.createIcons();
+    }
+
+    function removeOption(optionId) {
+        const optionDiv = document.getElementById(`option-${optionId}`);
+        if (optionDiv) optionDiv.remove();
+
+        // Update option letters
+        const container = document.getElementById('optionsContainer');
+        Array.from(container.children).forEach((child, idx) => {
+            const letter = child.querySelector('span');
+            if (letter) letter.textContent = String.fromCharCode(65 + idx);
+        });
+    }
+
+    async function saveQuestion(event) {
+        event.preventDefault();
+
+        // Collect options
+        const optionElements = document.querySelectorAll('[data-option-text]');
+        const options = Array.from(optionElements).map((elem, idx) => {
+            const container = elem.closest('[id^="option-"]');
+            const isCorrect = container.querySelector('[data-option-correct]').checked;
+            return {
+                optionText: elem.value,
+                isCorrect: isCorrect,
+                optionOrder: idx + 1
+            };
+        });
+
+        // Check if at least one option is correct
+        if (!options.some(opt => opt.isCorrect)) {
+            alert('En az bir doğru şık seçmelisiniz!');
+            return;
+        }
+
+        const data = {
+            quizId: document.getElementById('questionQuizId').value,
+            questionText: document.getElementById('questionText').value,
+            points: parseInt(document.getElementById('questionPoints').value),
+            questionOrder: document.getElementById('questionOrder').value || null,
+            options: options
+        };
+
+        try {
+            let response;
+            if (editingQuestionId) {
+                response = await APIService.put(`/api/admin/quizzes/questions/${editingQuestionId}`, data);
+            } else {
+                response = await APIService.post('/api/admin/quizzes/questions', data);
+            }
+
+            if (response.ok) {
+                alert(editingQuestionId ? 'Soru güncellendi!' : 'Soru oluşturuldu!');
+                closeQuestionModal();
+                loadQuizQuestions();
+            } else {
+                const error = await response.json();
+                alert('Hata: ' + (error.message || 'Soru kaydedilemedi!'));
+            }
+        } catch (error) {
+            console.error('Soru kaydetme hatası:', error);
+            alert('Bir hata oluştu!');
+        }
+    }
+
+    async function editQuestion(id) {
+        try {
+            const response = await APIService.get(`/api/admin/quizzes/${selectedQuizId}`);
+            const quiz = await response.json();
+            const question = quiz.questions.find(q => q.id === id);
+
+            if (!question) {
+                alert('Soru bulunamadı!');
+                return;
+            }
+
+            document.getElementById('questionId').value = question.id;
+            document.getElementById('questionQuizId').value = question.quizId;
+            document.getElementById('questionText').value = question.questionText;
+            document.getElementById('questionPoints').value = question.points;
+            document.getElementById('questionOrder').value = question.questionOrder || '';
+
+            // Load options
+            const container = document.getElementById('optionsContainer');
+            container.innerHTML = '';
+            optionCounter = 0;
+
+            question.options.forEach((option, idx) => {
+                addOption();
+                const optionDiv = container.children[idx];
+                optionDiv.querySelector('[data-option-text]').value = option.optionText;
+                if (option.isCorrect) {
+                    optionDiv.querySelector('[data-option-correct]').checked = true;
+                }
+            });
+
+            showQuestionModal(id);
+        } catch (error) {
+            console.error('Soru yükleme hatası:', error);
+            alert('Soru yüklenemedi!');
+        }
+    }
+
+    async function deleteQuestion(id) {
+        if (!confirm('Bu soruyu silmek istediğinizden emin misiniz?')) return;
+
+        try {
+            const response = await APIService.delete(`/api/admin/quizzes/questions/${id}`);
+            if (response.ok) {
+                alert('Soru silindi!');
+                loadQuizQuestions();
+            } else {
+                alert('Soru silinemedi!');
+            }
+        } catch (error) {
+            console.error('Soru silme hatası:', error);
+            alert('Bir hata oluştu!');
+        }
+    }
+</script>
+</body>
+</html>

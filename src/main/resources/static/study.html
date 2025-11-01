@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Öğrenme Kartları - MuhasebeOkulu</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Ortak CSS -->
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+
+    <!-- Ortak JS -->
+    <script src="http://localhost:8080/assets/js/common.js"></script>
+    <script src="http://localhost:8080/assets/js/api.js"></script>
+    <script src="http://localhost:8080/assets/js/auth.js"></script>
+
+    <!-- Page-specific JS -->
+    <script src="http://localhost:8080/assets/js/pages/study.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .study-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .study-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        .card-icon-wrapper {
+            transition: all 0.3s ease;
+        }
+
+        .study-card:hover .card-icon-wrapper {
+            transform: scale(1.1) rotate(5deg);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased">
+<div class="relative min-h-screen">
+    <!-- Arka Plan Deseni -->
+    <div class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
+        <div class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9D6FF,#E2E2E2,transparent)]"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 w-full backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 border-b border-slate-200/80">
+
+                <!-- Giriş yapmamış kullanıcılar için: Logo -->
+                <div id="guestLayout" class="flex items-center gap-4">
+                    <a href="index.html" class="flex items-center gap-2 group">
+                        <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
+                        <span class="text-lg font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                    </a>
+                </div>
+
+                <!-- Giriş yapmış kullanıcılar için: Logo + Nav Links -->
+                <div id="userLayout" class="hidden flex items-center justify-between w-full">
+                    <a href="index.html" class="flex items-center gap-2 group">
+                        <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
+                        <span class="text-lg font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                    </a>
+                    <nav class="hidden md:flex items-center justify-center gap-6 absolute left-1/2 transform -translate-x-1/2">
+                        <a href="dashboard.html" id="userDashboardLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Dashboard</a>
+                        <a href="problems.html" id="userProblemsLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Problemler</a>
+                        <a href="quizzes.html" id="userQuizzesLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Quiz</a>
+                        <a href="study.html" id="userStudyLink" class="text-sm font-medium text-slate-900">Öğren</a>
+                        <a href="profile.html" id="userProfileLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Profilim</a>
+                        <a href="admin-dashboard.html" id="adminDashboardLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Dashboard</a>
+                        <a href="admin.html" id="adminLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Admin Panel</a>
+                        <a href="admin-quizzes.html" id="adminQuizzesLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Quiz Yönetimi</a>
+                    </nav>
+                </div>
+
+                <!-- Giriş yapmamış kullanıcılar için: Auth Butonları -->
+                <div id="guestAuthButtons" class="flex items-center gap-2 flex-shrink-0">
+                    <a href="login.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md transition-colors whitespace-nowrap">Giriş Yap</a>
+                    <a href="register.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm whitespace-nowrap">Kayıt Ol</a>
+                </div>
+
+                <!-- Giriş yapmış kullanıcılar için: Profil Dropdown -->
+                <div id="userProfileMenu" class="hidden flex items-center gap-2">
+                    <div class="relative">
+                        <button onclick="CommonUtils.toggleUserDropdown()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                            <span id="userDisplayName">Hoşgeldin, Kullanıcı</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                        </button>
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1">
+                            <a href="profile.html" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                                <i data-lucide="user" class="w-4 h-4"></i>
+                                Profilim
+                            </a>
+                            <hr class="my-1 border-slate-200">
+                            <button onclick="CommonUtils.logout()" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                <i data-lucide="log-out" class="w-4 h-4"></i>
+                                Çıkış Yap
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="relative z-10">
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Page Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-slate-900 mb-2">Öğrenme Kartları</h1>
+            <p class="text-slate-600">Muhasebe konularını adım adım öğrenin ve pratik yapın</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="flex items-center justify-center py-12">
+            <div class="flex items-center gap-2 text-slate-600">
+                <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
+                <span>Kartlar yükleniyor...</span>
+            </div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div id="cardsGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Cards will be loaded here dynamically -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-12">
+            <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
+                <i data-lucide="book-open" class="w-8 h-8 text-slate-400"></i>
+            </div>
+            <h3 class="text-lg font-medium text-slate-900 mb-2">Henüz kart yok</h3>
+            <p class="text-slate-600">Öğrenme kartları yakında eklenecek</p>
+        </div>
+        </section>
+    </main>
+</div>
+
+    <script>
+        // Initialize icons on load
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+    </script>
+</body>
+
+</html>

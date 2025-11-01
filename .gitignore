@@ -1,0 +1,57 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Archived code directories ###
+archived-code/
+src/main/java/archive/
+
+### Logs ###
+*.log
+app.log
+
+### Claude/Serena ###
+.serena/
+claudedocs/
+.claude/settings.local.json
+
+### Documentation/Reports ###
+ARCHIVING_SUMMARY.md
+NAVBAR_CLEANUP_REPORT.md
+ROOM_PERFORMANCE_API_TESTS.md
+ROOM_PERFORMANCE_SYSTEM.md
+TEACHER_ROOM_SYSTEM.md
+hesapkodlari.md
+run_migration.ps1
+update_role_constraint.sql
+NUL

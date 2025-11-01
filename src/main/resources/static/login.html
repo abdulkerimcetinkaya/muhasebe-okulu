@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MuhasebeOkulu — Giriş Yap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Ortak CSS -->
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
+    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+    
+    <!-- Ortak JS -->
+    <script src="http://localhost:8080/assets/js/common.js"></script>
+    <script src="http://localhost:8080/assets/js/api.js"></script>
+    <script src="http://localhost:8080/assets/js/auth.js"></script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 antialiased scroll-smooth">
+    <div class="relative min-h-screen flex flex-col">
+        <!-- Arka Plan Deseni -->
+        <div
+            class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
+            <div
+                class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_520px_at_50%_180px,#DDE3FF,#F3F4F6,transparent)] opacity-90">
+            </div>
+        </div>
+
+        <main class="relative z-10 flex-1">
+            <!-- Giriş Formu -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-16 pb-12">
+                <div class="mx-auto max-w-md">
+                    <div class="mb-6 flex items-center gap-2">
+                        <div>
+                            <h1 class="text-2xl sm:text-3xl font-semibold tracking-tight text-slate-900">Giriş Yap</h1>
+                            <p class="text-sm text-slate-600 mt-0.5">Hesabınıza erişin ve öğrenmeye devam edin.</p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                        <div class="p-5 sm:p-6">
+                            <form id="loginForm" class="space-y-4">
+                                <!-- E-posta -->
+                                <div>
+                                    <label for="email" class="block text-sm font-medium text-slate-700">E-posta</label>
+                                    <div class="mt-1.5 relative">
+                                        <i data-lucide="mail"
+                                            class="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-500 pointer-events-none"
+                                            style="stroke-width:1.5;"></i>
+                                        <input id="email" name="email" type="email" required
+                                            autocomplete="email" placeholder="E-posta adresiniz"
+                                            class="w-full rounded-lg border border-slate-200 bg-white px-9 py-2.5 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:ring-2 focus:ring-slate-300 focus:border-slate-300 hover:border-slate-300">
+                                    </div>
+                                </div>
+
+                                <!-- Şifre -->
+                                <div>
+                                    <div class="flex items-center justify-between">
+                                        <label for="password"
+                                            class="block text-sm font-medium text-slate-700">Şifre</label>
+                                    </div>
+                                    <div class="mt-1.5 relative">
+                                        <i data-lucide="lock"
+                                            class="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-500 pointer-events-none"
+                                            style="stroke-width:1.5;"></i>
+                                        <input id="password" name="password" type="password" required
+                                            autocomplete="current-password" placeholder="••••••••"
+                                            class="w-full rounded-lg border border-slate-200 bg-white px-9 py-2.5 pr-11 text-sm text-slate-900 placeholder-slate-400 outline-none transition-all focus:ring-2 focus:ring-slate-300 focus:border-slate-300 hover:border-slate-300">
+                                        <button type="button" id="togglePassword"
+                                            class="absolute right-2.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-8 h-8 rounded-md text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300 transition-colors"
+                                            aria-label="Şifreyi göster/gizle">
+                                            <i data-lucide="eye" class="w-4.5 h-4.5" style="stroke-width:1.5;"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Gönder -->
+                                <div class="pt-1.5">
+                                    <button type="submit"
+                                        class="group inline-flex w-full items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white transition-all hover:bg-slate-800 hover:-translate-y-0.5 shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-300">
+                                        <i data-lucide="log-in"
+                                            class="w-4.5 h-4.5 transition-transform duration-300 group-hover:-translate-y-0.5"
+                                            style="stroke-width:1.5;"></i>
+                                        Giriş Yap
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="px-5 py-3 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                            <div class="text-xs text-slate-600">Hesabın yok mu?</div>
+                            <a href="register.html"
+                                class="group inline-flex items-center gap-1.5 text-xs font-medium text-slate-700 hover:text-slate-900 transition-colors">
+                                Kayıt Ol
+                                <i data-lucide="arrow-right"
+                                    class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                                    style="stroke-width:1.5;"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Hata Mesajı -->
+                    <div id="errorAlert" class="hidden mt-4 rounded-lg border border-red-200 bg-red-50 p-4">
+                        <div class="flex items-center gap-2">
+                            <i data-lucide="alert-circle" class="w-5 h-5 text-red-600" style="stroke-width:1.5;"></i>
+                            <p id="errorMessage" class="text-sm text-red-800"></p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="bg-white border-t border-slate-200/80 mt-auto">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <div class="flex items-center justify-between">
+                    <a href="index.html" class="flex items-center gap-2 group">
+                        <div
+                            class="w-7 h-7 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-sm tracking-tighter transition-transform duration-300 group-hover:scale-105">
+                            MO</div>
+                        <span class="text-base font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                    </a>
+                    <p class="text-sm text-slate-500">© <span id="year"></span> Tüm hakları saklıdır.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8080/api/auth/login";
+
+        // Yıl
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        // Şifre göster/gizle
+        const pwdInput = document.getElementById('password');
+        const toggleBtn = document.getElementById('togglePassword');
+        const toggleIcon = toggleBtn.querySelector('i');
+
+        toggleBtn.addEventListener('click', () => {
+            const isHidden = pwdInput.type === 'password';
+            pwdInput.type = isHidden ? 'text' : 'password';
+            toggleIcon.setAttribute('data-lucide', isHidden ? 'eye-off' : 'eye');
+            lucide.createIcons();
+        });
+
+        // Hata göster
+        function showError(message) {
+            document.getElementById("errorMessage").textContent = message;
+            document.getElementById("errorAlert").classList.remove("hidden");
+            lucide.createIcons();
+        }
+
+        // Form submit
+        document.getElementById("loginForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            // Hata mesajını gizle
+            document.getElementById("errorAlert").classList.add("hidden");
+
+            const email = document.getElementById("email").value.trim();
+            const password = document.getElementById("password").value;
+
+            if (!email || !password) {
+                showError("E-posta ve şifre boş olamaz!");
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => null);
+                    throw new Error(errorData?.message || "Giriş başarısız!");
+                }
+
+                const data = await response.json();
+
+                // JWT Token ve kullanıcı bilgilerini kaydet
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("user", JSON.stringify({
+                    id: data.id,
+                    username: data.username,
+                    role: data.role
+                }));
+
+                // Rol bazlı yönlendirme
+                const redirectUrl = localStorage.getItem('redirectAfterLogin');
+                if (redirectUrl) {
+                    localStorage.removeItem('redirectAfterLogin');
+                    window.location.href = redirectUrl;
+                } else {
+                    // Rol bazlı yönlendirme
+                    if (data.role === 'ADMIN') {
+                        window.location.href = "admin-dashboard.html";
+                    } else if (data.role === 'TEACHER') {
+                        window.location.href = "teacher-dashboard.html";
+                    } else {
+                        window.location.href = "dashboard.html";
+                    }
+                }
+
+            } catch (err) {
+                console.error("Login hatası:", err);
+                showError(err.message || "Giriş yapılırken bir hata oluştu.");
+            }
+        });
+
+        // Iconları yükle
+        lucide.createIcons();
+    </script>
+</body>
+
+</html>

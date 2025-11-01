@@ -1,0 +1,341 @@
+/**
+ * Components CSS - Özel component stilleri
+ * Problem kartları, navbar, dropdown gibi component'ler için özel stiller
+ */
+
+/* Problem Card Styles */
+.problem-card {
+    @apply bg-white rounded-lg shadow-md border border-gray-200 p-4 transition-all duration-200;
+}
+
+.problem-card:hover {
+    @apply shadow-lg transform -translate-y-1;
+}
+
+.problem-card.solved {
+    @apply opacity-60 bg-gray-50;
+}
+
+.problem-card.solved .problem-title {
+    @apply text-gray-500;
+}
+
+.problem-card.solved .problem-content {
+    @apply text-gray-400;
+}
+
+.problem-card.solved .problem-button {
+    @apply bg-gray-400 hover:bg-gray-500;
+}
+
+.problem-badge {
+    @apply absolute top-2 right-2 bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded-full;
+}
+
+.problem-badge.solved {
+    @apply bg-green-100 text-green-800;
+}
+
+.problem-badge.unsolved {
+    @apply bg-gray-100 text-gray-800;
+}
+
+/* Navbar Styles */
+.navbar {
+    @apply bg-white shadow-sm border-b border-gray-200;
+}
+
+.navbar-brand {
+    @apply text-xl font-bold text-gray-900;
+}
+
+.navbar-nav {
+    @apply flex items-center space-x-4;
+}
+
+.navbar-link {
+    @apply text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200;
+}
+
+.navbar-link.active {
+    @apply text-blue-600 bg-blue-50;
+}
+
+/* User Dropdown Styles */
+.user-dropdown {
+    @apply relative;
+}
+
+.user-dropdown-button {
+    @apply flex items-center space-x-2 text-gray-700 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 rounded-md px-3 py-2;
+}
+
+.user-dropdown-menu {
+    @apply absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-50;
+}
+
+.user-dropdown-item {
+    @apply block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150;
+}
+
+.user-dropdown-divider {
+    @apply border-t border-gray-200;
+}
+
+/* Profile Card Styles */
+.profile-card {
+    @apply bg-white rounded-lg shadow-md border border-gray-200 p-6;
+}
+
+.profile-avatar {
+    @apply w-16 h-16 bg-blue-600 text-white rounded-full flex items-center justify-center text-xl font-bold;
+}
+
+.profile-info {
+    @apply mt-4;
+}
+
+.profile-name {
+    @apply text-lg font-semibold text-gray-900;
+}
+
+.profile-email {
+    @apply text-sm text-gray-600;
+}
+
+.profile-role {
+    @apply text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full;
+}
+
+/* Stats Card Styles */
+.stats-card {
+    @apply bg-white rounded-lg shadow-md border border-gray-200 p-6;
+}
+
+.stats-number {
+    @apply text-2xl font-bold text-gray-900;
+}
+
+.stats-label {
+    @apply text-sm text-gray-600;
+}
+
+.stats-icon {
+    @apply w-8 h-8 text-blue-600;
+}
+
+/* Difficulty Badge Styles */
+.difficulty-badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+}
+
+.difficulty-badge.easy {
+    @apply bg-green-100 text-green-800;
+}
+
+.difficulty-badge.medium {
+    @apply bg-yellow-100 text-yellow-800;
+}
+
+.difficulty-badge.hard {
+    @apply bg-red-100 text-red-800;
+}
+
+/* Tag Styles */
+.tag {
+    @apply inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-gray-100 text-gray-800;
+}
+
+.tag:hover {
+    @apply bg-gray-200;
+}
+
+/* Search Bar Styles */
+.search-bar {
+    @apply relative;
+}
+
+.search-input {
+    @apply w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+}
+
+.search-icon {
+    @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400;
+}
+
+/* Filter Styles */
+.filter-group {
+    @apply flex flex-wrap gap-2;
+}
+
+.filter-button {
+    @apply px-3 py-1 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200;
+}
+
+.filter-button.active {
+    @apply bg-blue-600 text-white border-blue-600;
+}
+
+/* Loading States */
+.skeleton {
+    @apply animate-pulse bg-gray-200 rounded;
+}
+
+.skeleton-text {
+    @apply h-4 bg-gray-200 rounded;
+}
+
+.skeleton-card {
+    @apply bg-white rounded-lg shadow-md border border-gray-200 p-4;
+}
+
+.skeleton-card .skeleton-text {
+    @apply mb-2;
+}
+
+.skeleton-card .skeleton-text:last-child {
+    @apply mb-0 w-3/4;
+}
+
+/* Empty State Styles */
+.empty-state {
+    @apply text-center py-12;
+}
+
+.empty-state-icon {
+    @apply w-12 h-12 text-gray-400 mx-auto mb-4;
+}
+
+.empty-state-title {
+    @apply text-lg font-medium text-gray-900 mb-2;
+}
+
+.empty-state-description {
+    @apply text-gray-600 mb-4;
+}
+
+.empty-state-action {
+    @apply inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700;
+}
+
+/* Toast Notification Styles */
+.toast {
+    @apply fixed top-4 right-4 z-50 max-w-sm w-full bg-white rounded-lg shadow-lg border border-gray-200;
+}
+
+.toast.success {
+    @apply border-green-200 bg-green-50;
+}
+
+.toast.error {
+    @apply border-red-200 bg-red-50;
+}
+
+.toast.warning {
+    @apply border-yellow-200 bg-yellow-50;
+}
+
+.toast.info {
+    @apply border-blue-200 bg-blue-50;
+}
+
+.toast-content {
+    @apply p-4;
+}
+
+.toast-title {
+    @apply text-sm font-medium text-gray-900;
+}
+
+.toast-message {
+    @apply text-sm text-gray-600 mt-1;
+}
+
+.toast-close {
+    @apply absolute top-2 right-2 text-gray-400 hover:text-gray-600;
+}
+
+/* Tab Styles */
+.tab-list {
+    @apply flex border-b border-gray-200;
+}
+
+.tab-item {
+    @apply px-4 py-2 text-sm font-medium text-gray-500 border-b-2 border-transparent hover:text-gray-700 hover:border-gray-300 transition-colors duration-200;
+}
+
+.tab-item.active {
+    @apply text-blue-600 border-blue-600;
+}
+
+.tab-panel {
+    @apply mt-4;
+}
+
+.tab-panel.hidden {
+    @apply hidden;
+}
+
+/* Form Styles */
+.form-group {
+    @apply mb-4;
+}
+
+.form-row {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.form-actions {
+    @apply flex justify-end space-x-3 mt-6;
+}
+
+/* Modal Styles */
+.modal-header {
+    @apply px-6 py-4 border-b border-gray-200;
+}
+
+.modal-title {
+    @apply text-lg font-medium text-gray-900;
+}
+
+.modal-body {
+    @apply px-6 py-4;
+}
+
+.modal-footer {
+    @apply px-6 py-4 border-t border-gray-200 flex justify-end space-x-3;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .problem-card {
+        @apply p-3;
+    }
+    
+    .profile-card {
+        @apply p-4;
+    }
+    
+    .stats-card {
+        @apply p-4;
+    }
+    
+    .form-row {
+        @apply grid-cols-1;
+    }
+    
+    .form-actions {
+        @apply flex-col space-x-0 space-y-2;
+    }
+    
+    .modal-content {
+        @apply mx-2;
+    }
+}
+
+
+
+
+
+
+
