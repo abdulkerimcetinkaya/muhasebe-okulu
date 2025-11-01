@@ -55,3 +55,4 @@ hesapkodlari.md
 run_migration.ps1
 update_role_constraint.sql
 NUL
+.env

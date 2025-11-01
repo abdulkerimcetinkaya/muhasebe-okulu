@@ -53,6 +53,7 @@ Aşağıdaki ekran görüntülerini çekip bu klasöre ekleyin:
 - **İçerik**: Admin panel - Kullanıcı veya problem yönetimi tablosu
 - **Kullanıcı**: Admin hesabı
 - **Önerilen**: Tabloda birkaç satır veri olsun
+- **⚠️ GÜVENLİK**: Gerçek kullanıcı bilgileri, email adresleri veya hassas veriler görünmesin
 
 ### 8. admin-dashboard.png
 **Sayfa**: `http://localhost:8080/admin-dashboard.html`
@@ -60,6 +61,7 @@ Aşağıdaki ekran görüntülerini çekip bu klasöre ekleyin:
 - **İçerik**: Admin dashboard - Sistem geneli istatistikler ve grafikler
 - **Kullanıcı**: Admin hesabı
 - **Önerilen**: Tüm grafikler ve KPI kartları görünsün
+- **⚠️ GÜVENLİK**: API endpoint'leri, sistem detayları veya hassas metrikler bulanıklaştırılabilir
 
 ## 🎨 Ekran Görüntüsü Çekme Önerileri
 
@@ -78,10 +80,19 @@ Aşağıdaki ekran görüntülerini çekip bu klasöre ekleyin:
 - ✅ Tailwind CSS stilleri uygulanmış olsun
 
 ### İçerik Önerileri
-- ✅ Demo veri kullanın (gerçek kişisel bilgi yok)
+- ✅ **Demo veri kullanın** (gerçek kişisel bilgi yok)
 - ✅ Türkçe içerik
 - ✅ Grafikler dolu görünsün (birkaç veri noktası)
 - ✅ Boş tablolar yerine örnek verilerle dolu tablolar
+
+### 🔒 Güvenlik Kontrolleri
+- ❌ **Gerçek email adresleri gösterme**
+- ❌ **Gerçek telefon numaraları gösterme**
+- ❌ **API token'ları veya JWT gösterme**
+- ❌ **Veritabanı şifreleri gösterme**
+- ❌ **Sistem path'leri gösterme** (C:\Users\..., /home/...)
+- ✅ **Mock/dummy data kullan**: test@example.com, +90 5XX XXX XXXX
+- ✅ **Admin panelinde hassas alanları blur'la**
 
 ### Çekim Araçları
 

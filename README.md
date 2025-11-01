@@ -117,18 +117,45 @@ cd muhasebe-okulu
 ### 2. PostgreSQL Veritabanını Oluşturun
 ```sql
 CREATE DATABASE "muhasebe-okulu";
-CREATE USER postgres WITH PASSWORD '1234';
-GRANT ALL PRIVILEGES ON DATABASE "muhasebe-okulu" TO postgres;
+CREATE USER your_username WITH PASSWORD 'your_secure_password';
+GRANT ALL PRIVILEGES ON DATABASE "muhasebe-okulu" TO your_username;
 ```
 
-### 3. Veritabanı Ayarlarını Yapılandırın
-`src/main/resources/application.properties` dosyasını düzenleyin:
+### 3. Environment Variables Yapılandırın (Önerilen)
 
+**Güvenlik için environment variables kullanın:**
+
+```bash
+# .env.example dosyasını kopyalayın
+cp .env.example .env
+
+# .env dosyasını düzenleyin ve güvenli değerler girin
+nano .env  # veya herhangi bir editör
+```
+
+**`.env` dosyası içeriği:**
+```env
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=muhasebe-okulu
+DB_USERNAME=your_username
+DB_PASSWORD=your_secure_password_min_12_chars
+JWT_SECRET=your_random_32_character_secret_key
+```
+
+**VEYA application.properties'i düzenleyin** (Hızlı test için):
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/muhasebe-okulu
-spring.datasource.username=postgres
-spring.datasource.password=1234
+spring.datasource.username=your_username
+spring.datasource.password=your_secure_password
 ```
+
+**⚠️ GÜVENLİK UYARISI**:
+- ✅ **Environment variables kullanın** (production için zorunlu)
+- ✅ **Güçlü şifreler** (min 12 karakter, mixed case, numbers, symbols)
+- ✅ **JWT secret'ı değiştirin** (min 32 karakter, random)
+- ❌ **Asla .env dosyasını Git'e commit etmeyin** (.gitignore'da)
+- ❌ **Varsayılan şifreleri production'da kullanmayın**
 
 ### 4. Projeyi Derleyin ve Çalıştırın
 ```bash
@@ -216,8 +243,10 @@ POST /api/quizzes/{id}/submit    # Quiz gönder
 GET    /api/users/{id}/profile   # Kullanıcı profili
 PUT    /api/users/{id}/profile   # Profil güncelle
 PUT    /api/users/{id}/password  # Şifre değiştir
-GET    /api/users                # Tüm kullanıcılar (Admin)
 ```
+
+**Admin Endpoints**: Admin paneli endpoint'leri gizlilik nedeniyle dokümante edilmemiştir.
+Detaylar için Swagger UI'ı kullanın: `http://localhost:8080/swagger-ui.html`
 
 ### JWT Authentication
 Korumalı endpoint'lere erişmek için Authorization header'ı ekleyin:
