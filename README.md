@@ -40,20 +40,19 @@ Modern ve göz dostu karanlık tema ile gece çalışmalarınızı daha konforlu
 ## 📸 Ekran Görüntüleri
 
 ### Ana Sayfa
-![Ana Sayfa](screenshots/homepage.png)
+![Ana Sayfa](screenshots/homepage.jpg)
 
-### Dashboard - Light & Dark Mode
-![Dashboard](screenshots/dashboard-light.png)
-![Dashboard Dark](screenshots/dashboard-dark.png)
+### Dashboard
+![Dashboard](screenshots/dashboard-light.jpg)
 
 ### Problem Çözme
-![Problem Çözme](screenshots/problem-solving.png)
+![Problem Çözme](screenshots/problem-solving.jpg)
 
 ### Quiz Sistemi
-![Quiz](screenshots/quiz.png)
+![Quiz](screenshots/quiz.jpg)
 
 ### Çalışma Kartları
-![Çalışma Kartları](screenshots/study-cards.png)
+![Çalışma Kartları](screenshots/study-cards.jpg)
 
 ## 🚀 Nasıl Kullanılır?
 
