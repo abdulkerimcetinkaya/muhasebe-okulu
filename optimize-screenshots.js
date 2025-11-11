@@ -3,7 +3,7 @@ const fs = require('fs');
 
 (async () => {
   const browser = await playwright.chromium.launch();
-  const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
+  const context = await browser.newContext({ viewport: { width: 1024, height: 600 } });
   const page = await context.newPage();
 
   const pages = [
@@ -17,11 +17,11 @@ const fs = require('fs');
   for (const p of pages) {
     await page.goto(p.url, { waitUntil: 'networkidle' });
     await page.waitForTimeout(1000);
-    await page.screenshot({ 
-      path: `screenshots/${p.name}.jpg`, 
+    await page.screenshot({
+      path: `screenshots/${p.name}.jpg`,
       type: 'jpeg',
-      quality: 50,
-      fullPage: true 
+      quality: 30,
+      fullPage: true
     });
     console.log(`✓ ${p.name}.jpg`);
   }
