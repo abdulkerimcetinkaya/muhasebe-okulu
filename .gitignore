@@ -39,6 +39,7 @@ src/main/java/archive/
 ### Logs ###
 *.log
 app.log
+startup.log
 
 ### Claude/Serena ###
 .serena/
