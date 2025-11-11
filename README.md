@@ -116,7 +116,7 @@ MIT License - Detaylar için [LICENSE](LICENSE) dosyasına bakın.
 
 ## 👤 Geliştirici
 
-**Abdul Kerim Çetinkaya**
+**Abdulkerim Çetinkaya**
 GitHub: [@abdulkerimcetinkaya](https://github.com/abdulkerimcetinkaya)
 
 ---
