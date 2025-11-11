@@ -21,7 +21,7 @@ const fs = require('fs');
       path: `screenshots/${p.name}.jpg`,
       type: 'jpeg',
       quality: 30,
-      fullPage: true
+      fullPage: false
     });
     console.log(`✓ ${p.name}.jpg`);
   }
