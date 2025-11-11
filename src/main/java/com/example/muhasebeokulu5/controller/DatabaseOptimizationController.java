@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jakarta.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -21,13 +20,8 @@ public class DatabaseOptimizationController {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @PostConstruct
-    public void initializeDatabaseOptimization() {
-        System.out.println("🚀 Starting database optimization...");
-        optimizeDatabase();
-        System.out.println("📊 Creating materialized views...");
-        createMaterializedViews();
-    }
+    // ⚠️ @PostConstruct removed - Flyway handles migrations automatically
+    // Manual optimization endpoint available below if needed
 
     @PostMapping("/optimize-database")
     public String optimizeDatabase() {

@@ -1,19 +1,22 @@
 package com.example.muhasebeokulu5.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "questions")
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"quiz", "options"})
+@EqualsAndHashCode(exclude = {"quiz", "options"})
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"quiz", "options", "hibernateLazyInitializer", "handler"})
 public class Question {
 
     @Id
@@ -40,7 +43,7 @@ public class Question {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Option> options = new ArrayList<>();
+    private Set<Option> options = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {

@@ -1,12 +1,15 @@
 package com.example.muhasebeokulu5.dto;
 
-import com.example.muhasebeokulu5.entities.CardSection;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
- * DTO for CardSection details
+ * DTO for CardSection with mixed content support
+ * Now contains a list of ContentItems instead of single content type
  */
 @Data
 @NoArgsConstructor
@@ -16,13 +19,16 @@ public class CardSectionDTO {
     private Long studyCardId; // Required when creating/updating
     private String title;
     private Integer displayOrder;
-    private String contentType; // TEXT, PROBLEM, QUIZ
-    private String content; // Text content if contentType = TEXT
-    private Long relatedProblemId; // ID if contentType = PROBLEM
-    private Long relatedQuizId; // ID if contentType = QUIZ
     private Boolean active; // Maps to isActive
 
-    // Additional fields for linked entities (populated by service)
-    private ProblemDTO relatedProblem; // Problem details if contentType = PROBLEM
-    private QuizDTO relatedQuiz; // Quiz details if contentType = QUIZ
+    /**
+     * Rich text content with slash command support (HTML format)
+     */
+    private String content;
+
+    /**
+     * List of content items in this section (DEPRECATED - use content field instead)
+     * Can contain mixed types: text, problems, quizzes in any order
+     */
+    private List<ContentItemDTO> contentItems = new ArrayList<>();
 }

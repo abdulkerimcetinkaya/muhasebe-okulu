@@ -47,7 +47,25 @@ public interface SolvedProblemRepository extends JpaRepository<SolvedProblem, UU
             "ORDER BY CAST(sp.solvedAt AS date) ASC")
     List<Object[]> findDailySolutionsByUser(@Param("userId") UUID userId, @Param("weekAgo") LocalDateTime weekAgo);
 
+    // En aktif kullanıcılar (en çok çözüm yapan)
+    @Query("SELECT sp.user.username, COUNT(sp) as solutionCount " +
+            "FROM SolvedProblem sp " +
+            "GROUP BY sp.user.id, sp.user.username " +
+            "ORDER BY solutionCount DESC")
+    List<Object[]> findTopActiveUsers();
+
     // Admin panel için ek metodlar
     @Query("SELECT COUNT(sp) FROM SolvedProblem sp WHERE sp.problem.id = :problemId")
     Long countByProblemId(@Param("problemId") Long problemId);
+
+    // Kullanıcının çözdüğü problem sayısı
+    @Query("SELECT COUNT(sp) FROM SolvedProblem sp WHERE sp.user.id = :userId")
+    Long countByUserId(@Param("userId") UUID userId);
+
+    // Zorluk seviyesine göre istatistik metodları
+    @Query("SELECT COUNT(sp) FROM SolvedProblem sp WHERE sp.user.id = :userId AND sp.problem.difficulty = :difficulty")
+    Long countByUserIdAndProblemDifficulty(@Param("userId") UUID userId, @Param("difficulty") com.example.muhasebeokulu5.entities.Difficulty difficulty);
+
+    @Query("SELECT COUNT(sp) FROM SolvedProblem sp WHERE sp.user.id = :userId AND sp.solvedAt >= :afterDate")
+    Long countByUserIdAndSolvedDateAfter(@Param("userId") UUID userId, @Param("afterDate") LocalDateTime afterDate);
 }

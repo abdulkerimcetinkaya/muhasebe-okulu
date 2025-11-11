@@ -5,19 +5,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MuhasebeOkulu - Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- Theme initialization (must be first to prevent flash) -->
+    <script src="/assets/js/utils/theme.js"></script>
+
+    <!-- Tailwind CSS with dark mode configuration -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Ortak CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
 
     <!-- Ortak JS -->
-    <script src="http://localhost:8080/assets/js/common.js"></script>
+    <script src="/assets/js/common.js"></script>
 
     <!-- Page-specific JS -->
-    <script src="http://localhost:8080/assets/js/pages/dashboard.js"></script>
+    <script src="/assets/js/pages/dashboard.js"></script>
 
     <style>
         body {
@@ -26,75 +43,82 @@
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased">
     <div class="relative min-h-screen">
         <!-- Arka Plan Deseni -->
         <div
-            class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
-            <div
-                class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9D6FF,#E2E2E2,transparent)]">
-            </div>
+            class="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-slate-900 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:6rem_4rem]">
         </div>
 
         <!-- Header -->
-        <header class="sticky top-0 z-40 w-full backdrop-blur-sm">
+        <header class="sticky top-0 z-40 w-full backdrop-blur-sm bg-white/80 dark:bg-slate-900/80">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex items-center justify-between h-16 border-b border-slate-200/80">
+                <div class="flex items-center justify-between h-16 border-b border-slate-200/80 dark:border-slate-700/80">
                     
                     <!-- Giriş yapmamış kullanıcılar için: Geri + Logo -->
                     <div id="guestLayout" class="flex items-center gap-4">
-                        <a href="index.html" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-md transition-all duration-300">
+                        <a href="index.html" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-all duration-300">
                             <i data-lucide="arrow-left" class="w-4 h-4" style="stroke-width:1.5;"></i>
                             Geri
                         </a>
                         <a href="index.html" class="flex items-center gap-2 group">
-                            <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
-                            <span class="text-lg font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                            <div class="w-8 h-8 bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
+                            <span class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">MuhasebeOkulu</span>
                         </a>
                     </div>
                     
                     <!-- Giriş yapmış kullanıcılar için: Logo + Nav Links -->
                     <div id="userLayout" class="hidden flex items-center justify-between w-full">
                         <a href="index.html" class="flex items-center gap-2 group">
-                            <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
-                            <span class="text-lg font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                            <div class="w-8 h-8 bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
+                            <span class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">MuhasebeOkulu</span>
                         </a>
                         <nav class="hidden md:flex items-center justify-center gap-6 absolute left-1/2 transform -translate-x-1/2">
-                            <a href="dashboard.html" id="userDashboardLink" class="text-sm font-medium text-slate-900">Dashboard</a>
-                            <a href="problems.html" id="userProblemsLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Problemler</a>
-                            <a href="quizzes.html" id="userQuizzesLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Quiz</a>
-                            <a href="study.html" id="userStudyLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Öğren</a>
-                            <a href="profile.html" id="userProfileLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Profilim</a>
-                            <a href="teacher-dashboard.html" id="teacherDashboardLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Dashboard</a>
-                            <a href="problems.html" id="teacherProblemsLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Problemler</a>
-                            <a href="profile.html" id="teacherProfileLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Profilim</a>
-                            <a href="admin-dashboard.html" id="adminDashboardLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Dashboard</a>
-                            <a href="admin.html" id="adminLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Admin Panel</a>
-                            <a href="admin-quizzes.html" id="adminQuizzesLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Quiz Yönetimi</a>
+                            <a href="dashboard.html" id="userDashboardLink" class="text-sm font-medium text-slate-900 dark:text-slate-100">Dashboard</a>
+                            <a href="problems.html" id="userProblemsLink" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Problemler</a>
+                            <a href="quizzes.html" id="userQuizzesLink" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Quiz</a>
+                            <a href="study.html" id="userStudyLink" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Öğren</a>
+                            <a href="profile.html" id="userProfileLink" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Profilim</a>
+                            <a href="teacher-dashboard.html" id="teacherDashboardLink" class="hidden text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Dashboard</a>
+                            <a href="problems.html" id="teacherProblemsLink" class="hidden text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Problemler</a>
+                            <a href="profile.html" id="teacherProfileLink" class="hidden text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Profilim</a>
+                            <a href="admin-dashboard.html" id="adminDashboardLink" class="hidden text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Dashboard</a>
+                            <a href="admin.html" id="adminLink" class="hidden text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Admin Panel</a>
+                            <a href="admin-quizzes.html" id="adminQuizzesLink" class="hidden text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Quiz Yönetimi</a>
                         </nav>
                     </div>
                     
-                    <!-- Giriş yapmamış kullanıcılar için: Auth Butonları -->
+                    <!-- Giriş yapmamış kullanıcılar için: Auth Butonları + Theme Toggle -->
                     <div id="guestAuthButtons" class="flex items-center gap-2 flex-shrink-0">
-                        <a href="login.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md transition-colors whitespace-nowrap">Giriş Yap</a>
-                        <a href="register.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm whitespace-nowrap">Kayıt Ol</a>
+                        <!-- Theme Toggle Button -->
+                        <button id="theme-toggle-guest" onclick="ThemeManager.toggle()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle dark mode">
+                            <i data-lucide="moon" class="w-5 h-5 text-slate-600 dark:text-slate-300 dark:hidden"></i>
+                            <i data-lucide="sun" class="w-5 h-5 text-slate-300 hidden dark:block"></i>
+                        </button>
+                        <a href="login.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors whitespace-nowrap">Giriş Yap</a>
+                        <a href="register.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 rounded-md transition-colors shadow-sm whitespace-nowrap">Kayıt Ol</a>
                     </div>
-                    
-                    <!-- Giriş yapmış kullanıcılar için: Profil Dropdown -->
+
+                    <!-- Giriş yapmış kullanıcılar için: Theme Toggle + Profil Dropdown -->
                     <div id="userProfileMenu" class="hidden flex items-center gap-2">
+                        <!-- Theme Toggle Button -->
+                        <button id="theme-toggle-user" onclick="ThemeManager.toggle()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle dark mode">
+                            <i data-lucide="moon" class="w-5 h-5 text-slate-600 dark:text-slate-300 dark:hidden"></i>
+                            <i data-lucide="sun" class="w-5 h-5 text-slate-300 hidden dark:block"></i>
+                        </button>
                         <div class="relative">
-                            <button onclick="CommonUtils.toggleUserDropdown()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+                            <button onclick="CommonUtils.toggleUserDropdown()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                                 <i data-lucide="user" class="w-4 h-4"></i>
                                 <span id="userDisplayName">Hoşgeldin, Kullanıcı</span>
                                 <i data-lucide="chevron-down" class="w-4 h-4"></i>
                             </button>
-                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1">
-                                <a href="profile.html" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                            <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1">
+                                <a href="profile.html" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                                     <i data-lucide="user" class="w-4 h-4"></i>
                                     Profilim
                                 </a>
-                                <hr class="my-1 border-slate-200">
-                                <button onclick="CommonUtils.logout()" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                <hr class="my-1 border-slate-200 dark:border-slate-700">
+                                <button onclick="CommonUtils.logout()" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                                     <i data-lucide="log-out" class="w-4 h-4"></i>
                                     Çıkış Yap
                                 </button>
@@ -106,62 +130,69 @@
         </header>
 
         <main class="relative z-10">
-            <!-- Hoş Geldiniz Section -->
-            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="bg-white border border-slate-200/80 rounded-xl shadow-sm p-6">
-                    <h1 class="text-2xl font-semibold tracking-tight text-slate-900">
-                        Hoş Geldiniz, <span id="welcomeUsername">Kullanıcı</span>!
-                    </h1>
-                    <p class="mt-2 text-slate-600">
-                        Muhasebe öğrenme yolculuğunuza devam edin ve becerilerinizi geliştirin.
-                    </p>
-                </div>
-            </section>
+            <!-- Hero Hoş Geldiniz Section -->
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+                <div class="relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl shadow-xl p-8 md:p-12">
+                    <!-- Arka plan deseni -->
+                    <div class="absolute inset-0 opacity-10">
+                        <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+                    </div>
 
-            <!-- İstatistikler -->
-            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white border border-slate-200/80 rounded-xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-slate-600">Çözülen Problem</p>
-                                <p class="text-2xl font-semibold text-slate-900" id="statSolutions">0</p>
+                    <div class="relative z-10">
+                        <div class="flex items-start justify-between flex-col md:flex-row gap-6">
+                            <!-- Sol: Hoşgeldin Mesajı -->
+                            <div class="flex-1">
+                                <div class="inline-flex items-center gap-2 px-3 py-1 bg-blue-500/20 text-blue-200 rounded-full text-xs font-medium mb-4">
+                                    <i data-lucide="sparkles" class="w-3 h-3"></i>
+                                    <span>Bugün de harika görünüyorsun!</span>
+                                </div>
+                                <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">
+                                    Merhaba, <span id="welcomeUsername">Kullanıcı</span>! 👋
+                                </h1>
+                                <p class="text-slate-300 text-lg mb-6 max-w-2xl">
+                                    Bugün hangi hedeflere ulaşmak istiyorsun? Öğrenmeye devam et ve becerilerini geliştir.
+                                </p>
+
+                                <!-- Bugünkü Hedef -->
+                                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 max-w-md">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <div class="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+                                            <i data-lucide="target" class="w-5 h-5 text-white"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-semibold">Bugünkü Hedefin</p>
+                                            <p class="text-slate-300 text-sm">3 problem çöz</p>
+                                        </div>
+                                    </div>
+                                    <div class="w-full bg-white/20 rounded-full h-2">
+                                        <div class="bg-blue-400 h-2 rounded-full" style="width: 33%"></div>
+                                    </div>
+                                    <p class="text-slate-300 text-xs mt-2">1/3 tamamlandı</p>
+                                </div>
                             </div>
-                            <div class="w-12 h-12 bg-green-100 text-green-600 flex items-center justify-center rounded-lg">
-                                <i data-lucide="check-circle" class="w-6 h-6" style="stroke-width: 1.5;"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white border border-slate-200/80 rounded-xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-slate-600">Toplam Puan</p>
-                                <p class="text-2xl font-semibold text-slate-900" id="statScore">0</p>
-                            </div>
-                            <div class="w-12 h-12 bg-blue-100 text-blue-600 flex items-center justify-center rounded-lg">
-                                <i data-lucide="star" class="w-6 h-6" style="stroke-width: 1.5;"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white border border-slate-200/80 rounded-xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-slate-600">Doğru Cevap Oranı</p>
-                                <p class="text-2xl font-semibold text-slate-900" id="statAccuracy">0%</p>
-                            </div>
-                            <div class="w-12 h-12 bg-purple-100 text-purple-600 flex items-center justify-center rounded-lg">
-                                <i data-lucide="target" class="w-6 h-6" style="stroke-width: 1.5;"></i>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="bg-white border border-slate-200/80 rounded-xl p-6 shadow-sm">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm font-medium text-slate-600">Son Aktiflik</p>
-                                <p class="text-2xl font-semibold text-slate-900" id="statLastActive">Bugün</p>
-                            </div>
-                            <div class="w-12 h-12 bg-orange-100 text-orange-600 flex items-center justify-center rounded-lg">
-                                <i data-lucide="clock" class="w-6 h-6" style="stroke-width: 1.5;"></i>
+
+                            <!-- Sağ: Kompakt İstatistikler -->
+                            <div class="grid grid-cols-2 gap-3 md:min-w-[280px]">
+                                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4">
+                                    <i data-lucide="check-circle" class="w-5 h-5 text-blue-400 mb-2"></i>
+                                    <p class="text-2xl font-bold text-white" id="statSolutions">0</p>
+                                    <p class="text-slate-300 text-xs">Çözülen</p>
+                                </div>
+                                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4">
+                                    <i data-lucide="star" class="w-5 h-5 text-indigo-400 mb-2"></i>
+                                    <p class="text-2xl font-bold text-white" id="statScore">0</p>
+                                    <p class="text-slate-300 text-xs">Puan</p>
+                                </div>
+                                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4">
+                                    <i data-lucide="zap" class="w-5 h-5 text-yellow-400 mb-2"></i>
+                                    <p class="text-2xl font-bold text-white" id="statStreak">0</p>
+                                    <p class="text-slate-300 text-xs">Gün Seri</p>
+                                </div>
+                                <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4">
+                                    <i data-lucide="target" class="w-5 h-5 text-sky-400 mb-2"></i>
+                                    <p class="text-2xl font-bold text-white"><span id="statAccuracy">0</span>%</p>
+                                    <p class="text-slate-300 text-xs">Başarı</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -169,67 +200,84 @@
             </section>
 
             <!-- Hızlı Erişim -->
-            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <h2 class="text-xl font-semibold tracking-tight text-slate-900 mb-6">Hızlı Erişim</h2>
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <a href="problems.html"
-                        class="group bg-white border border-slate-200/80 rounded-xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-blue-100 text-blue-600 flex items-center justify-center rounded-lg">
-                                <i data-lucide="puzzle" class="w-6 h-6" style="stroke-width: 1.5;"></i>
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100 mb-6">Hızlı Erişim</h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Problemler -->
+                    <a href="problems.html" class="block bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-blue-200 dark:hover:border-blue-500 transition-all group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-blue-200 dark:group-hover:bg-blue-900/50 transition-colors">
+                                <i data-lucide="book-open" class="w-6 h-6"></i>
                             </div>
-                            <div>
-                                <h3 class="text-base font-semibold text-slate-900">Problemler</h3>
-                                <p class="text-sm text-slate-600">Muhasebe problemlerini çözün</p>
-                            </div>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">Problemler</h3>
                         </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Muhasebe problemleri çöz ve pratik yap</p>
+                        <span class="inline-flex items-center text-sm text-blue-600 dark:text-blue-400 font-medium">
+                            Çözmeye Başla
+                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </span>
                     </a>
-                    <a href="quizzes.html"
-                        class="group bg-white border border-slate-200/80 rounded-xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-purple-100 text-purple-600 flex items-center justify-center rounded-lg">
-                                <i data-lucide="help-circle" class="w-6 h-6" style="stroke-width: 1.5;"></i>
+
+                    <!-- Quizler -->
+                    <a href="quizzes.html" class="block bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-indigo-200 dark:hover:border-indigo-500 transition-all group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-200 dark:group-hover:bg-indigo-900/50 transition-colors">
+                                <i data-lucide="brain" class="w-6 h-6"></i>
                             </div>
-                            <div>
-                                <h3 class="text-base font-semibold text-slate-900">Quizler</h3>
-                                <p class="text-sm text-slate-600">Bilginizi test edin</p>
-                            </div>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">Quiz</h3>
                         </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Bilgini test et ve kendini değerlendir</p>
+                        <span class="inline-flex items-center text-sm text-indigo-600 dark:text-indigo-400 font-medium">
+                            Quize Başla
+                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </span>
                     </a>
-                    <a href="study.html"
-                        class="group bg-white border border-slate-200/80 rounded-xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-indigo-100 text-indigo-600 flex items-center justify-center rounded-lg">
-                                <i data-lucide="book-open" class="w-6 h-6" style="stroke-width: 1.5;"></i>
+
+                    <!-- Öğren -->
+                    <a href="study.html" class="block bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-xl p-6 shadow-sm hover:shadow-md hover:border-sky-200 dark:hover:border-sky-500 transition-all group">
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-sky-100 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 rounded-xl flex items-center justify-center flex-shrink-0 group-hover:bg-sky-200 dark:group-hover:bg-sky-900/50 transition-colors">
+                                <i data-lucide="graduation-cap" class="w-6 h-6"></i>
                             </div>
-                            <div>
-                                <h3 class="text-base font-semibold text-slate-900">Öğrenme Kartları</h3>
-                                <p class="text-sm text-slate-600">Konuları öğrenin</p>
-                            </div>
+                            <h3 class="text-lg font-semibold text-slate-900 dark:text-slate-100 group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors">Öğren</h3>
                         </div>
-                    </a>
-                    <a href="profile.html"
-                        class="group bg-white border border-slate-200/80 rounded-xl p-6 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all">
-                        <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 bg-green-100 text-green-600 flex items-center justify-center rounded-lg">
-                                <i data-lucide="user" class="w-6 h-6" style="stroke-width: 1.5;"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-base font-semibold text-slate-900">Profilim</h3>
-                                <p class="text-sm text-slate-600">İlerlemenizi görüntüleyin</p>
-                            </div>
-                        </div>
+                        <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">Konu anlatımları ve öğrenme kartları</p>
+                        <span class="inline-flex items-center text-sm text-sky-600 dark:text-sky-400 font-medium">
+                            Öğrenmeye Başla
+                            <i data-lucide="arrow-right" class="w-4 h-4 ml-1"></i>
+                        </span>
                     </a>
                 </div>
             </section>
 
             <!-- Son Aktiviteler -->
-            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                <h2 class="text-xl font-semibold tracking-tight text-slate-900 mb-6">Son Aktiviteler</h2>
-                <div class="bg-white border border-slate-200/80 rounded-xl shadow-sm overflow-hidden">
+            <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-12">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">Son Çözdüklerin</h2>
+                    <a href="problems.html" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium inline-flex items-center gap-1">
+                        Tümünü Gör
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </a>
+                </div>
+                <div class="bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-xl shadow-sm overflow-hidden">
                     <div class="p-6">
-                        <div id="recentActivities" class="space-y-4">
-                            <!-- Aktivite öğeleri buraya gelecek -->
+                        <div id="recentlySolved" class="space-y-3">
+                            <!-- Son çözülen problemler buraya gelecek -->
+                            <div class="flex items-center justify-between p-4 bg-slate-50 dark:bg-slate-700/50 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center rounded-lg">
+                                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-medium text-slate-900 dark:text-slate-100">Henüz problem çözmediniz</p>
+                                        <p class="text-xs text-slate-600 dark:text-slate-400">İlk problemi çözerek başlayın!</p>
+                                    </div>
+                                </div>
+                                <a href="problems.html" class="px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition-colors">
+                                    Başla
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -237,16 +285,16 @@
         </main>
 
         <!-- Footer -->
-        <footer class="bg-white border-t border-slate-200/80 mt-16">
+        <footer class="bg-white dark:bg-slate-800 border-t border-slate-200/80 dark:border-slate-700/80 mt-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div class="flex items-center justify-between">
                     <a href="dashboard.html" class="flex items-center gap-2 group">
                         <div
-                            class="w-7 h-7 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-sm tracking-tighter">
+                            class="w-7 h-7 bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center rounded-lg font-semibold text-sm tracking-tighter">
                             MO</div>
-                        <span class="text-base font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                        <span class="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">MuhasebeOkulu</span>
                     </a>
-                    <p class="text-sm text-slate-500">&copy; <span id="year"></span> MuhasebeOkulu. Tüm hakları
+                    <p class="text-sm text-slate-500 dark:text-slate-400">&copy; <span id="year"></span> MuhasebeOkulu. Tüm hakları
                         saklıdır.</p>
                 </div>
             </div>

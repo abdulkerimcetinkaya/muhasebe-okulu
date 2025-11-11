@@ -10,7 +10,8 @@ import java.time.LocalDateTime;
 
 /**
  * CardSection entity - Subsections within a StudyCard
- * Contains dynamic content that can be text, problem reference, or quiz reference
+ * Now supports MIXED CONTENT through ContentItem list
+ * Each section can contain multiple content items (text, problems, quizzes) in any order
  */
 @Entity
 @Table(name = "card_sections")
@@ -35,23 +36,20 @@ public class CardSection {
     private Integer displayOrder = 0;
 
     /**
-     * Content type determines how to display this section:
-     * - TEXT: Display content field as rich text
-     * - PROBLEM: Link to a Problem entity (use relatedProblemId)
-     * - QUIZ: Link to a Quiz entity (use relatedQuizId)
+     * Rich text content with slash command support
+     * Stores HTML content generated from rich text editor
      */
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
-    private ContentType contentType = ContentType.TEXT;
-
     @Column(columnDefinition = "TEXT")
-    private String content; // Used when contentType = TEXT
+    private String content;
 
-    @Column(name = "related_problem_id")
-    private Long relatedProblemId; // Foreign key to Problem - used when contentType = PROBLEM
-
-    @Column(name = "related_quiz_id")
-    private Long relatedQuizId; // Foreign key to Quiz - used when contentType = QUIZ
+    /**
+     * Content items - ordered list of mixed content (DEPRECATED - use content field instead)
+     * Each item can be: TEXT, PROBLEM link, QUIZ link, STUDY_PROBLEM, or STUDY_QUIZ
+     */
+    @OneToMany(mappedBy = "cardSection", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("displayOrder ASC")
+    @JsonIgnore
+    private java.util.List<ContentItem> contentItems = new java.util.ArrayList<>();
 
     @Column(nullable = false)
     @JsonProperty("active")
@@ -66,14 +64,5 @@ public class CardSection {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
-    }
-
-    /**
-     * Content type enum for CardSection
-     */
-    public enum ContentType {
-        TEXT,    // Plain text/HTML content
-        PROBLEM, // Link to Problem entity
-        QUIZ     // Link to Quiz entity
     }
 }

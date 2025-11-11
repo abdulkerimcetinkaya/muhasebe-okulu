@@ -91,11 +91,29 @@ public class AdminController {
         return ResponseEntity.noContent().build();
     }
 
+    // Toplu Problem İmport
+    @PostMapping("/problems/bulk")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<BulkProblemImportDTO.ImportResult> bulkImportProblems(
+            @RequestBody BulkProblemImportDTO bulkImportDTO) {
+        BulkProblemImportDTO.ImportResult result = adminService.bulkImportProblems(bulkImportDTO);
+        return ResponseEntity.ok(result);
+    }
+
     // Raporlar
     @GetMapping("/reports")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ReportDTO> getReports() {
         ReportDTO reports = adminService.getReports();
         return ResponseEntity.ok(reports);
+    }
+
+    /**
+     * Admin Dashboard İstatistiklerini Getir
+     */
+    @GetMapping("/stats")
+    public ResponseEntity<AdminStatsDTO> getAdminStats() {
+        AdminStatsDTO stats = adminService.getAdminStats();
+        return ResponseEntity.ok(stats);
     }
 }

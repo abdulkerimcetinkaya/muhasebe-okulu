@@ -27,6 +27,21 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
            "LOWER(q.description) LIKE LOWER(CONCAT('%', :search, '%')))")
     Page<Quiz> searchActiveQuizzes(@Param("search") String search, Pageable pageable);
 
+    // N+1 Query Prevention: Fetch quiz with questions eagerly
     @Query("SELECT q FROM Quiz q LEFT JOIN FETCH q.questions WHERE q.id = :id")
     Quiz findByIdWithQuestions(@Param("id") Long id);
+
+    // N+1 Query Prevention: Fetch quiz with questions and options eagerly
+    @Query("SELECT DISTINCT q FROM Quiz q " +
+           "LEFT JOIN FETCH q.questions qst " +
+           "LEFT JOIN FETCH qst.options " +
+           "WHERE q.id = :id")
+    Quiz findByIdWithQuestionsAndOptions(@Param("id") Long id);
+
+    // N+1 Query Prevention: Fetch active quizzes with questions and topic
+    @Query("SELECT DISTINCT q FROM Quiz q " +
+           "LEFT JOIN FETCH q.questions " +
+           "LEFT JOIN FETCH q.topic " +
+           "WHERE q.isActive = true")
+    List<Quiz> findActiveQuizzesWithQuestions();
 }

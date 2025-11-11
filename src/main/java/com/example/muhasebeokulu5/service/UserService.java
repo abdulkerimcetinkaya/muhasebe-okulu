@@ -114,8 +114,8 @@ public class UserService {
                     user.getMaxStreak(),
                     user.getLastActiveDate(),
                     user.getTotalTimeSpent(),
-                    user.getBadgeCount(),
-                    user.getBadges(),
+                    0,                          // badgeCount deprecated
+                    null,                       // badges deprecated
                     user.getPreferredLanguage(),
                     user.getTimezone(),
                     user.getEmailNotifications(),
@@ -259,8 +259,8 @@ public class UserService {
                     savedUser.getMaxStreak(),
                     savedUser.getLastActiveDate(),
                     savedUser.getTotalTimeSpent(),
-                    savedUser.getBadgeCount(),
-                    savedUser.getBadges(),
+                    0,                          // badgeCount deprecated
+                    null,                       // badges deprecated
                     savedUser.getPreferredLanguage(),
                     savedUser.getTimezone(),
                     savedUser.getEmailNotifications(),

@@ -20,7 +20,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // İlk yükleme
     showSection('dashboard');
     addAnswerRow('c-answersBody');
-    loadDashboardData();
     lucide.createIcons();
 });
 
@@ -38,7 +37,8 @@ function showSection(which) {
         'all-users', 'active-users', 'banned-users',
         'problem-reports', 'user-reports', 'performance-analysis',
         'duzenle', 'quiz-topics', 'quiz-quizzes', 'quiz-questions',
-        'study-cards-list', 'study-card-sections'
+        'study-cards-list', 'study-card-sections',
+        'study-cards-crud', 'study-sections-management'
     ];
 
     sections.forEach(section => {
@@ -66,7 +66,7 @@ function showSection(which) {
     } else if (which === 'all-users') {
         loadUsers();
     } else if (which === 'dashboard') {
-        loadDashboardData();
+        // Dashboard karşılama ekranı - veri yükleme gerekmez
     } else if (which === 'all-quizzes') {
         loadAdminQuizzes();
     } else if (which === 'add-quiz') {
@@ -86,6 +86,35 @@ function showSection(which) {
         loadStudyCards();
     } else if (which === 'study-card-sections') {
         loadCardsForSelect();
+    } else if (which === 'study-cards-crud') {
+        // Kart Yönetimi - kartların temel bilgilerini yönet
+        if (window.studyCardCRUD) {
+            window.studyCardCRUD.init();
+        }
+    } else if (which === 'study-sections-management') {
+        // Bölüm Yönetimi
+        if (window.studySectionManager) {
+            window.studySectionManager.init();
+        }
+    }
+
+    // Force hide study-cards-crud section when not active (using display style)
+    const studyCardsSection = document.getElementById('study-cards-crud');
+    if (studyCardsSection) {
+        if (which === 'study-cards-crud') {
+            // Show the section
+            studyCardsSection.style.display = 'block';
+            studyCardsSection.classList.remove('hidden');
+        } else {
+            // Hide the section forcefully
+            studyCardsSection.style.display = 'none';
+            studyCardsSection.classList.add('hidden');
+            // Clear container content
+            const container = document.getElementById('study-cards-crud-container');
+            if (container) {
+                container.innerHTML = '';
+            }
+        }
     }
 
     lucide.createIcons();
@@ -436,7 +465,7 @@ function renderProblems(problems) {
             </td>
             <td class="px-6 py-3">
                 <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-md ${difficultyBadge(item.difficulty)}">
-                    ${difficultyLabel(item.difficulty)} (${difficultyPoints(item.difficulty)} puan)
+                    ${difficultyLabel(item.difficulty)}
                 </span>
             </td>
             <td class="px-6 py-3">
@@ -803,7 +832,10 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Profil dropdown fonksiyonları
-function toggleProfileDropdown() {
+function toggleProfileDropdown(event) {
+    if (event) {
+        event.stopPropagation(); // Event'in üst elementlere yayılmasını engelle
+    }
     const dropdown = document.getElementById('profileDropdown');
     if (dropdown) {
         dropdown.classList.toggle('hidden');
@@ -813,9 +845,8 @@ function toggleProfileDropdown() {
 // Dropdown dışına tıklandığında kapat
 document.addEventListener('click', function (event) {
     const dropdown = document.getElementById('profileDropdown');
-    const button = document.querySelector('[onclick="toggleProfileDropdown()"]');
 
-    if (dropdown && button && !button.contains(event.target) && !dropdown.contains(event.target)) {
+    if (dropdown && !dropdown.contains(event.target)) {
         dropdown.classList.add('hidden');
     }
 });
@@ -861,27 +892,7 @@ async function updateAccountName(code, displayElement) {
     }
 }
 
-        // Dashboard data loading
-        async function loadDashboardData() {
-            try {
-                console.log('Dashboard API çağrısı başlatılıyor...');
-                const data = await ApiService.getAdminStats();
-                
-                // Dashboard istatistiklerini güncelle
-                document.getElementById('dashboard-total-users').textContent = data.totalUsers || '0';
-                document.getElementById('dashboard-total-problems').textContent = data.totalProblems || '0';
-                document.getElementById('dashboard-active-users').textContent = data.activeUsers || '0';
-                document.getElementById('dashboard-total-solutions').textContent = data.totalSolutions || '0';
-                
-            } catch (err) {
-                console.error('Dashboard veri yükleme hatası:', err);
-                // Hata durumunda varsayılan değerler
-                document.getElementById('dashboard-total-users').textContent = '0';
-                document.getElementById('dashboard-total-problems').textContent = '0';
-                document.getElementById('dashboard-active-users').textContent = '0';
-                document.getElementById('dashboard-total-solutions').textContent = '0';
-            }
-        }
+        // Dashboard artık sadece karşılama ekranı - veri yükleme gerekmez
 
 // Users management
 async function loadUsers() {
@@ -2394,8 +2405,6 @@ async function saveStudyCard(event) {
     const data = {
         title: document.getElementById('studyCardTitle').value,
         description: document.getElementById('studyCardDescription').value,
-        icon: document.getElementById('studyCardIcon').value,
-        color: document.getElementById('studyCardColor').value,
         displayOrder: parseInt(document.getElementById('studyCardOrder').value),
         active: document.getElementById('studyCardActive').checked
     };
@@ -2431,8 +2440,6 @@ async function editStudyCard(id) {
         document.getElementById('studyCardId').value = card.id;
         document.getElementById('studyCardTitle').value = card.title;
         document.getElementById('studyCardDescription').value = card.description || '';
-        document.getElementById('studyCardIcon').value = card.icon || 'book-open';
-        document.getElementById('studyCardColor').value = card.color || 'blue';
         document.getElementById('studyCardOrder').value = card.displayOrder;
         document.getElementById('studyCardActive').checked = card.active;
 

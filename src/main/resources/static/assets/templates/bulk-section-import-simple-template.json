@@ -1,0 +1,54 @@
+{
+  "studyCardId": 4,
+  "sections": [
+    {
+      "title": "Basit Metin İçerik Örneği",
+      "displayOrder": 1,
+      "active": true,
+      "contentItems": [
+        {
+          "contentType": "TEXT",
+          "displayOrder": 0,
+          "active": true,
+          "textContent": "Bu basit bir paragraf içeriğidir.",
+          "blockData": {
+            "id": "block-simple-1",
+            "type": "paragraph",
+            "content": "Bu basit bir paragraf içeriğidir.",
+            "properties": {}
+          }
+        }
+      ]
+    },
+    {
+      "title": "Problem ve Quiz Bölümü",
+      "displayOrder": 2,
+      "active": true,
+      "contentItems": [
+        {
+          "contentType": "PARAGRAPH",
+          "displayOrder": 0,
+          "active": true,
+          "blockData": {
+            "id": "block-intro",
+            "type": "paragraph",
+            "content": "Bu bölümde problem ve quiz çözerek pratik yapacaksınız.",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "TEXT",
+          "displayOrder": 1,
+          "active": true,
+          "textContent": "NOT: Problem ve Quiz içerikleri için relatedProblemId ve relatedQuizId kullanılmalıdır.",
+          "blockData": {
+            "id": "block-note",
+            "type": "paragraph",
+            "content": "<em>NOT: Problem ve Quiz içerikleri için relatedProblemId ve relatedQuizId kullanılmalıdır.</em>",
+            "properties": {}
+          }
+        }
+      ]
+    }
+  ]
+}

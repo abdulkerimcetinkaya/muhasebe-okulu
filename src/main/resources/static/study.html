@@ -5,23 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Öğrenme Kartları - MuhasebeOkulu</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Theme initialization -->
+    <script src="/assets/js/utils/theme.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {} }
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- Ortak CSS -->
-    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
-    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
 
     <!-- Ortak JS -->
-    <script src="http://localhost:8080/assets/js/common.js"></script>
-    <script src="http://localhost:8080/assets/js/api.js"></script>
-    <script src="http://localhost:8080/assets/js/auth.js"></script>
+    <script src="/assets/js/common.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth.js"></script>
 
     <!-- Page-specific JS -->
-    <script src="http://localhost:8080/assets/js/pages/study.js"></script>
+    <script src="/assets/js/pages/study.js"></script>
 
     <style>
         body {
@@ -47,65 +57,73 @@
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased">
 <div class="relative min-h-screen">
     <!-- Arka Plan Deseni -->
-    <div class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
-        <div class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_500px_at_50%_200px,#C9D6FF,#E2E2E2,transparent)]"></div>
+    <div class="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-slate-900 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:6rem_4rem]">
     </div>
 
     <!-- Header -->
-    <header class="sticky top-0 z-40 w-full backdrop-blur-sm">
+    <header class="sticky top-0 z-40 w-full backdrop-blur-sm bg-white/80 dark:bg-slate-900/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16 border-b border-slate-200/80">
+            <div class="flex items-center justify-between h-16 border-b border-slate-200/80 dark:border-slate-700/80">
 
                 <!-- Giriş yapmamış kullanıcılar için: Logo -->
                 <div id="guestLayout" class="flex items-center gap-4">
                     <a href="index.html" class="flex items-center gap-2 group">
-                        <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
-                        <span class="text-lg font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                        <div class="w-8 h-8 bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
+                        <span class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">MuhasebeOkulu</span>
                     </a>
                 </div>
 
                 <!-- Giriş yapmış kullanıcılar için: Logo + Nav Links -->
                 <div id="userLayout" class="hidden flex items-center justify-between w-full">
                     <a href="index.html" class="flex items-center gap-2 group">
-                        <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
-                        <span class="text-lg font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+                        <div class="w-8 h-8 bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center rounded-lg font-semibold text-lg tracking-tighter transition-transform duration-300 group-hover:scale-105">MO</div>
+                        <span class="text-lg font-semibold tracking-tight text-slate-900 dark:text-slate-100">MuhasebeOkulu</span>
                     </a>
                     <nav class="hidden md:flex items-center justify-center gap-6 absolute left-1/2 transform -translate-x-1/2">
-                        <a href="dashboard.html" id="userDashboardLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Dashboard</a>
-                        <a href="problems.html" id="userProblemsLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Problemler</a>
-                        <a href="quizzes.html" id="userQuizzesLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Quiz</a>
-                        <a href="study.html" id="userStudyLink" class="text-sm font-medium text-slate-900">Öğren</a>
-                        <a href="profile.html" id="userProfileLink" class="text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Profilim</a>
-                        <a href="admin-dashboard.html" id="adminDashboardLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Dashboard</a>
-                        <a href="admin.html" id="adminLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Admin Panel</a>
-                        <a href="admin-quizzes.html" id="adminQuizzesLink" class="hidden text-sm font-medium text-slate-600 hover:text-slate-900 transition-colors">Quiz Yönetimi</a>
+                        <a href="dashboard.html" id="userDashboardLink" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Dashboard</a>
+                        <a href="problems.html" id="userProblemsLink" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Problemler</a>
+                        <a href="quizzes.html" id="userQuizzesLink" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Quiz</a>
+                        <a href="study.html" id="userStudyLink" class="text-sm font-medium text-slate-900 dark:text-slate-100">Öğren</a>
+                        <a href="profile.html" id="userProfileLink" class="text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Profilim</a>
+                        <a href="admin-dashboard.html" id="adminDashboardLink" class="hidden text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Dashboard</a>
+                        <a href="admin.html" id="adminLink" class="hidden text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Admin Panel</a>
+                        <a href="admin-quizzes.html" id="adminQuizzesLink" class="hidden text-sm font-medium text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-slate-100 transition-colors">Quiz Yönetimi</a>
                     </nav>
                 </div>
 
-                <!-- Giriş yapmamış kullanıcılar için: Auth Butonları -->
+                <!-- Giriş yapmamış kullanıcılar için: Auth Butonları + Theme Toggle -->
                 <div id="guestAuthButtons" class="flex items-center gap-2 flex-shrink-0">
-                    <a href="login.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md transition-colors whitespace-nowrap">Giriş Yap</a>
-                    <a href="register.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm whitespace-nowrap">Kayıt Ol</a>
+                    <button onclick="ThemeManager.toggle()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle dark mode">
+                        <i data-lucide="moon" class="w-5 h-5 text-slate-600 dark:text-slate-300 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 text-slate-300 hidden dark:block"></i>
+                    </button>
+                    <a href="login.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-colors whitespace-nowrap">Giriş Yap</a>
+                    <a href="register.html" class="inline-flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 rounded-md transition-colors shadow-sm whitespace-nowrap">Kayıt Ol</a>
                 </div>
 
                 <!-- Giriş yapmış kullanıcılar için: Profil Dropdown -->
                 <div id="userProfileMenu" class="hidden flex items-center gap-2">
+                    <!-- Theme Toggle for User -->
+                    <button onclick="ThemeManager.toggle()" class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" aria-label="Toggle dark mode">
+                        <i data-lucide="moon" class="w-5 h-5 text-slate-600 dark:text-slate-300 dark:hidden"></i>
+                        <i data-lucide="sun" class="w-5 h-5 text-slate-300 hidden dark:block"></i>
+                    </button>
                     <div class="relative">
-                        <button onclick="CommonUtils.toggleUserDropdown()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
+                        <button onclick="CommonUtils.toggleUserDropdown()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors">
                             <i data-lucide="user" class="w-4 h-4"></i>
                             <span id="userDisplayName">Hoşgeldin, Kullanıcı</span>
                             <i data-lucide="chevron-down" class="w-4 h-4"></i>
                         </button>
-                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-slate-200 py-1">
-                            <a href="profile.html" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                        <div id="userDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 py-1">
+                            <a href="profile.html" class="flex items-center gap-2 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                                 <i data-lucide="user" class="w-4 h-4"></i>
                                 Profilim
                             </a>
-                            <hr class="my-1 border-slate-200">
-                            <button onclick="CommonUtils.logout()" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                            <hr class="my-1 border-slate-200 dark:border-slate-700">
+                            <button onclick="CommonUtils.logout()" class="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                                 <i data-lucide="log-out" class="w-4 h-4"></i>
                                 Çıkış Yap
                             </button>
@@ -116,45 +134,153 @@
         </div>
     </header>
 
-    <!-- Main Content -->
-    <main class="relative z-10">
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Page Header -->
-        <div class="mb-8">
-            <h1 class="text-3xl font-bold text-slate-900 mb-2">Öğrenme Kartları</h1>
-            <p class="text-slate-600">Muhasebe konularını adım adım öğrenin ve pratik yapın</p>
-        </div>
+    <!-- Hero Section -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8">
+        <div class="relative overflow-hidden bg-gradient-to-br from-slate-800 via-slate-900 to-slate-800 rounded-2xl shadow-xl p-8 md:p-12">
+            <!-- Arka plan deseni -->
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 32px 32px;"></div>
+            </div>
 
-        <!-- Loading State -->
-        <div id="loadingState" class="flex items-center justify-center py-12">
-            <div class="flex items-center gap-2 text-slate-600">
-                <i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>
-                <span>Kartlar yükleniyor...</span>
+            <div class="relative z-10 flex items-center justify-between flex-col md:flex-row gap-6">
+                <!-- Sol: Başlık & Açıklama -->
+                <div class="flex-1 text-center md:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-indigo-500/20 text-indigo-200 rounded-full text-xs font-medium mb-4">
+                        <i data-lucide="graduation-cap" class="w-3 h-3"></i>
+                        <span>Adım Adım Öğrenme</span>
+                    </div>
+                    <h1 class="text-3xl md:text-4xl font-bold text-white mb-3">
+                        Konular
+                    </h1>
+                    <p class="text-slate-300 text-lg max-w-2xl">
+                        Muhasebe konularını yapılandırılmış kartlarla öğrenin, kavramları pekiştirin ve başarıya ulaşın!
+                    </p>
+                </div>
+
+                <!-- Sağ: İstatistik Kartları -->
+                <div class="grid grid-cols-2 md:grid-cols-2 gap-3 md:min-w-[280px]">
+                    <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-center">
+                        <i data-lucide="book-open" class="w-5 h-5 text-indigo-400 mx-auto mb-2"></i>
+                        <p class="text-2xl font-bold text-white" id="statTotalCards">0</p>
+                        <p class="text-slate-300 text-xs">Toplam Kart</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-center">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-emerald-400 mx-auto mb-2"></i>
+                        <p class="text-2xl font-bold text-white" id="statCompletedCards">0</p>
+                        <p class="text-slate-300 text-xs">Tamamlanan</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-center">
+                        <i data-lucide="trending-up" class="w-5 h-5 text-sky-400 mx-auto mb-2"></i>
+                        <p class="text-2xl font-bold text-white"><span id="statProgress">0</span>%</p>
+                        <p class="text-slate-300 text-xs">İlerleme</p>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-4 text-center">
+                        <i data-lucide="flame" class="w-5 h-5 text-orange-400 mx-auto mb-2"></i>
+                        <p class="text-2xl font-bold text-white" id="statStreak">0</p>
+                        <p class="text-slate-300 text-xs">Günlük Seri</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter & Content Section -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Devam Edenler Section -->
+        <div id="inProgressSection" class="hidden mb-12">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                    <i data-lucide="clock" class="w-6 h-6 text-indigo-600 dark:text-indigo-400"></i>
+                    Devam Edenler
+                </h2>
+            </div>
+            <div id="inProgressGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- In-progress cards will be loaded here -->
             </div>
         </div>
 
+        <!-- Filter Section -->
+        <div class="mb-8">
+            <div class="flex items-center justify-between flex-wrap gap-4 mb-6">
+                <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100">Öğrenme Kartlarına Göz At</h2>
+
+                <!-- Filter & Search -->
+                <div class="flex gap-2 items-center flex-wrap">
+                    <!-- Search Bar -->
+                    <div class="relative">
+                        <input
+                            type="text"
+                            id="searchInput"
+                            placeholder="Kart ara..."
+                            class="pl-10 pr-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 focus:border-transparent w-64"
+                            onkeyup="filterCards()"
+                        />
+                        <i data-lucide="search" class="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                    </div>
+
+                    <!-- Category Filter -->
+                    <button onclick="filterByCategory('all')" id="filter-all"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 dark:bg-indigo-700 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all shadow-sm">
+                        <i data-lucide="grid-3x3" class="w-4 h-4"></i>
+                        Tümü
+                    </button>
+                    <button onclick="filterByCategory('completed')" id="filter-completed"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        Tamamlananlar
+                    </button>
+                    <button onclick="filterByCategory('in-progress')" id="filter-in-progress"
+                        class="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                        <i data-lucide="clock" class="w-4 h-4"></i>
+                        Devam Eden
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="text-center py-16">
+            <i data-lucide="loader-2" class="w-12 h-12 text-slate-400 dark:text-slate-600 mx-auto mb-4 animate-spin"></i>
+            <p class="text-slate-600 dark:text-slate-400">Öğrenme kartları yükleniyor...</p>
+        </div>
+
         <!-- Cards Grid -->
-        <div id="cardsGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div id="cardsGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <!-- Cards will be loaded here dynamically -->
         </div>
 
         <!-- Empty State -->
-        <div id="emptyState" class="hidden text-center py-12">
-            <div class="inline-flex items-center justify-center w-16 h-16 bg-slate-100 rounded-full mb-4">
-                <i data-lucide="book-open" class="w-8 h-8 text-slate-400"></i>
+        <div id="emptyState" class="hidden text-center py-16">
+            <div class="w-20 h-20 bg-gradient-to-br from-indigo-100 dark:from-indigo-900/30 to-slate-100 dark:to-slate-800 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm">
+                <i data-lucide="book-open" class="w-10 h-10 text-slate-400 dark:text-slate-500"></i>
             </div>
-            <h3 class="text-lg font-medium text-slate-900 mb-2">Henüz kart yok</h3>
-            <p class="text-slate-600">Öğrenme kartları yakında eklenecek</p>
+            <h3 class="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">Henüz Kart Yok</h3>
+            <p class="text-slate-600 dark:text-slate-400 mb-6">Şu anda bu kategoride öğrenme kartı bulunmuyor</p>
+            <button onclick="filterByCategory('all')" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 dark:bg-indigo-700 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-all">
+                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                Tüm Kartları Göster
+            </button>
         </div>
-        </section>
     </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-700/80 mt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="flex items-center justify-between">
+                <a href="dashboard.html" class="flex items-center gap-2 group">
+                    <div class="w-7 h-7 bg-slate-800 dark:bg-slate-700 text-white flex items-center justify-center rounded-lg font-semibold text-sm tracking-tighter">
+                        MO</div>
+                    <span class="text-base font-semibold tracking-tight text-slate-900 dark:text-slate-100">MuhasebeOkulu</span>
+                </a>
+                <p class="text-sm text-slate-500 dark:text-slate-400">&copy; <span id="year"></span> MuhasebeOkulu. Tüm hakları saklıdır.</p>
+            </div>
+        </div>
+    </footer>
 </div>
 
     <script>
-        // Initialize icons on load
-        document.addEventListener('DOMContentLoaded', function() {
-            lucide.createIcons();
-        });
+        // Update year
+        document.getElementById('year').textContent = new Date().getFullYear();
     </script>
 </body>
 

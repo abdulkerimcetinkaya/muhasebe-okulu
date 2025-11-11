@@ -63,10 +63,16 @@ public class JwtUtil {
     }
 
     // Token generate et
-    public String generateToken(UUID userId, String username) {
+    public String generateToken(UUID userId, String username, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId.toString());
+        claims.put("role", role);
         return createToken(claims, username);
+    }
+
+    // Extract role from token
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     private String createToken(Map<String, Object> claims, String subject) {

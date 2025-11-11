@@ -55,20 +55,19 @@ public class SecurityConfig {
                         ).permitAll()
                         // Public endpoints (authentication gerekmez)
                         .requestMatchers(
-                                "/api/auth/**",                    // Login/Register
-                                "/api/problems/**",                // Problemler API (PUBLIC - herkes görebilir)
-                                "/api/solved-problems/**",         // Çözüm kontrolü API (PUBLIC - herkes kullanabilir)
-                                "/api/test/**",                    // Test endpoints (development için)
-                                "/api/account-plans/**",           // Hesap planı API (PUBLIC)
-                                "/api/categories",                 // Kategori listesi (PUBLIC - herkes görebilir)
-                                "/api/categories/{id}",            // Kategori detayı (PUBLIC - herkes görebilir)
-                                "/api/quizzes",                    // Quiz listesi (PUBLIC - herkes görebilir)
-                                "/api/quizzes/{id}",               // Quiz detayı (PUBLIC - herkes görebilir)
-                                "/api/study-cards",                // Study cards listesi (PUBLIC - herkes görebilir)
-                                "/api/study-cards/**",             // Study card detayları ve sections (PUBLIC)
-                                "/actuator/**",                    // Actuator endpoints (development için)
-                                "/*.html",                         // Root level HTML dosyaları
-                                "/h2-console/**"                   // H2 Console (development için)
+                                "/api/auth/**",                           // Login/Register
+                                "/api/problems/**",                       // Problemler API (PUBLIC - herkes görebilir)
+                                "/api/solved-problems/**",                // Çözüm kontrolü API (PUBLIC - herkes kullanabilir)
+                                "/api/test/**",                           // Test endpoints (development için)
+                                "/api/account-plans/**",                  // Hesap planı API (PUBLIC)
+                                "/api/categories",                        // Kategori listesi (PUBLIC - herkes görebilir)
+                                "/api/categories/*",                      // Kategori detayı (PUBLIC)
+                                "/api/quizzes",                           // Quiz listesi (PUBLIC - herkes görebilir)
+                                "/api/quizzes/*",                         // Quiz detayı (PUBLIC)
+                                "/api/study-cards/**",                    // Study cards API (controller handles auth)
+                                "/actuator/**",                           // Actuator endpoints (development için)
+                                "/*.html",                                // Root level HTML dosyaları
+                                "/h2-console/**"                          // H2 Console (development için)
                         ).permitAll()
                         // Users API endpointleri authentication gerektirir
                         .requestMatchers("/api/users/**").authenticated()

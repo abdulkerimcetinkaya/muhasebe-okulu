@@ -37,11 +37,6 @@ public class Problem {
     @Column(name = "created_by")
     private UUID createdBy; // Öğretmen/Admin ID (nullable - eski problemler için)
 
-    // ✅ YENİ: Kategori ilişkisi
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
-    private Category category;
-
     // Room-specific isPrivate field has been archived
 
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

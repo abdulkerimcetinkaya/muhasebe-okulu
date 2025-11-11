@@ -32,6 +32,12 @@ public interface UserRepository extends JpaRepository<User, UUID> {
            "FROM User u ORDER BY u.totalScore DESC")
     List<Object[]> findTopUsersByScore();
     
+    
+    Long countByCreatedAtAfter(LocalDateTime date);
+    
+    @Query("SELECT COUNT(DISTINCT sp.user) FROM SolvedProblem sp WHERE sp.solvedAt >= :weekAgo")
+    Long countDistinctUsersByRecentSolutions(@Param("weekAgo") LocalDateTime weekAgo);
+
     @Query("SELECT DATE(u.createdAt) as date, COUNT(u) as count " +
            "FROM User u WHERE u.createdAt >= :weekAgo " +
            "GROUP BY DATE(u.createdAt) ORDER BY date")

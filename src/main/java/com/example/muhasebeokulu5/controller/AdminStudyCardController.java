@@ -1,5 +1,7 @@
 package com.example.muhasebeokulu5.controller;
 
+import com.example.muhasebeokulu5.dto.BulkSectionImportDTO;
+import com.example.muhasebeokulu5.dto.BulkStudyCardImportDTO;
 import com.example.muhasebeokulu5.dto.CardSectionDTO;
 import com.example.muhasebeokulu5.dto.StudyCardDTO;
 import com.example.muhasebeokulu5.entities.CardSection;
@@ -7,6 +9,7 @@ import com.example.muhasebeokulu5.entities.StudyCard;
 import com.example.muhasebeokulu5.service.StudyCardService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -65,6 +68,14 @@ public class AdminStudyCardController {
         return ResponseEntity.noContent().build();
     }
 
+    @PostMapping("/bulk")
+    @Operation(summary = "Bulk import study cards", description = "Import multiple study cards with sections from JSON")
+    public ResponseEntity<BulkStudyCardImportDTO.ImportResult> bulkImportStudyCards(
+            @RequestBody @Valid BulkStudyCardImportDTO importDTO) {
+        BulkStudyCardImportDTO.ImportResult result = studyCardService.bulkImportStudyCards(importDTO);
+        return ResponseEntity.ok(result);
+    }
+
     // ==================== CARD SECTION CRUD ====================
 
     @GetMapping("/{cardId}/sections")
@@ -76,8 +87,8 @@ public class AdminStudyCardController {
 
     @GetMapping("/sections/{id}")
     @Operation(summary = "Get card section by ID", description = "Get a single card section by ID for editing")
-    public ResponseEntity<CardSection> getCardSectionById(@PathVariable Long id) {
-        CardSection section = studyCardService.getCardSectionById(id);
+    public ResponseEntity<CardSectionDTO> getCardSectionById(@PathVariable Long id) {
+        CardSectionDTO section = studyCardService.getCardSectionWithContentItems(id);
         return ResponseEntity.ok(section);
     }
 
@@ -91,8 +102,30 @@ public class AdminStudyCardController {
     @PutMapping("/sections/{id}")
     @Operation(summary = "Update card section", description = "Update an existing card section")
     public ResponseEntity<CardSection> updateCardSection(@PathVariable Long id, @RequestBody CardSectionDTO sectionDTO) {
-        CardSection updated = studyCardService.updateCardSection(id, sectionDTO);
-        return ResponseEntity.ok(updated);
+        try {
+            System.out.println("=== UPDATE SECTION DEBUG ===");
+            System.out.println("Section ID: " + id);
+            System.out.println("Title: " + sectionDTO.getTitle());
+            System.out.println("ContentItems count: " + (sectionDTO.getContentItems() != null ? sectionDTO.getContentItems().size() : 0));
+
+            if (sectionDTO.getContentItems() != null) {
+                for (int i = 0; i < sectionDTO.getContentItems().size(); i++) {
+                    var item = sectionDTO.getContentItems().get(i);
+                    System.out.println("  Item " + i + ": type=" + item.getContentType() + ", blockData=" + (item.getBlockData() != null ? "present" : "null"));
+                }
+            }
+
+            CardSection updated = studyCardService.updateCardSection(id, sectionDTO);
+
+            System.out.println("=== UPDATE SUCCESS ===");
+            return ResponseEntity.ok(updated);
+        } catch (Exception e) {
+            System.err.println("=== UPDATE ERROR ===");
+            System.err.println("Error message: " + e.getMessage());
+            System.err.println("Error class: " + e.getClass().getName());
+            e.printStackTrace();
+            throw new RuntimeException("Update failed: " + e.getMessage(), e);
+        }
     }
 
     @DeleteMapping("/sections/{id}")
@@ -100,5 +133,13 @@ public class AdminStudyCardController {
     public ResponseEntity<Void> deleteCardSection(@PathVariable Long id) {
         studyCardService.deleteCardSection(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/sections/bulk")
+    @Operation(summary = "Bulk import sections", description = "Import multiple sections with content items into an existing study card")
+    public ResponseEntity<BulkSectionImportDTO.ImportResult> bulkImportSections(
+            @RequestBody @Valid BulkSectionImportDTO importDTO) {
+        BulkSectionImportDTO.ImportResult result = studyCardService.bulkImportSections(importDTO);
+        return ResponseEntity.ok(result);
     }
 }

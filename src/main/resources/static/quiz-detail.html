@@ -4,23 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz - MuhasebeOkulu</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Theme initialization -->
+    <script src="/assets/js/utils/theme.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {} }
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- Ortak CSS -->
-    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
-    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
 
     <!-- Ortak JS -->
-    <script src="http://localhost:8080/assets/js/common.js"></script>
-    <script src="http://localhost:8080/assets/js/api.js"></script>
-    <script src="http://localhost:8080/assets/js/auth.js"></script>
+    <script src="/assets/js/common.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth.js"></script>
 
     <!-- Page-specific JS -->
-    <script src="http://localhost:8080/assets/js/pages/quiz-detail.js"></script>
+    <script src="/assets/js/pages/quiz-detail.js"></script>
 
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
@@ -54,11 +64,10 @@
         }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased scroll-smooth">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased scroll-smooth">
 <div class="relative min-h-screen">
     <!-- Arka Plan -->
     <div class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:6rem_4rem]">
-        <div class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(520px_520px_at_50%_160px,rgba(30,41,59,0.08),rgba(30,41,59,0.03),transparent)]"></div>
     </div>
 
     <!-- Header - Quiz Detay Navbar (Sadece geri butonu ve timer) -->
@@ -188,6 +197,20 @@
         </div>
     </main>
 </div>
+
+<!-- Footer -->
+<footer class="bg-white border-t border-slate-200/80 mt-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex items-center justify-between">
+            <a href="dashboard.html" class="flex items-center gap-2 group">
+                <div class="w-7 h-7 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-sm tracking-tighter">
+                    MO</div>
+                <span class="text-base font-semibold tracking-tight text-slate-900">MuhasebeOkulu</span>
+            </a>
+            <p class="text-sm text-slate-500">&copy; <span id="year"></span> MuhasebeOkulu. Tüm hakları saklıdır.</p>
+        </div>
+    </div>
+</footer>
 
 </body>
 </html>

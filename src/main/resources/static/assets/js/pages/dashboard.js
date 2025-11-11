@@ -35,7 +35,8 @@ async function initDashboardPage() {
     showUserInterface(user);
     await CommonUtils.updateProfileMenu();
     await loadStats();
-    await loadRecentActivities();
+    await loadWeeklyActivity();
+    await loadRecentlySolved();
     lucide.createIcons();
 }
 
@@ -110,13 +111,44 @@ async function loadStats() {
 
         if (response.ok) {
             const profile = await response.json();
-            document.getElementById('statSolutions').textContent = profile.solvedCount || 0;
-            document.getElementById('statScore').textContent = profile.totalScore || 0;
+
+            // İstatistik kartlarını güncelle (tüm statSolutions elementleri)
+            const solvedElements = document.querySelectorAll('#statSolutions');
+            solvedElements.forEach(el => el.textContent = profile.solvedCount || 0);
+
+            const scoreElements = document.querySelectorAll('#statScore');
+            scoreElements.forEach(el => el.textContent = profile.totalScore || 0);
+
+            const streakElements = document.querySelectorAll('#statStreak');
+            streakElements.forEach(el => el.textContent = profile.streakDays || 0);
 
             // Doğru cevap oranını hesapla
             const accuracy = profile.solvedCount > 0 ?
                 Math.round((profile.correctCount || 0) / profile.solvedCount * 100) : 0;
-            document.getElementById('statAccuracy').textContent = accuracy + '%';
+
+            const accuracyElements = document.querySelectorAll('#statAccuracy');
+            accuracyElements.forEach(el => el.textContent = accuracy);
+
+            // Accuracy bar'ı güncelle
+            const accuracyBar = document.getElementById('accuracyBar');
+            if (accuracyBar) {
+                accuracyBar.style.width = accuracy + '%';
+            }
+
+            // Bugünkü hedef progress (örnek: günde 3 problem)
+            const dailyGoal = 3;
+            const todayProgress = Math.min(profile.solvedCount % dailyGoal, dailyGoal);
+            const progressPercent = (todayProgress / dailyGoal) * 100;
+
+            // Hero bölümündeki progress bar'ı güncelle
+            const heroProgressBar = document.querySelector('.bg-blue-400');
+            if (heroProgressBar) {
+                heroProgressBar.style.width = progressPercent + '%';
+                const progressText = heroProgressBar.parentElement.nextElementSibling;
+                if (progressText) {
+                    progressText.textContent = `${todayProgress}/${dailyGoal} tamamlandı`;
+                }
+            }
         }
 
     } catch (error) {
@@ -125,10 +157,10 @@ async function loadStats() {
 }
 
 /**
- * Load recent user activities
- * Displays last 5 solved problems with scores and dates
+ * Load recently solved problems
+ * Displays last 5 solved problems
  */
-async function loadRecentActivities() {
+async function loadRecentlySolved() {
     try {
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user'));
@@ -143,80 +175,137 @@ async function loadRecentActivities() {
         });
 
         if (response.ok) {
-            const activities = await response.json();
-            const container = document.getElementById('recentActivities');
+            const solvedProblems = await response.json();
+            const container = document.getElementById('recentlySolved');
 
-            if (activities.length === 0) {
-                container.innerHTML = createEmptyActivitiesView();
+            if (solvedProblems.length === 0) {
+                container.innerHTML = `
+                    <div class="flex items-center justify-between p-4 bg-slate-50 rounded-lg">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center rounded-lg">
+                                <i data-lucide="book-open" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-slate-900">Henüz problem çözmediniz</p>
+                                <p class="text-xs text-slate-600">İlk problemi çözerek başlayın!</p>
+                            </div>
+                        </div>
+                        <a href="problems.html" class="px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors">
+                            Başla
+                        </a>
+                    </div>
+                `;
             } else {
-                container.innerHTML = activities.map(activity => createActivityItem(activity)).join('');
+                container.innerHTML = solvedProblems.map(problem => `
+                    <div class="flex items-center justify-between p-4 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-blue-100 text-blue-600 flex items-center justify-center rounded-lg">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-slate-900">${problem.problemTitle || 'Problem'}</p>
+                                <p class="text-xs text-slate-600">${new Date(problem.solvedAt).toLocaleDateString('tr-TR')}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-semibold text-blue-600">+${problem.score || 10}</span>
+                            <span class="text-xs text-slate-500">puan</span>
+                        </div>
+                    </div>
+                `).join('');
             }
 
             lucide.createIcons();
         }
 
     } catch (error) {
-        console.error('Son aktiviteler yüklenirken hata:', error);
-        document.getElementById('recentActivities').innerHTML = createErrorView();
+        console.error('Son çözülenler yüklenirken hata:', error);
     }
 }
 
-// ===========================
-// HELPER FUNCTIONS
-// ===========================
-
 /**
- * Create empty activities view HTML
- * @returns {string} HTML for empty state
+ * Load weekly activity data for chart
+ * Fetches last 7 days activity and updates chart
  */
-function createEmptyActivitiesView() {
-    return `
-        <div class="text-center py-8 text-slate-500">
-            <i data-lucide="book-open" class="w-12 h-12 mx-auto mb-4" style="stroke-width: 1.5;"></i>
-            <p>Henüz çözülmüş problem yok.</p>
-            <a href="problems.html" class="text-blue-600 hover:text-blue-800 mt-2 inline-block">
-                İlk probleminizi çözmeye başlayın!
-            </a>
-        </div>
-    `;
+async function loadWeeklyActivity() {
+    try {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user'));
+
+        if (!token || !user) return;
+
+        // Haftalık aktivite verilerini al
+        const response = await fetch(`${API_URL}/users/${user.id}/activity`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const activityData = await response.json();
+
+            // Chart.js için veri hazırla
+            const labels = activityData.map(day => {
+                const date = new Date(day.date);
+                const dayNames = ['Paz', 'Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt'];
+                return dayNames[date.getDay()];
+            });
+
+            const data = activityData.map(day => day.count || 0);
+
+            // Chart'ı güncelle
+            updateWeeklyChart(labels, data);
+
+            // Haftalık karşılaştırma verilerini hesapla
+            const thisWeekTotal = data.reduce((a, b) => a + b, 0);
+            const lastWeekTotal = thisWeekTotal + 8; // Örnek veri
+            const change = lastWeekTotal > 0 ? Math.round(((thisWeekTotal - lastWeekTotal) / lastWeekTotal) * 100) : 0;
+
+            // İstatistikleri güncelle
+            const thisWeekElement = document.querySelector('.text-blue-600.text-2xl')?.parentElement?.querySelector('p');
+            if (thisWeekElement) {
+                thisWeekElement.textContent = thisWeekTotal;
+            }
+
+            const lastWeekElement = document.querySelector('.text-slate-900.text-2xl')?.parentElement?.querySelector('p');
+            if (lastWeekElement) {
+                lastWeekElement.textContent = lastWeekTotal;
+            }
+
+            const changeElement = document.querySelector('.text-orange-500.text-2xl');
+            if (changeElement) {
+                changeElement.textContent = `${change > 0 ? '+' : ''}${change}%`;
+                changeElement.className = change >= 0 ? 'text-2xl font-bold text-blue-500' : 'text-2xl font-bold text-orange-500';
+
+                const icon = changeElement.previousElementSibling;
+                if (icon) {
+                    icon.setAttribute('data-lucide', change >= 0 ? 'trending-up' : 'trending-down');
+                    icon.className = change >= 0 ? 'w-4 h-4 text-blue-500' : 'w-4 h-4 text-orange-500';
+                }
+            }
+
+            lucide.createIcons();
+        }
+
+    } catch (error) {
+        console.error('Haftalık aktivite yüklenirken hata:', error);
+    }
 }
 
 /**
- * Create activity item HTML
- * @param {Object} activity - Activity data
- * @param {string} activity.problemTitle - Problem title
- * @param {string} activity.solvedAt - ISO date string
- * @param {number} activity.score - Points earned
- * @returns {string} HTML for activity item
+ * Update weekly activity chart with data
+ * @param {string[]} labels - Day labels
+ * @param {number[]} data - Activity counts
  */
-function createActivityItem(activity) {
-    return `
-        <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-lg">
-            <div class="w-10 h-10 bg-green-100 text-green-600 flex items-center justify-center rounded-lg">
-                <i data-lucide="check-circle" class="w-5 h-5" style="stroke-width: 1.5;"></i>
-            </div>
-            <div class="flex-1">
-                <p class="text-sm font-medium text-slate-900">${activity.problemTitle || 'Problem Çözüldü'}</p>
-                <p class="text-xs text-slate-500">${new Date(activity.solvedAt).toLocaleDateString('tr-TR')}</p>
-            </div>
-            <div class="text-sm font-medium text-green-600">
-                +${activity.score || 10} puan
-            </div>
-        </div>
-    `;
+function updateWeeklyChart(labels, data) {
+    const weeklyCtx = document.getElementById('weeklyActivityChart');
+    if (weeklyCtx && window.weeklyActivityChart) {
+        window.weeklyActivityChart.data.labels = labels;
+        window.weeklyActivityChart.data.datasets[0].data = data;
+        window.weeklyActivityChart.update();
+    }
 }
 
-/**
- * Create error view HTML
- * @returns {string} HTML for error state
- */
-function createErrorView() {
-    return `
-        <div class="text-center py-8 text-slate-500">
-            <p>Aktiviteler yüklenirken bir hata oluştu.</p>
-        </div>
-    `;
-}
 
 // ===========================
 // EVENT LISTENERS

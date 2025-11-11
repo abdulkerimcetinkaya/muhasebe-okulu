@@ -1,0 +1,30 @@
+{
+  "cards": [
+    {
+      "title": "Temel Muhasebe Kavramları",
+      "description": "Muhasebenin temel kavramlarını öğrenin",
+      "imageUrl": "📚",
+      "isActive": true,
+      "sections": [
+        {
+          "title": "Giriş: Muhasebe Nedir?",
+          "contentType": "TEXT",
+          "content": "<div class='prose'><h2>Muhasebe Nedir?</h2><p>Muhasebe, işletmelerin finansal durumlarını <strong>kaydetme</strong>, <strong>sınıflandırma</strong> ve <strong>raporlama</strong> sürecidir.</p><ul><li>Finansal kayıtların tutulması</li><li>İşletme performansının izlenmesi</li><li>Stratejik kararların desteklenmesi</li></ul></div>",
+          "isActive": true
+        },
+        {
+          "title": "Pratik Yapın: Dönem Sonu İşlemleri",
+          "contentType": "PROBLEM",
+          "content": "<div class='problem-container'><h3>Problem: Dönem Sonu İşlemleri</h3><p class='problem-description'>Bir işletmenin 2024 yılı sonunda aşağıdaki işlemleri gerçekleştirilmiştir:</p><div class='problem-data'><table class='table'><thead><tr><th>Hesap</th><th>Tutar (TL)</th></tr></thead><tbody><tr><td>Kasa</td><td>50.000</td></tr><tr><td>Bankalar</td><td>120.000</td></tr><tr><td>Alıcılar</td><td>80.000</td></tr></tbody></table></div><div class='problem-question'><p><strong>Soru:</strong> Yukarıdaki işlemlerin muhasebe kayıtlarını yapınız.</p></div></div>",
+          "isActive": true
+        },
+        {
+          "title": "Bilginizi Test Edin",
+          "contentType": "QUIZ",
+          "content": "<div class='quiz-container'><h3>Quiz: Temel Muhasebe</h3><div class='quiz-questions'><div class='question'><p class='question-text'>1. Muhasebenin temel amacı nedir?</p><ul class='options'><li>A) Vergi ödemek</li><li>B) İşletmenin finansal durumunu raporlamak ✓</li><li>C) Personel maaşlarını hesaplamak</li><li>D) Ürün fiyatlandırması yapmak</li></ul></div><div class='question'><p class='question-text'>2. Hangi hesap aktif hesaptır?</p><ul class='options'><li>A) Sermaye</li><li>B) Kasa ✓</li><li>C) Satış Gelirleri</li><li>D) Borç Senetleri</li></ul></div></div></div>",
+          "isActive": true
+        }
+      ]
+    }
+  ]
+}

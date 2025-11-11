@@ -24,11 +24,4 @@ public class AdminDashboardController {
         AdminDashboardDTO stats = dashboardService.getDashboardStats();
         return ResponseEntity.ok(stats);
     }
-
-    @GetMapping("/stats")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<AdminDashboardDTO> getStats() {
-        AdminDashboardDTO stats = dashboardService.getDashboardStats();
-        return ResponseEntity.ok(stats);
-    }
 }

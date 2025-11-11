@@ -56,3 +56,10 @@ run_migration.ps1
 update_role_constraint.sql
 NUL
 .env
+
+### Node.js / Playwright ###
+node_modules/
+package-lock.json
+test-results/
+playwright-report/
+playwright/.cache/

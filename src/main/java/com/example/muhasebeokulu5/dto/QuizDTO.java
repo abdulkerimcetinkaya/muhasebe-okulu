@@ -46,5 +46,6 @@ public class QuizDTO {
 
     private Integer questionCount; // Toplam soru sayısı
     private Integer totalPoints; // Toplam puan
+    private Integer userScore; // Kullanıcının aldığı puan (completed quizzes için)
     private List<QuestionDTO> questions; // Sorular (detaylı görünüm için)
 }

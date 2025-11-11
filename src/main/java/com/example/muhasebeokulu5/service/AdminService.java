@@ -149,7 +149,7 @@ public class AdminService {
         problem.setTags(createProblemDTO.getTags());
         problem.setDifficulty(createProblemDTO.getDifficulty());
         problem.setCreatedAt(LocalDateTime.now());
-        
+
         problem = problemRepository.save(problem);
         
         // Doğru cevapları kaydet
@@ -176,7 +176,7 @@ public class AdminService {
         problem.setHint(updateProblemDTO.getHint());
         problem.setTags(updateProblemDTO.getTags());
         problem.setDifficulty(updateProblemDTO.getDifficulty());
-        
+
         // Mevcut doğru cevapları sil
         correctEntryRepository.deleteByProblemId(id);
         
@@ -265,7 +265,7 @@ public class AdminService {
         dto.setTags(problem.getTags());
         dto.setDifficulty(problem.getDifficulty());
         dto.setCreatedAt(problem.getCreatedAt());
-        
+
         // Çözüm sayısını hesapla
         Long solveCount = solvedProblemRepository.countByProblemId(problem.getId());
         dto.setSolveCount(solveCount);
@@ -351,6 +351,119 @@ public class AdminService {
             new ReportDTO.PerformanceMetricsDTO("Başarı Oranı", 100.0, "%", "STABLE"),
             new ReportDTO.PerformanceMetricsDTO("Ortalama Çözüm Süresi", 15.5, "dakika", "DOWN"),
             new ReportDTO.PerformanceMetricsDTO("Kullanıcı Memnuniyeti", 4.8, "/5", "UP")
+        );
+    }
+
+    /**
+     * Admin Dashboard İstatistiklerini Getir
+     */
+    public AdminStatsDTO getAdminStats() {
+        AdminStatsDTO stats = new AdminStatsDTO();
+
+        // 1. Kullanıcı İstatistikleri
+        stats.setTotalUsers(userRepository.count());
+
+        // Bu hafta kayıt olan kullanıcılar (son 7 gün)
+        LocalDateTime weekAgo = LocalDateTime.now().minusDays(7);
+        stats.setUsersThisWeek(userRepository.countByCreatedAtAfter(weekAgo));
+
+        // Aktif kullanıcılar (son 7 günde çözüm yapanlar)
+        stats.setActiveUsers(userRepository.countDistinctUsersByRecentSolutions(weekAgo));
+
+        // 2. Problem İstatistikleri
+        stats.setTotalProblems(problemRepository.count());
+
+        // Zorluk seviyelerine göre problem dağılımı
+        Map<String, Long> problemsByDifficulty = new HashMap<>();
+        problemsByDifficulty.put("EASY", problemRepository.countByDifficulty(Difficulty.EASY));
+        problemsByDifficulty.put("MEDIUM", problemRepository.countByDifficulty(Difficulty.MEDIUM));
+        problemsByDifficulty.put("HARD", problemRepository.countByDifficulty(Difficulty.HARD));
+        stats.setProblemsByDifficulty(problemsByDifficulty);
+
+        // 3. Çözüm İstatistikleri
+        stats.setTotalSolutions(solvedProblemRepository.count());
+        stats.setSolutionsThisWeek(solvedProblemRepository.countSolutionsAfter(weekAgo));
+
+        // Son 7 günün günlük çözümleri
+        List<Object[]> dailyData = solvedProblemRepository.findDailySolutions(weekAgo);
+        List<AdminStatsDTO.DailySolutionDTO> dailySolutions = dailyData.stream()
+            .map(row -> new AdminStatsDTO.DailySolutionDTO(
+                ((java.sql.Date) row[0]).toLocalDate(),
+                ((Number) row[1]).longValue()
+            ))
+            .collect(Collectors.toList());
+        stats.setDailySolutions(dailySolutions);
+
+        // 4. En Çok Çözülen Problemler (Top 5)
+        List<Object[]> topProblemsData = solvedProblemRepository.findTopSolvedProblems();
+        List<AdminStatsDTO.TopProblemDTO> topProblems = topProblemsData.stream()
+            .limit(5)
+            .map(row -> new AdminStatsDTO.TopProblemDTO(
+                ((Number) row[0]).longValue(),  // problem ID
+                (String) row[1],                 // title
+                ((Difficulty) row[2]).name(),    // difficulty
+                ((Number) row[3]).longValue()    // solve count
+            ))
+            .collect(Collectors.toList());
+        stats.setTopSolvedProblems(topProblems);
+
+        // 5. En Aktif Kullanıcılar (Top 3)
+        List<Object[]> topUsersData = solvedProblemRepository.findTopActiveUsers();
+        List<AdminStatsDTO.TopUserDTO> topUsers = new ArrayList<>();
+        int rank = 1;
+        for (int i = 0; i < Math.min(3, topUsersData.size()); i++) {
+            Object[] row = topUsersData.get(i);
+            topUsers.add(new AdminStatsDTO.TopUserDTO(
+                (String) row[0],                 // username
+                ((Number) row[1]).longValue(),   // solution count
+                rank++                            // rank
+            ));
+        }
+        stats.setTopUsers(topUsers);
+
+        return stats;
+    }
+
+    // ==================== TOPLU PROBLEM İMPORT ====================
+
+    /**
+     * Toplu problem import işlemi
+     * Başarılı ve başarısız problemlerin detaylarını döner
+     *
+     * @param bulkImportDTO Toplu import DTO
+     * @return Import sonuç özeti
+     */
+    @Transactional
+    public BulkProblemImportDTO.ImportResult bulkImportProblems(BulkProblemImportDTO bulkImportDTO) {
+        List<BulkProblemImportDTO.ImportError> errors = new ArrayList<>();
+        int successCount = 0;
+        int totalProblems = bulkImportDTO.getProblems().size();
+
+        for (int i = 0; i < totalProblems; i++) {
+            CreateProblemDTO problemDTO = bulkImportDTO.getProblems().get(i);
+
+            try {
+                // Her bir problemi oluştur (mevcut createProblem metodunu kullan)
+                createProblem(problemDTO);
+                successCount++;
+            } catch (Exception e) {
+                // Hata durumunda error listesine ekle
+                BulkProblemImportDTO.ImportError error = new BulkProblemImportDTO.ImportError(
+                    i,
+                    problemDTO.getTitle(),
+                    e.getMessage()
+                );
+                errors.add(error);
+            }
+        }
+
+        int failureCount = totalProblems - successCount;
+
+        return new BulkProblemImportDTO.ImportResult(
+            totalProblems,
+            successCount,
+            failureCount,
+            errors
         );
     }
 }

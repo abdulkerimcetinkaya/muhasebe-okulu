@@ -39,21 +39,30 @@ const CommonUtils = {
             'Content-Type': 'application/json',
             ...options.headers
         };
-        
+
         if (token) {
             headers['Authorization'] = `Bearer ${token}`;
         }
-        
+
         try {
             const response = await fetch(`${CommonConfig.API_URL}${endpoint}`, {
                 ...options,
                 headers
             });
-            
+
+            // 401/403 hatalarında otomatik logout
+            if (response.status === 401 || response.status === 403) {
+                console.error('Oturum süresi dolmuş veya yetkiniz yok. Çıkış yapılıyor...');
+                localStorage.clear();
+                alert('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.');
+                window.location.href = 'login.html';
+                throw new Error('Unauthorized');
+            }
+
             if (!response.ok) {
                 throw new Error(`API Error: ${response.status} - ${response.statusText}`);
             }
-            
+
             return response.json();
         } catch (error) {
             console.error('API call failed:', error);

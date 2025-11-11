@@ -6,6 +6,7 @@ import com.example.muhasebeokulu5.entities.*;
 import com.example.muhasebeokulu5.exception.ResourceNotFoundException;
 import com.example.muhasebeokulu5.exception.BadRequestException;
 import com.example.muhasebeokulu5.repository.*;
+import com.example.muhasebeokulu5.util.RankUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,6 +63,18 @@ public class SolvedProblemService {
             // Room functionality has been archived
             // Genel problemlerde sınırsız deneme hakkı var, sadece ilk doğru çözümde puan verilir
 
+            // Kullanıcının cevaplarını UserAnswer tablosuna kaydet (deneme kaydı için)
+            for (CheckSolutionRequest.EntryLine entry : request.getEntries()) {
+                UserAnswer userAnswer = new UserAnswer();
+                userAnswer.setUser(user);
+                userAnswer.setProblem(problem);
+                userAnswer.setAccountCode(entry.getAccountCode());
+                userAnswer.setDebit(entry.getDebit() != null ? entry.getDebit().doubleValue() : 0.0);
+                userAnswer.setCredit(entry.getCredit() != null ? entry.getCredit().doubleValue() : 0.0);
+                userAnswer.setDescription(""); // EntryLine'da description alanı yok
+                userAnswerRepository.save(userAnswer);
+            }
+
             boolean balanced = isBalanced(request.getEntries());
             boolean correct = isCorrect(request.getEntries(), problem.getId());
 
@@ -80,7 +93,7 @@ public class SolvedProblemService {
                 );
 
                 if (!alreadySolvedCorrectly) {
-                    // İlk doğru çözüm - puan kazan
+                    // İlk doğru çözüm - puan ve yıldız kazan
                     SolvedProblem solved = new SolvedProblem();
                     solved.setProblem(problem);
                     solved.setUser(user);
@@ -89,18 +102,50 @@ public class SolvedProblemService {
                     solved.setEarnedPoints(points);
                     solvedProblemRepository.save(solved);
 
+                    // ⭐ Yıldız Sistemi - Kazanılan puanlara göre yıldız kazan
+                    int starsEarned = RankUtil.getStarsForPoints(points);
+
+                    // 🎯 İlk denemede doğru çözüm bonusu (deneme sayısı UserAnswer'dan alınabilir)
+                    long attemptCount = userAnswerRepository.countByUserIdAndProblemId(user.getId(), problem.getId());
+                    boolean firstTry = (attemptCount == request.getEntries().size()); // İlk deneme
+                    if (firstTry) {
+                        starsEarned += RankUtil.getFirstTryBonus();
+                    }
+
+                    // Eski puan sistemini güncelle
                     user.setTotalScore(user.getTotalScore() + points);
                     user.setSolvedCount(user.getSolvedCount() + 1);
 
-                    // Streak hesaplama ve güncelleme
+                    // ⭐ Yıldızları güncelle
+                    int previousStars = user.getTotalStars();
+                    user.setTotalStars(previousStars + starsEarned);
+                    if (firstTry) {
+                        user.setBonusStars(user.getBonusStars() + RankUtil.getFirstTryBonus());
+                    }
+
+                    // 🔥 Streak hesaplama ve güncelleme
                     updateUserStreak(user);
+
+                    // 🔥 Streak bonusu yıldızları
+                    if (user.getCurrentStreak() > 0 && user.getCurrentStreak() % 7 == 0) {
+                        int streakBonus = RankUtil.getStreakBonus(user.getCurrentStreak());
+                        user.setTotalStars(user.getTotalStars() + streakBonus);
+                        user.setBonusStars(user.getBonusStars() + streakBonus);
+                    }
+
+                    // Son aktivite tarihini güncelle
+                    user.setLastActivityDate(LocalDate.now());
 
                     userRepository.save(user);
 
-                    message = "✅ Tebrikler! Problem doğru çözüldü. +" + points + " puan kazandınız!";
+                    // Unvan bilgisini al
+                    RankUtil.RankInfo rankInfo = RankUtil.getRankInfo(user.getTotalStars());
+
+                    message = String.format("✅ Tebrikler! Problem doğru çözüldü. ⭐ +%d yıldız kazandınız! (Toplam: %d ⭐ - %s %s)",
+                            starsEarned, user.getTotalStars(), rankInfo.getRankIcon(), rankInfo.getRankName());
                 } else {
-                    // Daha önce doğru çözmüş - puan yok
-                    message = "✅ Tebrikler! Problem doğru çözüldü. (Bu problemi daha önce çözdüğünüz için puan kazanmadınız)";
+                    // Daha önce doğru çözmüş - puan ve yıldız yok
+                    message = "✅ Tebrikler! Problem doğru çözüldü. (Bu problemi daha önce çözdüğünüz için yıldız kazanmadınız)";
                 }
             }
 
@@ -116,33 +161,40 @@ public class SolvedProblemService {
     }
 
     /**
-     * Kullanıcının streak bilgilerini günceller
+     * Kullanıcının streak bilgilerini günceller (Yıldız Sistemi)
      */
     private void updateUserStreak(User user) {
         LocalDate today = LocalDate.now();
-        LocalDate lastActive = user.getLastActiveDate();
-        
-        if (lastActive == null) {
+        LocalDate lastActivity = user.getLastActivityDate();
+
+        if (lastActivity == null) {
             // İlk kez problem çözüyor
+            user.setCurrentStreak(1);
+            user.setBestStreak(1);
+            // Geriye dönük uyumluluk için eski alanları da güncelle
             user.setDailyStreak(1);
             user.setMaxStreak(1);
-        } else if (lastActive.equals(today)) {
+        } else if (lastActivity.equals(today)) {
             // Bugün zaten problem çözmüş, streak değişmez
-            // Sadece lastActiveDate güncellenir
-        } else if (lastActive.equals(today.minusDays(1))) {
+            // Sadece lastActivityDate güncellenir
+        } else if (lastActivity.equals(today.minusDays(1))) {
             // Dün aktif olmuş, seri devam ediyor
+            user.setCurrentStreak(user.getCurrentStreak() + 1);
             user.setDailyStreak(user.getDailyStreak() + 1);
         } else {
             // Seri kırılmış, yeni seri başlıyor
+            user.setCurrentStreak(1);
             user.setDailyStreak(1);
         }
-        
+
         // Maksimum seri güncelleme
-        if (user.getDailyStreak() > user.getMaxStreak()) {
-            user.setMaxStreak(user.getDailyStreak());
+        if (user.getCurrentStreak() > user.getBestStreak()) {
+            user.setBestStreak(user.getCurrentStreak());
+            user.setMaxStreak(user.getCurrentStreak());
         }
-        
-        // Son aktif tarih güncelleme
+
+        // Son aktif tarih güncelleme (hem yeni hem eski alan)
+        user.setLastActivityDate(today);
         user.setLastActiveDate(today);
     }
 
@@ -231,6 +283,53 @@ public class SolvedProblemService {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Çözülen problemler getirilirken hata oluştu: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Kullanıcının istatistiklerini döndürür:
+     * - Toplam problem sayısı
+     * - Çözülen problem sayısı
+     * - Denenen problem sayısı
+     * - Başarı oranı (çözülen / denenen * 100)
+     */
+    public com.example.muhasebeokulu5.dto.UserStatsDTO getUserStatistics(UUID userId) {
+        try {
+            if (userId == null) {
+                throw new BadRequestException("Kullanıcı ID boş olamaz");
+            }
+
+            // Toplam problem sayısı
+            long totalProblems = problemRepository.count();
+
+            // Kullanıcının doğru çözdüğü problem sayısı
+            long solvedProblems = solvedProblemRepository.countByUserId(userId);
+
+            // Kullanıcının denediği (en az 1 cevap gönderdiği) problem sayısı
+            long attemptedProblems = userAnswerRepository.countDistinctProblemsByUserId(userId);
+
+            // ÖNEMLI: Denenen problem sayısı, çözülen problem sayısından az olamaz
+            // (Çünkü bir problem çözülmüşse mutlaka denenmiştir)
+            if (attemptedProblems < solvedProblems) {
+                attemptedProblems = solvedProblems;
+            }
+
+            // Başarı oranı hesaplama (division by zero kontrolü)
+            int successRate = attemptedProblems > 0
+                ? (int) Math.round((solvedProblems * 100.0) / attemptedProblems)
+                : 0;
+
+            return new com.example.muhasebeokulu5.dto.UserStatsDTO(
+                totalProblems,
+                solvedProblems,
+                attemptedProblems,
+                successRate
+            );
+
+        } catch (BadRequestException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Kullanıcı istatistikleri getirilirken hata oluştu: " + e.getMessage(), e);
         }
     }
 

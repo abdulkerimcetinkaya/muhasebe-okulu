@@ -3,7 +3,9 @@
  * Tailwind CSS ile birlikte kullanılacak custom stiller
  */
 
-/* Root variables */
+/* ===========================
+   Theme Variables - Light Mode
+   =========================== */
 :root {
     --primary-color: #3b82f6;
     --primary-dark: #2563eb;
@@ -19,6 +21,39 @@
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+/* ===========================
+   Theme Variables - Dark Mode
+   =========================== */
+.dark {
+    --primary-color: #60a5fa;
+    --primary-dark: #3b82f6;
+    --secondary-color: #94a3b8;
+    --success-color: #34d399;
+    --error-color: #f87171;
+    --warning-color: #fbbf24;
+    --background-color: #0f172a;
+    --card-background: #1e293b;
+    --text-primary: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --border-color: #334155;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.5), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+}
+
+/* ===========================
+   Theme Transition Styles
+   =========================== */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *:before,
+html.theme-transitioning *:after {
+    transition: background-color 300ms ease-in-out,
+                border-color 300ms ease-in-out,
+                color 300ms ease-in-out !important;
+    transition-delay: 0s !important;
 }
 
 /* Base styles */
@@ -264,13 +299,25 @@ body {
     border-radius: 3px;
 }
 
+.dark .custom-scrollbar::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
 .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #c1c1c1;
     border-radius: 3px;
 }
 
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #475569;
+}
+
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background: #a8a8a8;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
 }
 
 /* Focus styles for accessibility */

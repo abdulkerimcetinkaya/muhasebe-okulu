@@ -1,5 +1,6 @@
 package com.example.muhasebeokulu5.controller;
 
+import com.example.muhasebeokulu5.dto.BulkQuestionImportDTO;
 import com.example.muhasebeokulu5.dto.QuestionDTO;
 import com.example.muhasebeokulu5.dto.QuizDTO;
 import com.example.muhasebeokulu5.dto.TopicDTO;
@@ -121,5 +122,12 @@ public class AdminQuizController {
     public ResponseEntity<Void> deleteQuestion(@PathVariable Long id) {
         quizService.deleteQuestion(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/questions/bulk")
+    public ResponseEntity<BulkQuestionImportDTO.ImportResult> bulkImportQuestions(
+            @Valid @RequestBody BulkQuestionImportDTO bulkImportDTO) {
+        BulkQuestionImportDTO.ImportResult result = quizService.bulkImportQuestions(bulkImportDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 }

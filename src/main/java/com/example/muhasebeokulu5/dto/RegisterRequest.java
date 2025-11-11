@@ -21,9 +21,8 @@ public class RegisterRequest {
     @NotBlank(message = "Şifre onayı boş olamaz")
     private String confirmPassword;
 
-    @NotBlank(message = "Rol seçimi zorunludur")
-    @Pattern(regexp = "USER|ADMIN|TEACHER", message = "Rol sadece USER, ADMIN veya TEACHER olabilir")
-    private String role; // "USER", "ADMIN" veya "TEACHER"
+    // Rol backend'de otomatik USER olarak atanacak
+    // ADMIN rolü sadece veritabanından manuel olarak atanabilir
 
     // Temel kişisel bilgiler
     @NotBlank(message = "Ad boş olamaz")

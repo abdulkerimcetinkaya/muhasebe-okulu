@@ -72,4 +72,20 @@ public class SolvedProblemController {
         boolean alreadySubmitted = solvedProblemService.hasUserSubmitted(userId, problemId);
         return ResponseEntity.ok(Map.of("alreadySubmitted", alreadySubmitted));
     }
+
+    /**
+     * Kullanıcının istatistiklerini döndürür
+     * GET /api/solved-problems/stats/{userId}
+     */
+    @GetMapping("/stats/{userId}")
+    public ResponseEntity<?> getUserStats(@PathVariable UUID userId) {
+        try {
+            var stats = solvedProblemService.getUserStatistics(userId);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(
+                Map.of("error", e.getMessage())
+            );
+        }
+    }
 }

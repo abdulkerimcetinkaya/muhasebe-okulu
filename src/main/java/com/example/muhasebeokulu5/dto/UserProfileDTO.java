@@ -41,8 +41,8 @@ public class UserProfileDTO {
     private Integer maxStreak;
     private LocalDate lastActiveDate;
     private Integer totalTimeSpent;
-    private Integer badgeCount;
-    private String badges;
+    private Integer badgeCount;          // Deprecated: rozet sistemi kaldırıldı
+    private String badges;                // Deprecated: rozet sistemi kaldırıldı
 
     // Tercihler
     private String preferredLanguage;

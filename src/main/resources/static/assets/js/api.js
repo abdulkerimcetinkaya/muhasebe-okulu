@@ -118,18 +118,32 @@ window.ApiService = ApiService;
 
 // Generic REST API Service for quiz and other modules
 const APIService = {
-    get: (url) => {
-        return fetch(`http://localhost:8080${url}`, {
+    // Global error handler for 401/403 responses
+    handleResponse: async (response) => {
+        if (response.status === 401 || response.status === 403) {
+            // Oturum süresi dolmuş veya yetki yok
+            console.error('Oturum süresi dolmuş veya yetkiniz yok. Çıkış yapılıyor...');
+            localStorage.clear();
+            alert('Oturum süreniz dolmuş. Lütfen tekrar giriş yapın.');
+            window.location.href = 'login.html';
+            throw new Error('Unauthorized');
+        }
+        return response;
+    },
+
+    get: async (url) => {
+        const response = await fetch(`http://localhost:8080${url}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
+        return await APIService.handleResponse(response);
     },
 
-    post: (url, data) => {
-        return fetch(`http://localhost:8080${url}`, {
+    post: async (url, data) => {
+        const response = await fetch(`http://localhost:8080${url}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -137,10 +151,11 @@ const APIService = {
             },
             body: JSON.stringify(data)
         });
+        return await APIService.handleResponse(response);
     },
 
-    put: (url, data) => {
-        return fetch(`http://localhost:8080${url}`, {
+    put: async (url, data) => {
+        const response = await fetch(`http://localhost:8080${url}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -148,16 +163,18 @@ const APIService = {
             },
             body: JSON.stringify(data)
         });
+        return await APIService.handleResponse(response);
     },
 
-    delete: (url) => {
-        return fetch(`http://localhost:8080${url}`, {
+    delete: async (url) => {
+        const response = await fetch(`http://localhost:8080${url}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
+        return await APIService.handleResponse(response);
     }
 };
 

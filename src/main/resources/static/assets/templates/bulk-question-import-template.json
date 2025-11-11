@@ -1,0 +1,31 @@
+{
+  "quizId": 1,
+  "questions": [
+    {
+      "questionText": "Dönem sonu düzeltme kayıtları ile ilgili aşağıdakilerden hangisi doğrudur?",
+      "points": 10,
+      "options": [
+        {
+          "optionText": "Sadece gelir-gider hesaplarını ilgilendirir",
+          "isCorrect": false,
+          "optionOrder": 1
+        },
+        {
+          "optionText": "Tahakkuk esasına uygun kayıt yapılmasını sağlar",
+          "isCorrect": true,
+          "optionOrder": 2
+        },
+        {
+          "optionText": "İsteğe bağlı olarak yapılabilir",
+          "isCorrect": false,
+          "optionOrder": 3
+        },
+        {
+          "optionText": "Sadece büyük şirketler için gereklidir",
+          "isCorrect": false,
+          "optionOrder": 4
+        }
+      ]
+    }
+  ]
+}

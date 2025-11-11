@@ -1,0 +1,19 @@
+{
+  "problems": [
+    {
+      "title": "",
+      "content": "",
+      "hint": "",
+      "tags": "",
+      "difficulty": "EASY",
+      "correctEntries": [
+        {
+          "accountCode": "",
+          "accountName": "",
+          "debitAmount": 0,
+          "creditAmount": 0
+        }
+      ]
+    }
+  ]
+}

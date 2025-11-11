@@ -1,0 +1,437 @@
+/**
+ * Admin Panel Styles
+ * Utility classes for admin UI components
+ */
+
+/* Button Styles */
+.btn-primary {
+    @apply bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center gap-2 font-medium;
+}
+
+.btn-secondary {
+    @apply bg-slate-100 text-slate-700 px-4 py-2 rounded-lg hover:bg-slate-200 transition-colors font-medium;
+}
+
+.btn-success {
+    @apply bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 font-medium;
+}
+
+.btn-danger {
+    @apply bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors font-medium;
+}
+
+.btn-sm {
+    @apply text-sm px-3 py-1.5;
+}
+
+.btn-icon {
+    @apply p-2 rounded-lg transition-colors flex items-center justify-center;
+}
+
+.btn-icon-primary {
+    @apply text-indigo-600 hover:bg-indigo-50;
+}
+
+.btn-icon-success {
+    @apply text-green-600 hover:bg-green-50;
+}
+
+.btn-icon-danger {
+    @apply text-red-600 hover:bg-red-50;
+}
+
+.btn-icon-secondary {
+    @apply text-slate-600 hover:bg-slate-100;
+}
+
+.btn-icon-sm {
+    @apply p-1 text-xs;
+}
+
+/* Input Styles */
+.input-field {
+    @apply w-full px-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 9999 !important;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    z-index: 10000 !important;
+}
+
+.modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background-color: white;
+    z-index: 10001 !important;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.modal-close {
+    color: #94a3b8;
+    transition: color 0.15s;
+}
+
+.modal-close:hover {
+    color: #475569;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+/* Block Editor Styles */
+.simple-block-editor {
+    position: relative;
+}
+
+.block-wrapper {
+    position: relative;
+    margin-bottom: 0.25rem;
+}
+
+.block-content {
+    min-height: 32px;
+}
+
+.block-content:empty::before {
+    content: attr(data-placeholder);
+    color: #94a3b8;
+    pointer-events: none;
+}
+
+.block-content:focus {
+    outline: none;
+}
+
+.block-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+/* Table Styles in Block Editor */
+.block-content table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.block-content table td {
+    border: 1px solid #cbd5e1;
+    padding: 0.5rem;
+    min-width: 60px;
+}
+
+.block-content table td:focus {
+    outline: 2px solid #6366f1;
+    outline-offset: -2px;
+}
+
+/* Slash Menu Styles */
+#slash-menu {
+    animation: slideDown 0.15s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Utility Classes */
+.card {
+    @apply bg-white border border-slate-200 rounded-lg p-4;
+}
+
+.card-hover {
+    @apply hover:shadow-md transition-shadow;
+}
+
+.divider {
+    @apply border-t border-slate-200 my-4;
+}
+
+.badge {
+    @apply px-2 py-1 text-xs font-medium rounded;
+}
+
+.badge-primary {
+    @apply bg-indigo-100 text-indigo-700;
+}
+
+.badge-success {
+    @apply bg-green-100 text-green-700;
+}
+
+.badge-warning {
+    @apply bg-yellow-100 text-yellow-700;
+}
+
+.badge-danger {
+    @apply bg-red-100 text-red-700;
+}
+
+/* Loading Spinner */
+.spinner {
+    @apply inline-block w-5 h-5 border-2 border-slate-300 border-t-indigo-600 rounded-full animate-spin;
+}
+
+/* Toast Notifications (if needed) */
+.toast {
+    @apply fixed top-4 right-4 bg-white border border-slate-200 rounded-lg shadow-lg p-4 z-50 max-w-sm;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.toast-success {
+    @apply border-green-500 bg-green-50;
+}
+
+.toast-error {
+    @apply border-red-500 bg-red-50;
+}
+
+.toast-info {
+    @apply border-blue-500 bg-blue-50;
+}
+
+.toast-warning {
+    @apply border-yellow-500 bg-yellow-50;
+}
+
+/* Study Card Selector Styles - Modern Dropdown */
+.study-card-dropdown {
+    @apply w-full px-4 py-3 pr-10 bg-white border-2 border-gray-200 rounded-lg text-sm font-medium text-gray-900 appearance-none cursor-pointer transition-all duration-200;
+}
+
+.study-card-dropdown:hover {
+    @apply border-indigo-300 bg-gray-50;
+}
+
+.study-card-dropdown:focus {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2 border-indigo-500 bg-white;
+}
+
+.study-card-dropdown option {
+    @apply py-2;
+}
+
+/* Rich Text Editor Content Styles */
+.editor-content {
+    line-height: 1.75;
+    color: #1e293b;
+}
+
+/* Headings */
+.editor-content h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: #0f172a;
+}
+
+.editor-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-top: 1.25rem;
+    margin-bottom: 0.875rem;
+    color: #1e293b;
+}
+
+.editor-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-top: 1rem;
+    margin-bottom: 0.75rem;
+    color: #334155;
+}
+
+/* Paragraphs */
+.editor-content p {
+    margin-bottom: 1rem;
+}
+
+/* Lists */
+.editor-content ul,
+.editor-content ol {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+    padding-left: 0.5rem;
+}
+
+.editor-content ul {
+    list-style-type: disc;
+}
+
+.editor-content ol {
+    list-style-type: decimal;
+}
+
+.editor-content li {
+    margin-bottom: 0.5rem;
+    line-height: 1.75;
+}
+
+.editor-content ul ul,
+.editor-content ol ol,
+.editor-content ul ol,
+.editor-content ol ul {
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Nested lists */
+.editor-content ul ul {
+    list-style-type: circle;
+}
+
+.editor-content ul ul ul {
+    list-style-type: square;
+}
+
+/* Bold, Italic, Underline */
+.editor-content strong,
+.editor-content b {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.editor-content em,
+.editor-content i {
+    font-style: italic;
+}
+
+.editor-content u {
+    text-decoration: underline;
+}
+
+/* Code blocks */
+.editor-content pre {
+    background-color: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+}
+
+.editor-content code {
+    background-color: #f1f5f9;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.875rem;
+}
+
+.editor-content pre code {
+    background-color: transparent;
+    padding: 0;
+    display: block;
+}
+
+/* Blockquotes */
+.editor-content blockquote {
+    border-left: 4px solid #6366f1;
+    padding-left: 1rem;
+    margin: 1rem 0;
+    font-style: italic;
+    color: #475569;
+}
+
+/* Tables */
+.editor-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+}
+
+.editor-content table td,
+.editor-content table th {
+    border: 1px solid #cbd5e1;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.editor-content table th {
+    background-color: #f8fafc;
+    font-weight: 600;
+}
+
+.editor-content table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* Horizontal rules */
+.editor-content hr {
+    border: none;
+    border-top: 2px solid #e2e8f0;
+    margin: 2rem 0;
+}
+
+/* Links */
+.editor-content a {
+    color: #6366f1;
+    text-decoration: underline;
+}
+
+.editor-content a:hover {
+    color: #4f46e5;
+}
+
+/* Placeholder */
+.editor-content:empty::before {
+    content: attr(data-placeholder);
+    color: #94a3b8;
+    pointer-events: none;
+    font-style: italic;
+}
+
+/* Focus state */
+.editor-content:focus {
+    outline: none;
+}

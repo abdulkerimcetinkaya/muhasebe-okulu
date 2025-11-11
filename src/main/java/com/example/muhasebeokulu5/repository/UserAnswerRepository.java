@@ -22,4 +22,17 @@ public interface UserAnswerRepository extends JpaRepository<UserAnswer, UUID> {
      */
     @Query("SELECT ua FROM UserAnswer ua WHERE ua.user.id = :userId AND ua.problem.id = :problemId ORDER BY ua.answerTime DESC")
     List<UserAnswer> findByUserIdAndProblemIdOrderByAnswerTimeDesc(@Param("userId") UUID userId, @Param("problemId") Long problemId);
+
+    /**
+     * Bir kullanıcının denediği (en az bir cevap gönderdiği) farklı problem sayısını döndürür
+     */
+    @Query("SELECT COUNT(DISTINCT ua.problem.id) FROM UserAnswer ua WHERE ua.user.id = :userId")
+    long countDistinctProblemsByUserId(@Param("userId") UUID userId);
+
+    /**
+     * Belirli bir kullanıcının belirli bir problem için kaç cevap gönderdiğini sayar
+     * İlk deneme bonusu hesabı için kullanılır
+     */
+    @Query("SELECT COUNT(ua) FROM UserAnswer ua WHERE ua.user.id = :userId AND ua.problem.id = :problemId")
+    long countByUserIdAndProblemId(@Param("userId") UUID userId, @Param("problemId") Long problemId);
 }

@@ -1,19 +1,22 @@
 package com.example.muhasebeokulu5.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "quizzes")
-@Data
+@Getter
+@Setter
+@ToString(exclude = {"questions", "userQuizAnswers"})
+@EqualsAndHashCode(exclude = {"questions", "userQuizAnswers"})
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties({"questions", "userQuizAnswers", "hibernateLazyInitializer", "handler"})
 public class Quiz {
 
     @Id
@@ -52,10 +55,10 @@ public class Quiz {
     private LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Question> questions = new ArrayList<>();
+    private Set<Question> questions = new HashSet<>();
 
     @OneToMany(mappedBy = "quiz", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserQuizAnswer> userQuizAnswers = new ArrayList<>();
+    private Set<UserQuizAnswer> userQuizAnswers = new HashSet<>();
 
     @PrePersist
     protected void onCreate() {

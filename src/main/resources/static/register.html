@@ -5,7 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MuhasebeOkulu — Kayıt Ol</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Theme initialization -->
+    <script src="/assets/js/utils/theme.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {} }
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
@@ -13,13 +23,13 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     
     <!-- Ortak CSS -->
-    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
-    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
     
     <!-- Ortak JS -->
-    <script src="http://localhost:8080/assets/js/common.js"></script>
-    <script src="http://localhost:8080/assets/js/api.js"></script>
-    <script src="http://localhost:8080/assets/js/auth.js"></script>
+    <script src="/assets/js/common.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth.js"></script>
     <style>
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -27,14 +37,11 @@
     </style>
 </head>
 
-<body class="bg-slate-50 text-slate-800 antialiased scroll-smooth">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased scroll-smooth">
     <div class="relative min-h-screen flex flex-col">
         <!-- Arka Plan Deseni -->
         <div
             class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem]">
-            <div
-                class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(circle_520px_at_50%_180px,#DDE3FF,#F3F4F6,transparent)] opacity-90">
-            </div>
         </div>
 
         <main class="relative z-10 flex-1">
@@ -130,22 +137,6 @@
                                             aria-label="Şifreyi göster/gizle">
                                             <i data-lucide="eye" class="w-4.5 h-4.5" style="stroke-width:1.5;"></i>
                                         </button>
-                                    </div>
-                                </div>
-
-                                <!-- Rol Seçimi -->
-                                <div>
-                                    <label for="role" class="block text-sm font-medium text-slate-700">Rol</label>
-                                    <div class="mt-1.5 relative">
-                                        <i data-lucide="shield"
-                                            class="absolute left-3 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-slate-500 pointer-events-none"
-                                            style="stroke-width:1.5;"></i>
-                                        <select id="role" name="role"
-                                            class="w-full rounded-lg border border-slate-200 bg-white px-9 py-2.5 text-sm text-slate-900 outline-none transition-all focus:ring-2 focus:ring-slate-300 focus:border-slate-300 hover:border-slate-300">
-                                            <option value="USER">Öğrenci</option>
-                                            <option value="TEACHER">Öğretmen</option>
-                                            <option value="ADMIN">Yönetici</option>
-                                        </select>
                                     </div>
                                 </div>
 
@@ -250,7 +241,6 @@
             const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
             const confirmPassword = document.getElementById("confirmPassword").value;
-            const role = document.getElementById("role").value;
 
             // Validasyon
             if (!firstName || !lastName || !email || !password || !confirmPassword) {
@@ -284,8 +274,7 @@
                         lastName,
                         email,
                         password,
-                        confirmPassword,
-                        role
+                        confirmPassword
                     })
                 });
 
@@ -302,7 +291,7 @@
                     id: data.id,
                     username: data.username,
                     role: data.role,
-                    firstName: firstName,
+                    firstName: data.firstName,
                     lastName: lastName,
                     email: email
                 }));

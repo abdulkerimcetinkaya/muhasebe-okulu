@@ -19,6 +19,10 @@ const itemsPerPage = 15;
 let totalPages = 1;
 let allProblems = [];
 
+// Filter state
+let currentDifficulty = '';
+let currentStatus = '';
+
 // ===========================
 // INITIALIZATION
 // ===========================
@@ -35,6 +39,13 @@ async function initProblemsPage() {
 
     // Setup navbar based on role
     setupNavbarByRole();
+
+    // Load user stats if logged in
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+        document.getElementById('statsSection').classList.remove('hidden');
+        await loadUserStats();
+    }
 
     // Load problems
     await loadProblems();
@@ -131,15 +142,51 @@ function setupNavbarByRole() {
  */
 function setupEventListeners() {
     document.getElementById('searchInput').addEventListener('input', debounce(filterProblems, 300));
-    document.getElementById('difficultyFilter').addEventListener('change', filterProblems);
-    document.getElementById('statusFilter').addEventListener('change', filterProblems);
     document.getElementById('sortFilter').addEventListener('change', filterProblems);
-    document.getElementById('clearFilters').addEventListener('click', clearFilters);
 }
 
 // ===========================
 // DATA LOADING
 // ===========================
+
+/**
+ * Load user statistics
+ */
+async function loadUserStats() {
+    try {
+        const token = localStorage.getItem('token');
+        const storedUser = localStorage.getItem('user');
+        if (!token || !storedUser) return;
+
+        const user = JSON.parse(storedUser);
+        const userId = user.id;
+
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
+
+        // Fetch user statistics from the new endpoint
+        const response = await fetch(`${API_URL}/solved-problems/stats/${userId}`, {
+            method: 'GET',
+            headers: headers
+        });
+
+        if (!response.ok) throw new Error('İstatistikler yüklenemedi');
+
+        const stats = await response.json();
+
+        // Update stats
+        document.getElementById('statTotalProblems').textContent = stats.totalProblems;
+        document.getElementById('statSolved').textContent = stats.solvedProblems;
+        document.getElementById('statAttempted').textContent = stats.attemptedProblems;
+        document.getElementById('statSuccessRate').textContent = stats.successRate;
+
+        lucide.createIcons();
+    } catch (error) {
+        console.error('İstatistik yükleme hatası:', error);
+    }
+}
 
 /**
  * Load problems from API
@@ -266,13 +313,60 @@ async function loadProblemsWithFilters(page = 0, search = '', difficulty = '', s
 // ===========================
 
 /**
+ * Set difficulty filter and update UI
+ * @param {string} difficulty - Difficulty level (EASY, MEDIUM, HARD, or empty)
+ */
+function setDifficultyFilter(difficulty) {
+    currentDifficulty = difficulty;
+
+    // Update button states
+    document.querySelectorAll('#diffAll, #diffEasy, #diffMedium, #diffHard').forEach(btn => {
+        btn.classList.remove('active', 'bg-slate-800', 'dark:bg-slate-700', 'text-white', 'border-slate-800', 'dark:border-slate-700');
+        btn.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300', 'border-slate-300', 'dark:border-slate-700');
+    });
+
+    let activeBtn;
+    if (difficulty === 'EASY') activeBtn = document.getElementById('diffEasy');
+    else if (difficulty === 'MEDIUM') activeBtn = document.getElementById('diffMedium');
+    else if (difficulty === 'HARD') activeBtn = document.getElementById('diffHard');
+    else activeBtn = document.getElementById('diffAll');
+
+    activeBtn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300', 'border-slate-300', 'dark:border-slate-700');
+    activeBtn.classList.add('active', 'bg-slate-800', 'dark:bg-slate-700', 'text-white', 'border-slate-800', 'dark:border-slate-700');
+
+    filterProblems();
+}
+
+/**
+ * Set status filter and update UI
+ * @param {string} status - Status (solved, unsolved, or empty)
+ */
+function setStatusFilter(status) {
+    currentStatus = status;
+
+    // Update button states
+    document.querySelectorAll('#statusAll, #statusSolved, #statusUnsolved').forEach(btn => {
+        btn.classList.remove('active', 'bg-slate-800', 'dark:bg-slate-700', 'text-white', 'border-slate-800', 'dark:border-slate-700');
+        btn.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300', 'border-slate-300', 'dark:border-slate-700');
+    });
+
+    let activeBtn;
+    if (status === 'solved') activeBtn = document.getElementById('statusSolved');
+    else if (status === 'unsolved') activeBtn = document.getElementById('statusUnsolved');
+    else activeBtn = document.getElementById('statusAll');
+
+    activeBtn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-300', 'border-slate-300', 'dark:border-slate-700');
+    activeBtn.classList.add('active', 'bg-slate-800', 'dark:bg-slate-700', 'text-white', 'border-slate-800', 'dark:border-slate-700');
+
+    filterProblems();
+}
+
+/**
  * Filter problems based on user input
  * Reads filter values and triggers filtered API request
  */
 function filterProblems() {
     const searchTerm = document.getElementById('searchInput').value;
-    const difficulty = document.getElementById('difficultyFilter').value;
-    const status = document.getElementById('statusFilter').value;
     const sortBy = document.getElementById('sortFilter').value;
 
     // Prepare sort parameter
@@ -287,74 +381,8 @@ function filterProblems() {
         sortParam = 'title,asc';
     }
 
-    // Update active filter count
-    updateActiveFilters(searchTerm, difficulty, status);
-
     // Load problems with filters
-    loadProblemsWithFilters(0, searchTerm, difficulty, status, sortParam);
-}
-
-/**
- * Clear all filters
- */
-function clearFilters() {
-    document.getElementById('searchInput').value = '';
-    document.getElementById('difficultyFilter').value = '';
-    document.getElementById('statusFilter').value = '';
-    document.getElementById('sortFilter').value = 'newest';
-    updateActiveFilters('', '', '');
-    loadProblems();
-}
-
-/**
- * Update active filter tags display
- * @param {string} search - Search term
- * @param {string} difficulty - Difficulty level
- * @param {string} status - Status filter
- */
-function updateActiveFilters(search, difficulty, status) {
-    const filterCount = document.getElementById('filterCount');
-    const activeFilters = document.getElementById('activeFilters');
-    const activeFilterTags = document.getElementById('activeFilterTags');
-
-    let count = 0;
-    let tags = [];
-
-    if (search) {
-        count++;
-        tags.push(`<span class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-700 rounded-md text-xs">
-            <i data-lucide="search" class="w-3 h-3"></i>
-            ${search}
-        </span>`);
-    }
-
-    if (difficulty) {
-        count++;
-        const diffText = difficulty === 'EASY' ? '🟢 Kolay' : difficulty === 'MEDIUM' ? '🟡 Orta' : '🔴 Zor';
-        tags.push(`<span class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-700 rounded-md text-xs">
-            ${diffText}
-        </span>`);
-    }
-
-    if (status) {
-        count++;
-        const statusText = status === 'solved' ? '✓ Çözülmüş' : '○ Çözülmemiş';
-        tags.push(`<span class="inline-flex items-center gap-1 px-2 py-1 bg-slate-100 text-slate-700 rounded-md text-xs">
-            ${statusText}
-        </span>`);
-    }
-
-    if (count > 0) {
-        filterCount.textContent = count;
-        filterCount.classList.remove('hidden');
-        activeFilters.classList.remove('hidden');
-        activeFilterTags.innerHTML = tags.join('');
-        lucide.createIcons();
-    } else {
-        filterCount.classList.add('hidden');
-        activeFilters.classList.add('hidden');
-        activeFilterTags.innerHTML = '';
-    }
+    loadProblemsWithFilters(0, searchTerm, currentDifficulty, currentStatus, sortParam);
 }
 
 // ===========================
@@ -401,61 +429,85 @@ function createProblemCard(problem) {
     // Check if problem is solved
     const isSolved = problem.solved === true || problem.solved === 'true' || problem.solved === 1;
 
-    const cardClass = isSolved ?
-        'rounded-lg border border-slate-200 bg-slate-50 shadow-sm overflow-hidden opacity-60' :
-        'rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden hover:shadow-md transition-shadow';
+    const cardClass = 'problem-card bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 rounded-xl shadow-sm overflow-hidden';
 
     const solvedBadge = isSolved ? `
-        <div class="inline-flex items-center gap-1 px-1.5 py-0.5 bg-green-100 text-green-800 rounded-full text-xs font-medium mb-1">
-            <i data-lucide="check-circle" class="w-2.5 h-2.5" style="stroke-width:2;"></i>
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-semibold">
+            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i>
             Çözüldü
-        </div>
+        </span>
     ` : '';
 
+    // Difficulty badge - dashboard style with dark mode
+    const difficultyBadges = {
+        'EASY': {
+            class: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
+            text: 'Kolay'
+        },
+        'MEDIUM': {
+            class: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400',
+            text: 'Orta'
+        },
+        'HARD': {
+            class: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400',
+            text: 'Zor'
+        }
+    };
+
+    const diffBadge = difficultyBadges[problem.difficulty] || difficultyBadges['MEDIUM'];
+
     const buttonHTML = isSolved ? `
-        <button onclick="startProblem(${problem.id})" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors border border-slate-300">
-            <i data-lucide="refresh-cw" class="w-3.5 h-3.5" style="stroke-width:1.5;"></i>
+        <button onclick="startProblem(${problem.id})" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">
+            <i data-lucide="refresh-cw" class="w-4 h-4"></i>
             Tekrar Çöz
         </button>
     ` : `
-        <button onclick="startProblem(${problem.id})" class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors">
-            <i data-lucide="play" class="w-3.5 h-3.5" style="stroke-width:1.5;"></i>
+        <button onclick="startProblem(${problem.id})" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 rounded-lg transition-colors">
+            <i data-lucide="play" class="w-4 h-4"></i>
             Çözmeye Başla
         </button>
     `;
 
     return `
     <div class="${cardClass}">
-        <div class="p-4">
-            <div class="flex items-start justify-between">
-                <div class="flex-1">
-                    ${solvedBadge}
-                    <div class="flex items-center gap-2 mb-1">
-                        <h3 class="text-base font-semibold ${isSolved ? 'text-slate-500' : 'text-slate-900'}">${problem.title}</h3>
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            problem.difficulty === 'EASY' ? 'bg-green-100 text-green-800' :
-                            problem.difficulty === 'MEDIUM' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-red-100 text-red-800'
-                        }">
-                            ${problem.difficulty === 'EASY' ? 'Kolay' :
-                              problem.difficulty === 'MEDIUM' ? 'Orta' : 'Zor'}
+        <div class="p-5">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex-1 min-w-0">
+                    <!-- Badges -->
+                    <div class="flex items-center gap-2 mb-3">
+                        ${solvedBadge}
+                        <span class="inline-flex items-center px-2.5 py-1 ${diffBadge.class} rounded-full text-xs font-semibold">
+                            ${diffBadge.text}
                         </span>
                     </div>
-                    <p class="${isSolved ? 'text-slate-500' : 'text-slate-600'} text-sm mb-2 line-clamp-1">${problem.content}</p>
-                    <div class="flex items-center gap-3 text-xs text-slate-500">
+
+                    <!-- Title -->
+                    <h3 class="text-base font-semibold ${isSolved ? 'text-slate-500 dark:text-slate-500' : 'text-slate-900 dark:text-slate-100'} mb-2">
+                        ${problem.title}
+                    </h3>
+
+                    <!-- Description -->
+                    <p class="${isSolved ? 'text-slate-400 dark:text-slate-500' : 'text-slate-600 dark:text-slate-400'} text-sm mb-3 line-clamp-2">
+                        ${problem.content}
+                    </p>
+
+                    <!-- Metadata -->
+                    <div class="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
                         <span class="flex items-center gap-1">
-                            <i data-lucide="clock" class="w-3.5 h-3.5" style="stroke-width:1.5;"></i>
+                            <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
                             ${new Date(problem.createdAt).toLocaleDateString('tr-TR')}
                         </span>
                         ${problem.tags ? `
                             <span class="flex items-center gap-1">
-                                <i data-lucide="tag" class="w-3.5 h-3.5" style="stroke-width:1.5;"></i>
+                                <i data-lucide="tag" class="w-3.5 h-3.5"></i>
                                 ${problem.tags}
                             </span>
                         ` : ''}
                     </div>
                 </div>
-                <div class="ml-4 flex items-center">
+
+                <!-- Action button -->
+                <div class="flex-shrink-0">
                     ${buttonHTML}
                 </div>
             </div>
@@ -471,8 +523,8 @@ function displayEmptyState() {
     const problemsList = document.getElementById('problemsList');
     problemsList.innerHTML = `
         <div class="text-center py-12">
-            <i data-lucide="search" class="w-12 h-12 text-slate-400 mx-auto mb-4"></i>
-            <p class="text-slate-600">Arama kriterlerinize uygun problem bulunamadı.</p>
+            <i data-lucide="search" class="w-12 h-12 text-slate-400 dark:text-slate-600 mx-auto mb-4"></i>
+            <p class="text-slate-600 dark:text-slate-400">Arama kriterlerinize uygun problem bulunamadı.</p>
         </div>
     `;
     lucide.createIcons();
@@ -484,8 +536,8 @@ function displayEmptyState() {
 function displayErrorState() {
     document.getElementById('problemsList').innerHTML = `
         <div class="text-center py-12">
-            <i data-lucide="alert-circle" class="w-12 h-12 text-slate-400 mx-auto mb-4"></i>
-            <p class="text-slate-600">Problemler yüklenirken bir hata oluştu.</p>
+            <i data-lucide="alert-circle" class="w-12 h-12 text-slate-400 dark:text-slate-600 mx-auto mb-4"></i>
+            <p class="text-slate-600 dark:text-slate-400">Problemler yüklenirken bir hata oluştu.</p>
         </div>
     `;
     lucide.createIcons();
@@ -521,7 +573,7 @@ function updatePagination() {
     // Previous page button
     if (currentPage > 1) {
         paginationHTML += `
-            <button onclick="changePage(${currentPage - 1})" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition-colors">
+            <button onclick="changePage(${currentPage - 1})" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                 <i data-lucide="chevron-left" class="w-4 h-4" style="stroke-width:1.5;"></i>
                 Önceki
             </button>
@@ -536,8 +588,8 @@ function updatePagination() {
         paginationHTML += `
             <button onclick="changePage(${i})" class="px-3 py-2 text-sm font-medium rounded-md transition-colors ${
                 i === currentPage
-                    ? 'bg-slate-800 text-white'
-                    : 'text-slate-700 bg-white border border-slate-300 hover:bg-slate-50'
+                    ? 'bg-slate-800 dark:bg-slate-700 text-white'
+                    : 'text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
             }">
                 ${i}
             </button>
@@ -547,7 +599,7 @@ function updatePagination() {
     // Next page button
     if (currentPage < totalPages) {
         paginationHTML += `
-            <button onclick="changePage(${currentPage + 1})" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-md hover:bg-slate-50 transition-colors">
+            <button onclick="changePage(${currentPage + 1})" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors">
                 Sonraki
                 <i data-lucide="chevron-right" class="w-4 h-4" style="stroke-width:1.5;"></i>
             </button>
@@ -564,8 +616,6 @@ function updatePagination() {
  */
 function changePage(page) {
     const searchTerm = document.getElementById('searchInput').value;
-    const difficulty = document.getElementById('difficultyFilter').value;
-    const status = document.getElementById('statusFilter').value;
     const sortBy = document.getElementById('sortFilter').value;
 
     // Prepare sort parameter
@@ -580,7 +630,7 @@ function changePage(page) {
         sortParam = 'title,asc';
     }
 
-    loadProblemsWithFilters(page - 1, searchTerm, difficulty, status, sortParam);
+    loadProblemsWithFilters(page - 1, searchTerm, currentDifficulty, currentStatus, sortParam);
 }
 
 // ===========================
@@ -633,25 +683,25 @@ function showNotification(problemId) {
     toast.className = 'fixed bottom-6 left-6 right-6 sm:left-auto sm:right-6 sm:max-w-sm z-50 notification-slide-up';
 
     toast.innerHTML = `
-        <div class="bg-white rounded-xl shadow-2xl border border-slate-200 p-4 flex items-center gap-3">
+        <div class="bg-white dark:bg-slate-800 rounded-xl shadow-2xl border border-slate-200 dark:border-slate-700 p-4 flex items-center gap-3">
             <div class="flex-shrink-0">
-                <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
-                    <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600"></i>
+                <div class="w-10 h-10 bg-amber-100 dark:bg-amber-900/30 rounded-full flex items-center justify-center">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 dark:text-amber-400"></i>
                 </div>
             </div>
             <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-semibold text-slate-900 mb-1">Giriş Gerekli</h4>
-                <p class="text-xs text-slate-600 mb-3">Problemleri çözmek için kayıt olun veya giriş yapın.</p>
+                <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100 mb-1">Giriş Gerekli</h4>
+                <p class="text-xs text-slate-600 dark:text-slate-400 mb-3">Problemleri çözmek için kayıt olun veya giriş yapın.</p>
                 <div class="flex gap-2">
-                    <button onclick="goToLogin(${problemId})" class="px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                    <button onclick="goToLogin(${problemId})" class="px-3 py-1.5 text-xs font-medium text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-lg transition-colors">
                         Giriş Yap
                     </button>
-                    <button onclick="goToRegister(${problemId})" class="px-3 py-1.5 text-xs font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors">
+                    <button onclick="goToRegister(${problemId})" class="px-3 py-1.5 text-xs font-medium text-white bg-slate-800 dark:bg-slate-700 hover:bg-slate-700 dark:hover:bg-slate-600 rounded-lg transition-colors">
                         Kayıt Ol
                     </button>
                 </div>
             </div>
-            <button onclick="closeToast()" class="flex-shrink-0 p-1 text-slate-400 hover:text-slate-600 transition-colors">
+            <button onclick="closeToast()" class="flex-shrink-0 p-1 text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 transition-colors">
                 <i data-lucide="x" class="w-4 h-4"></i>
             </button>
         </div>
@@ -746,6 +796,8 @@ window.goBack = goBack;
 window.goToLogin = goToLogin;
 window.goToRegister = goToRegister;
 window.closeToast = closeToast;
+window.setDifficultyFilter = setDifficultyFilter;
+window.setStatusFilter = setStatusFilter;
 
 // ===========================
 // EVENT LISTENERS

@@ -1,0 +1,238 @@
+{
+  "studyCardId": 4,
+  "sections": [
+    {
+      "title": "Giriş: Temel Kavramlar",
+      "displayOrder": 1,
+      "active": true,
+      "contentItems": [
+        {
+          "contentType": "HEADING",
+          "displayOrder": 0,
+          "active": true,
+          "blockData": {
+            "id": "block-1",
+            "type": "heading1",
+            "content": "Temel Muhasebe Kavramları",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "PARAGRAPH",
+          "displayOrder": 1,
+          "active": true,
+          "blockData": {
+            "id": "block-2",
+            "type": "paragraph",
+            "content": "Muhasebe, işletmelerin finansal durumlarını <strong>kaydetme</strong>, <strong>sınıflandırma</strong> ve <strong>raporlama</strong> sürecidir.",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "LIST",
+          "displayOrder": 2,
+          "active": true,
+          "blockData": {
+            "id": "block-3",
+            "type": "bulletList",
+            "content": "<li>Finansal kayıtların tutulması</li><li>İşletme performansının izlenmesi</li><li>Stratejik kararların desteklenmesi</li>",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "QUOTE",
+          "displayOrder": 3,
+          "active": true,
+          "blockData": {
+            "id": "block-4",
+            "type": "quote",
+            "content": "Muhasebe, işletmenin dili ve karar verme mekanizmasının temelidir.",
+            "properties": {}
+          }
+        }
+      ]
+    },
+    {
+      "title": "Hesap Planı ve Kayıt Sistemi",
+      "displayOrder": 2,
+      "active": true,
+      "contentItems": [
+        {
+          "contentType": "HEADING",
+          "displayOrder": 0,
+          "active": true,
+          "blockData": {
+            "id": "block-5",
+            "type": "heading2",
+            "content": "Tek Düzen Hesap Planı",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "PARAGRAPH",
+          "displayOrder": 1,
+          "active": true,
+          "blockData": {
+            "id": "block-6",
+            "type": "paragraph",
+            "content": "Türkiye'de işletmeler Tek Düzen Hesap Planı'nı kullanır. Bu plan hesapları 9 ana grupta toplar:",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "TABLE",
+          "displayOrder": 2,
+          "active": true,
+          "blockData": {
+            "id": "block-7",
+            "type": "table",
+            "content": "<table><tr><td>Grup</td><td>Hesap Adı</td><td>Açıklama</td></tr><tr><td>1</td><td>Dönen Varlıklar</td><td>Kısa vadeli varlıklar</td></tr><tr><td>2</td><td>Duran Varlıklar</td><td>Uzun vadeli varlıklar</td></tr><tr><td>3</td><td>Kısa Vadeli Yabancı Kaynaklar</td><td>1 yıl içinde ödenecek borçlar</td></tr><tr><td>4</td><td>Uzun Vadeli Yabancı Kaynaklar</td><td>1 yıldan uzun vadeli borçlar</td></tr><tr><td>5</td><td>Özkaynaklar</td><td>Sermaye ve yedekler</td></tr></table>",
+            "properties": {
+              "rows": 6,
+              "cols": 3
+            }
+          }
+        },
+        {
+          "contentType": "CODE",
+          "displayOrder": 3,
+          "active": true,
+          "blockData": {
+            "id": "block-8",
+            "type": "code",
+            "content": "100 KASA\n101 ALINAN ÇEKLER\n102 BANKALAR\n103 VERİLEN ÇEKLER VE ÖDEME EMİRLERİ (-)\n\n120 ALICILAR\n121 ALACAK SENETLERİ\n126 VERİLEN DEPOZİTO VE TEMİNATLAR",
+            "properties": {
+              "language": "plaintext"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "title": "Pratik: Muhasebe Kayıtları",
+      "displayOrder": 3,
+      "active": true,
+      "contentItems": [
+        {
+          "contentType": "HEADING",
+          "displayOrder": 0,
+          "active": true,
+          "blockData": {
+            "id": "block-9",
+            "type": "heading2",
+            "content": "Örnek Muhasebe Kayıtları",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "PARAGRAPH",
+          "displayOrder": 1,
+          "active": true,
+          "blockData": {
+            "id": "block-10",
+            "type": "paragraph",
+            "content": "Aşağıdaki işlemlerin muhasebe kayıtlarını inceleyelim:",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "DIVIDER",
+          "displayOrder": 2,
+          "active": true,
+          "blockData": {
+            "id": "block-11",
+            "type": "divider",
+            "content": "",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "HEADING",
+          "displayOrder": 3,
+          "active": true,
+          "blockData": {
+            "id": "block-12",
+            "type": "heading3",
+            "content": "İşlem 1: Nakit Tahsilat",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "PARAGRAPH",
+          "displayOrder": 4,
+          "active": true,
+          "blockData": {
+            "id": "block-13",
+            "type": "paragraph",
+            "content": "Alıcılardan 50.000 TL nakit tahsil edilmiştir.",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "CODE",
+          "displayOrder": 5,
+          "active": true,
+          "blockData": {
+            "id": "block-14",
+            "type": "code",
+            "content": "───────────────────────────────────\n100 KASA                    50.000\n    120 ALICILAR                    50.000\n───────────────────────────────────\nAlıcılardan nakit tahsilat",
+            "properties": {
+              "language": "plaintext"
+            }
+          }
+        },
+        {
+          "contentType": "LIST",
+          "displayOrder": 6,
+          "active": true,
+          "blockData": {
+            "id": "block-15",
+            "type": "todoList",
+            "content": "<li data-checked='false'>Borç: 100 KASA hesabına 50.000 TL</li><li data-checked='false'>Alacak: 120 ALICILAR hesabına 50.000 TL</li><li data-checked='true'>Kayıt kontrolü yapıldı</li>",
+            "properties": {}
+          }
+        }
+      ]
+    },
+    {
+      "title": "İleriye Dönük Çalışma Önerileri",
+      "displayOrder": 4,
+      "active": true,
+      "contentItems": [
+        {
+          "contentType": "HEADING",
+          "displayOrder": 0,
+          "active": true,
+          "blockData": {
+            "id": "block-16",
+            "type": "heading2",
+            "content": "🎯 Çalışma Planınız",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "LIST",
+          "displayOrder": 1,
+          "active": true,
+          "blockData": {
+            "id": "block-17",
+            "type": "numberedList",
+            "content": "<li>Tek Düzen Hesap Planı'nı ezberleyin (1-5 ana gruplar)</li><li>Her gün en az 5 muhasebe kaydı pratiği yapın</li><li>Borç-Alacak mantığını kavrayın</li><li>Bilanço ve Gelir Tablosu ilişkisini öğrenin</li><li>Gerçek işletme örnekleri üzerinde çalışın</li>",
+            "properties": {}
+          }
+        },
+        {
+          "contentType": "QUOTE",
+          "displayOrder": 2,
+          "active": true,
+          "blockData": {
+            "id": "block-18",
+            "type": "quote",
+            "content": "💡 <strong>İpucu:</strong> Muhasebe öğrenmenin en iyi yolu düzenli pratik yapmaktır. Her gün 30 dakika çalışarak 3 ayda temel seviyede uzmanlaşabilirsiniz.",
+            "properties": {}
+          }
+        }
+      ]
+    }
+  ]
+}

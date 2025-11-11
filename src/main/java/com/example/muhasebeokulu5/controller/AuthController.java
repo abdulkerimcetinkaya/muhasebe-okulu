@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
     private final AuthenticationManager authenticationManager;
@@ -53,10 +52,12 @@ public class AuthController {
             String generatedUsername = generateUniqueUsername(request.getFirstName().trim());
 
             // Yeni kullanıcı oluştur
+            // SECURITY: Kayıt sırasında her zaman USER rolü atanır
+            // ADMIN rolü sadece veritabanından manuel olarak atanır
             User user = User.builder()
                     .username(generatedUsername)
                     .password(passwordEncoder.encode(request.getPassword()))
-                    .role(Role.valueOf(request.getRole().toUpperCase()))
+                    .role(Role.USER)
                     .firstName(request.getFirstName().trim())
                     .lastName(request.getLastName().trim())
                     .email(request.getEmail().trim().toLowerCase())
@@ -67,13 +68,14 @@ public class AuthController {
             User savedUser = userRepository.save(user);
 
             // JWT token oluştur
-            String token = jwtUtil.generateToken(savedUser.getId(), savedUser.getUsername());
+            String token = jwtUtil.generateToken(savedUser.getId(), savedUser.getUsername(), savedUser.getRole().name());
 
             return ResponseEntity.ok(new AuthResponse(
                     token,
                     savedUser.getId(),
                     savedUser.getUsername(),
-                    savedUser.getRole().name()
+                    savedUser.getRole().name(),
+                    savedUser.getFirstName()
             ));
 
         } catch (BadRequestException e) {
@@ -96,13 +98,14 @@ public class AuthController {
             );
 
             // JWT token oluştur
-            String token = jwtUtil.generateToken(user.getId(), user.getUsername());
+            String token = jwtUtil.generateToken(user.getId(), user.getUsername(), user.getRole().name());
 
             return ResponseEntity.ok(new AuthResponse(
                     token,
                     user.getId(),
                     user.getUsername(),
-                    user.getRole().name()
+                    user.getRole().name(),
+                    user.getFirstName()
             ));
 
         } catch (BadCredentialsException e) {

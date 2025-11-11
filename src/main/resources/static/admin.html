@@ -1,23 +1,41 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
+<head><!-- trigger reload -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - MuhasebeOkulu</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <!-- Theme initialization -->
+    <script src="/assets/js/utils/theme.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: { extend: {} }
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Markdown & Sanitization Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/marked@11.1.1/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.8/dist/purify.min.js"></script>
+
+    <!-- Mammoth.js for Word Document Import -->
+    <script src="https://cdn.jsdelivr.net/npm/mammoth@1.6.0/mammoth.browser.min.js"></script>
     
     <!-- Ortak CSS -->
-    <link rel="stylesheet" href="http://localhost:8080/assets/css/common.css">
-    <link rel="stylesheet" href="http://localhost:8080/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+    <link rel="stylesheet" href="/assets/css/admin-styles.css">
     
     <!-- Ortak JS -->
-    <script src="http://localhost:8080/assets/js/common.js"></script>
-    <script src="http://localhost:8080/assets/js/api.js"></script>
-    <script src="http://localhost:8080/assets/js/auth.js"></script>
+    <script src="/assets/js/common.js"></script>
+    <script src="/assets/js/api.js"></script>
+    <script src="/assets/js/auth.js"></script>
     
     <script>
         // Admin kontrolü
@@ -48,13 +66,225 @@
     
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; }
+
+        /* Sidebar Active States */
+        .sidebar-btn.active,
+        button[onclick^="showSection"].active {
+            background-color: #1e293b;
+            color: white;
+        }
+
+        .sidebar-btn.active i,
+        button[onclick^="showSection"].active i {
+            color: white;
+        }
+
+        /* Section Cards Modern Style */
+        .section-card {
+            border-radius: 1rem;
+            border: 1px solid #e2e8f0;
+            background: white;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            transition: all 0.2s;
+        }
+
+        .section-card:hover {
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+
+        /* Modern Table Styles */
+        .modern-table {
+            border-radius: 0.75rem;
+            overflow: hidden;
+        }
+
+        .modern-table thead {
+            background-color: #f8fafc;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .modern-table tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Action Buttons */
+        .action-btn {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Slash Commands & Block Editor Styles */
+
+        /* Placeholder for empty contenteditable */
+        [contenteditable="true"].empty:before {
+            content: attr(data-placeholder);
+            color: #9ca3af;
+            pointer-events: none;
+            position: absolute;
+        }
+        [contenteditable="true"] {
+            position: relative;
+        }
+
+        /* Slash command menu */
+        #slashCommandMenu {
+            position: absolute;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            max-height: 400px;
+            overflow-y: auto;
+            z-index: 1000;
+            min-width: 280px;
+        }
+
+        .command-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .command-item:last-child {
+            border-bottom: none;
+        }
+
+        .command-item:hover,
+        .command-item.selected {
+            background-color: #f3f4f6;
+        }
+
+        .command-item.selected {
+            background-color: #e0e7ff;
+        }
+
+        /* Block animations */
+        .content-block {
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .content-block:hover {
+            transform: translateX(2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .content-block.dragging {
+            opacity: 0.5;
+            transform: scale(0.95);
+        }
+
+        /* Drag handle */
+        .drag-handle {
+            cursor: grab;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .content-block:hover .drag-handle {
+            opacity: 1;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        /* Add block button */
+        .add-block-btn {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .block-wrapper:hover .add-block-btn {
+            opacity: 1;
+        }
+
+        /* Section tree */
+        .section-item {
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+        }
+
+        .section-item:hover {
+            background-color: #f1f5f9;
+            transform: translateX(2px);
+        }
+
+        .section-item.active {
+            background-color: #e0e7ff;
+            border-left: 3px solid #6366f1;
+            font-weight: 600;
+        }
+
+        .section-item .delete-section-btn {
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .section-item:hover .delete-section-btn {
+            opacity: 1;
+        }
+
+        /* Content type badges */
+        .type-badge-TEXT {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        .type-badge-PROBLEM {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .type-badge-QUIZ {
+            background-color: #e9d5ff;
+            color: #6b21a8;
+        }
+        .type-badge-STUDY_PROBLEM {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .type-badge-STUDY_QUIZ {
+            background-color: #fce7f3;
+            color: #9f1239;
+        }
+
+        /* Custom scrollbar for block editor */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Notion-style blocks */
+        .notion-block {
+            position: relative;
+        }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 antialiased scroll-smooth">
-<div class="relative min-h-screen">
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased scroll-smooth min-h-screen flex flex-col">
+<div class="relative flex-1 flex flex-col">
     <!-- Arka Plan -->
     <div class="absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f1f5f9_1px,transparent_1px),linear-gradient(to_bottom,#f1f5f9_1px,transparent_1px)] bg-[size:6rem_4rem]">
-        <div class="absolute bottom-0 left-0 right-0 top-0 bg-[radial-gradient(520px_520px_at_50%_160px,rgba(30,58,138,0.12),rgba(30,58,138,0.04),transparent)]"></div>
     </div>
 
     <!-- Header -->
@@ -73,7 +303,7 @@
                 </div>
                 <div class="flex items-center gap-2">
                     <div class="relative">
-                        <button onclick="toggleProfileDropdown()" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                        <button onclick="toggleProfileDropdown(event)" class="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
                             <div class="w-8 h-8 bg-slate-800 text-white rounded-full flex items-center justify-center text-sm font-medium" id="userInitial">U</div>
                             <span id="userNameButton" class="hidden md:block w-auto whitespace-nowrap">Hoşgeldin, Admin</span>
                             <i data-lucide="chevron-down" class="w-4 h-4"></i>
@@ -107,68 +337,69 @@
         </div>
     </header>
 
-    <main class="relative z-10">
-        <section class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-16 pb-12">
+    <main class="relative z-10 flex-1 min-h-[calc(100vh-180px)]">
+        <section class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-10 md:pt-16 pb-12 min-h-[600px]">
 
             <!-- Düzen: Sol Sidebar + İçerik -->
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-6">
                 <!-- Sidebar -->
                 <aside class="lg:col-span-3">
-                    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                        <div class="p-4 border-b border-slate-200">
-                            <div class="text-sm font-medium text-slate-900">Admin Panel</div>
+                    <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden sticky top-20">
+                        <div class="p-5 border-b border-slate-200 bg-slate-50">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 bg-slate-800 text-white flex items-center justify-center rounded-lg">
+                                    <i data-lucide="settings" class="w-4 h-4" style="stroke-width:2;"></i>
+                                </div>
+                                <div class="text-base font-semibold text-slate-900">Admin Panel</div>
+                            </div>
                         </div>
-                        <nav class="p-2 space-y-1">
+                        <nav class="p-3 space-y-1.5">
                             <!-- Dashboard -->
-                            <button type="button" onclick="showSection('dashboard')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-100 w-full text-left">
-                                <i data-lucide="bar-chart-3" class="w-4.5 h-4.5" style="stroke-width:1.5;"></i>
-                                📊 Dashboard
+                            <button type="button" onclick="showSection('dashboard')" class="sidebar-btn flex items-center gap-2.5 px-3.5 py-2.5 rounded-lg text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 w-full text-left transition-all duration-200 group">
+                                <i data-lucide="bar-chart-3" class="w-5 h-5 group-hover:scale-110 transition-transform" style="stroke-width:1.5;"></i>
+                                Dashboard
                             </button>
                             
                             <!-- Problem Yönetimi -->
                             <div class="space-y-1">
-                                <button type="button" onclick="toggleSubmenu('problems')" class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md">
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="file-text" class="w-4.5 h-4.5" style="stroke-width:1.5;"></i>
-                                        📝 Problem Yönetimi
+                                <button type="button" onclick="toggleSubmenu('problems')" class="flex items-center justify-between w-full px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-all duration-200 group">
+                                    <div class="flex items-center gap-2.5">
+                                        <i data-lucide="file-text" class="w-5 h-5 group-hover:scale-110 transition-transform" style="stroke-width:1.5;"></i>
+                                        Problem Yönetimi
                                     </div>
-                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" id="problems-chevron"></i>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200" id="problems-chevron"></i>
                                 </button>
-                                <div id="problems-submenu" class="hidden ml-4 space-y-1">
-                                    <button type="button" onclick="showSection('all-problems')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                <div id="problems-submenu" class="hidden ml-7 space-y-0.5 border-l-2 border-slate-200 pl-3 mt-1">
+                                    <button type="button" onclick="showSection('all-problems')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="list" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Tüm Problemler
                                     </button>
-                                    <button type="button" onclick="showSection('add-problem')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                    <button type="button" onclick="showSection('add-problem')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="plus" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Yeni Problem Ekle
-                                    </button>
-                                    <button type="button" onclick="showSection('categories')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
-                                        <i data-lucide="tag" class="w-4 h-4" style="stroke-width:1.5;"></i>
-                                        Kategoriler
                                     </button>
                                 </div>
                             </div>
 
                             <!-- Quiz Yönetimi -->
                             <div class="space-y-1">
-                                <button type="button" onclick="toggleSubmenu('quizzes')" class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md">
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="help-circle" class="w-4.5 h-4.5" style="stroke-width:1.5;"></i>
-                                        📝 Quiz Yönetimi
+                                <button type="button" onclick="toggleSubmenu('quizzes')" class="flex items-center justify-between w-full px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-all duration-200 group">
+                                    <div class="flex items-center gap-2.5">
+                                        <i data-lucide="help-circle" class="w-5 h-5 group-hover:scale-110 transition-transform" style="stroke-width:1.5;"></i>
+                                        Quiz Yönetimi
                                     </div>
-                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" id="quizzes-chevron"></i>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200" id="quizzes-chevron"></i>
                                 </button>
-                                <div id="quizzes-submenu" class="hidden ml-4 space-y-1">
-                                    <button type="button" onclick="showSection('quiz-topics')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                <div id="quizzes-submenu" class="hidden ml-7 space-y-0.5 border-l-2 border-slate-200 pl-3 mt-1">
+                                    <button type="button" onclick="showSection('quiz-topics')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="folder" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Konular
                                     </button>
-                                    <button type="button" onclick="showSection('quiz-quizzes')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                    <button type="button" onclick="showSection('quiz-quizzes')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="list" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Quizler
                                     </button>
-                                    <button type="button" onclick="showSection('quiz-questions')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                    <button type="button" onclick="showSection('quiz-questions')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="file-question" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Sorular
                                     </button>
@@ -177,19 +408,19 @@
 
                             <!-- Öğrenme Kartları Yönetimi -->
                             <div class="space-y-1">
-                                <button type="button" onclick="toggleSubmenu('study-cards')" class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md">
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="book-open" class="w-4.5 h-4.5" style="stroke-width:1.5;"></i>
-                                        📚 Öğrenme Kartları
+                                <button type="button" onclick="toggleSubmenu('study-cards')" class="flex items-center justify-between w-full px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-all duration-200 group">
+                                    <div class="flex items-center gap-2.5">
+                                        <i data-lucide="book-open" class="w-5 h-5 group-hover:scale-110 transition-transform" style="stroke-width:1.5;"></i>
+                                        Öğrenme Kartları
                                     </div>
-                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" id="study-cards-chevron"></i>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200" id="study-cards-chevron"></i>
                                 </button>
-                                <div id="study-cards-submenu" class="hidden ml-4 space-y-1">
-                                    <button type="button" onclick="showSection('study-cards-list')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                <div id="study-cards-submenu" class="hidden ml-7 space-y-0.5 border-l-2 border-slate-200 pl-3 mt-1">
+                                    <button type="button" onclick="showSection('study-cards-crud')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="layout-grid" class="w-4 h-4" style="stroke-width:1.5;"></i>
-                                        Tüm Kartlar
+                                        Kart Yönetimi
                                     </button>
-                                    <button type="button" onclick="showSection('study-card-sections')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                    <button type="button" onclick="showSection('study-sections-management')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="layers" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Bölüm Yönetimi
                                     </button>
@@ -198,40 +429,40 @@
 
                             <!-- Kullanıcı Yönetimi -->
                             <div class="space-y-1">
-                                <button type="button" onclick="toggleSubmenu('users')" class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md">
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="users" class="w-4.5 h-4.5" style="stroke-width:1.5;"></i>
-                                        👥 Kullanıcı Yönetimi
+                                <button type="button" onclick="toggleSubmenu('users')" class="flex items-center justify-between w-full px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-all duration-200 group">
+                                    <div class="flex items-center gap-2.5">
+                                        <i data-lucide="users" class="w-5 h-5 group-hover:scale-110 transition-transform" style="stroke-width:1.5;"></i>
+                                        Kullanıcı Yönetimi
                                     </div>
-                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" id="users-chevron"></i>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200" id="users-chevron"></i>
                                 </button>
-                                <div id="users-submenu" class="hidden ml-4 space-y-1">
-                                    <button type="button" onclick="showSection('all-users')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                <div id="users-submenu" class="hidden ml-7 space-y-0.5 border-l-2 border-slate-200 pl-3 mt-1">
+                                    <button type="button" onclick="showSection('all-users')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="users" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Tüm Kullanıcılar
                                     </button>
-                                    <button type="button" onclick="showSection('active-users')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                    <button type="button" onclick="showSection('active-users')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="user-check" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Aktif Kullanıcılar
                                     </button>
-                                    <button type="button" onclick="showSection('banned-users')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                    <button type="button" onclick="showSection('banned-users')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="user-x" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Yasaklı Kullanıcılar
                                     </button>
                                 </div>
                             </div>
-                            
+
                             <!-- Raporlar & İstatistikler -->
                             <div class="space-y-1">
-                                <button type="button" onclick="toggleSubmenu('reports')" class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md">
-                                    <div class="flex items-center gap-2">
-                                        <i data-lucide="trending-up" class="w-4.5 h-4.5" style="stroke-width:1.5;"></i>
-                                        📈 Raporlar & İstatistikler
+                                <button type="button" onclick="toggleSubmenu('reports')" class="flex items-center justify-between w-full px-3.5 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 rounded-lg transition-all duration-200 group">
+                                    <div class="flex items-center gap-2.5">
+                                        <i data-lucide="trending-up" class="w-5 h-5 group-hover:scale-110 transition-transform" style="stroke-width:1.5;"></i>
+                                        Raporlar & İstatistikler
                                     </div>
-                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform" id="reports-chevron"></i>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 transition-transform duration-200" id="reports-chevron"></i>
                                 </button>
-                                <div id="reports-submenu" class="hidden ml-4 space-y-1">
-                                    <button type="button" onclick="showSection('problem-reports')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 w-full text-left">
+                                <div id="reports-submenu" class="hidden ml-7 space-y-0.5 border-l-2 border-slate-200 pl-3 mt-1">
+                                    <button type="button" onclick="showSection('problem-reports')" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 w-full text-left transition-colors">
                                         <i data-lucide="file-text" class="w-4 h-4" style="stroke-width:1.5;"></i>
                                         Problem Raporları
                                     </button>
@@ -247,12 +478,6 @@
                             </div>
 
 
-
-                            <div class="my-2 h-px bg-slate-200"></div>
-                            <a href="index.html" class="flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium text-slate-700 hover:bg-slate-50">
-                                <i data-lucide="arrow-left" class="w-4.5 h-4.5" style="stroke-width:1.5;"></i>
-                                Geri
-                            </a>
                         </nav>
                     </div>
                 </aside>
@@ -260,52 +485,30 @@
                 <!-- İçerik -->
                 <div class="lg:col-span-9">
                     <!-- Dashboard -->
-                    <div id="dashboard" class="hidden rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                        <div class="px-5 pt-5 sm:px-6 sm:pt-6">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 bg-slate-800 text-white flex items-center justify-center rounded-lg font-semibold text-base tracking-tighter">📊</div>
-                                <div>
-                                    <h2 class="text-lg font-semibold tracking-tight text-slate-900">Dashboard</h2>
-                                    <p class="text-xs text-slate-500 mt-0.5">Genel bakış ve sistem durumu</p>
+                    <div id="dashboard" class="hidden">
+                        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                            <div class="p-8 text-center">
+                                <div class="w-16 h-16 bg-gradient-to-br from-slate-700 to-slate-900 text-white flex items-center justify-center rounded-2xl mx-auto mb-4">
+                                    <i data-lucide="layout-dashboard" class="w-8 h-8" style="stroke-width:2;"></i>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="p-5 sm:p-6">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                                <div class="bg-slate-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-sm font-medium text-slate-600">Toplam Kullanıcı</p>
-                                            <p class="text-2xl font-bold text-slate-900" id="dashboard-total-users">0</p>
-                                        </div>
-                                        <i data-lucide="users" class="w-8 h-8 text-slate-400"></i>
+                                <h2 class="text-2xl font-bold tracking-tight text-slate-900 mb-2">Admin Panel</h2>
+                                <p class="text-slate-600 mb-6">Soldan bir bölüm seçerek yönetim işlemlerine başlayabilirsiniz.</p>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-2xl mx-auto">
+                                    <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                                        <i data-lucide="file-text" class="w-5 h-5 text-slate-700 mx-auto mb-1" style="stroke-width:2;"></i>
+                                        <p class="text-xs font-medium text-slate-700">Problemler</p>
                                     </div>
-                                </div>
-                                <div class="bg-slate-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-sm font-medium text-slate-600">Toplam Problem</p>
-                                            <p class="text-2xl font-bold text-slate-900" id="dashboard-total-problems">0</p>
-                                        </div>
-                                        <i data-lucide="file-text" class="w-8 h-8 text-slate-400"></i>
+                                    <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                                        <i data-lucide="users" class="w-5 h-5 text-slate-700 mx-auto mb-1" style="stroke-width:2;"></i>
+                                        <p class="text-xs font-medium text-slate-700">Kullanıcılar</p>
                                     </div>
-                                </div>
-                                <div class="bg-slate-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-sm font-medium text-slate-600">Aktif Kullanıcı</p>
-                                            <p class="text-2xl font-bold text-slate-900" id="dashboard-active-users">0</p>
-                                        </div>
-                                        <i data-lucide="activity" class="w-8 h-8 text-slate-400"></i>
+                                    <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                                        <i data-lucide="help-circle" class="w-5 h-5 text-slate-700 mx-auto mb-1" style="stroke-width:2;"></i>
+                                        <p class="text-xs font-medium text-slate-700">Quizler</p>
                                     </div>
-                                </div>
-                                <div class="bg-slate-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-sm font-medium text-slate-600">Toplam Çözüm</p>
-                                            <p class="text-2xl font-bold text-slate-900" id="dashboard-total-solutions">0</p>
-                                        </div>
-                                        <i data-lucide="check-circle-2" class="w-8 h-8 text-slate-400"></i>
+                                    <div class="p-3 rounded-lg bg-slate-50 border border-slate-200">
+                                        <i data-lucide="book-open" class="w-5 h-5 text-slate-700 mx-auto mb-1" style="stroke-width:2;"></i>
+                                        <p class="text-xs font-medium text-slate-700">Öğrenme Kartları</p>
                                     </div>
                                 </div>
                             </div>
@@ -315,58 +518,64 @@
                     <!-- Problem Listeleme -->
                     <div id="all-problems" class="hidden rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                         <div class="px-5 pt-5 sm:px-6 sm:pt-6">
-                            <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center justify-between mb-5">
                                 <div>
                                     <h2 class="text-lg font-semibold tracking-tight text-slate-900">Problemler</h2>
                                     <p class="text-xs text-slate-500 mt-0.5">Tüm problemleri görüntüleyin ve yönetin.</p>
                                 </div>
-                                <button type="button" onclick="showSection('add-problem')" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md">
-                                    <i data-lucide="plus" class="w-4 h-4" style="stroke-width:1.5;"></i>
-                                    Yeni Problem
-                                </button>
+                                <div class="flex gap-2">
+                                    <button type="button" onclick="showSection('add-problem')" class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-all hover:shadow-md">
+                                        <i data-lucide="plus" class="w-4 h-4" style="stroke-width:2;"></i>
+                                        Yeni Problem
+                                    </button>
+                                    <button type="button" onclick="showBulkImportModal()" class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 rounded-lg border border-slate-300 transition-all hover:shadow-md">
+                                        <i data-lucide="upload" class="w-4 h-4" style="stroke-width:2;"></i>
+                                        Toplu İçe Aktar
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- Arama ve Filtre -->
-                            <div class="flex flex-col sm:flex-row gap-3">
+                            <div class="flex flex-col sm:flex-row gap-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
                                 <div class="flex-1 relative">
-                                    <input type="text" id="problemSearchInput" placeholder="Problem başlığı, içerik veya etikete göre ara..." class="w-full pl-10 pr-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="stroke-width:1.5;"></i>
+                                    <input type="text" id="problemSearchInput" placeholder="Problem başlığı, içerik veya etikete göre ara..." class="w-full pl-10 pr-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition-all">
+                                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="stroke-width:2;"></i>
                                 </div>
                                 <div class="relative">
-                                    <select id="problemDifficultyFilter" class="w-full sm:w-40 appearance-none rounded-md border border-slate-300 bg-white px-3 py-2 pr-9 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
+                                    <select id="problemDifficultyFilter" class="w-full sm:w-40 appearance-none rounded-lg border border-slate-200 bg-white px-3 py-2.5 pr-9 text-sm text-slate-700 font-medium focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition-all">
                                         <option value="">Tüm Zorluklar</option>
                                         <option value="EASY">Kolay</option>
                                         <option value="MEDIUM">Orta</option>
                                         <option value="HARD">Zor</option>
                                     </select>
-                                    <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" style="stroke-width:1.5;"></i>
+                                    <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" style="stroke-width:2;"></i>
                                 </div>
-                                <button type="button" id="problemSearchButton" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors">
-                                    <i data-lucide="search" class="w-4 h-4" style="stroke-width:1.5;"></i>
+                                <button type="button" id="problemSearchButton" class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-all hover:shadow-md">
+                                    <i data-lucide="search" class="w-4 h-4" style="stroke-width:2;"></i>
                                     Ara
                                 </button>
-                                <button type="button" id="problemClearButton" class="inline-flex items-center justify-center gap-1.5 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-md transition-colors">
-                                    <i data-lucide="x" class="w-4 h-4" style="stroke-width:1.5;"></i>
+                                <button type="button" id="problemClearButton" class="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-slate-700 bg-white hover:bg-slate-100 rounded-lg border border-slate-200 transition-all">
+                                    <i data-lucide="x" class="w-4 h-4" style="stroke-width:2;"></i>
                                     Temizle
                                 </button>
                             </div>
                         </div>
                         <div class="mt-4 overflow-x-auto">
-                            <table class="min-w-full divide-y divide-slate-200">
-                                <thead class="bg-slate-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">Başlık</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">Zorluk</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">Etiketler</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">İşlemler</th>
+                            <table class="min-w-full">
+                                <thead>
+                                <tr class="border-b border-slate-200">
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider bg-slate-50/50">Başlık</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider bg-slate-50/50">Zorluk</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider bg-slate-50/50">Etiketler</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider bg-slate-50/50">İşlemler</th>
                                 </tr>
                                 </thead>
-                                <tbody id="problemsTbody" class="divide-y divide-slate-100">
+                                <tbody id="problemsTbody" class="divide-y divide-slate-100 bg-white">
                                 <!-- Dinamik satırlar -->
                                 </tbody>
                             </table>
                         </div>
-                        <div class="px-5 py-4 sm:px-6 border-t border-slate-200 bg-slate-50">
+                        <div class="px-5 py-4 sm:px-6 border-t border-slate-200 bg-slate-50/50">
                             <div id="pagination-container"></div>
                         </div>
                     </div>
@@ -379,10 +588,6 @@
                                     <h2 class="text-lg font-semibold tracking-tight text-slate-900">Yeni Problem Ekle</h2>
                                     <p class="text-xs text-slate-500 mt-0.5">Problem bilgilerini doldurun ve doğru cevap satırlarını ekleyin.</p>
                                 </div>
-                                <button type="button" onclick="showSection('list')" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 rounded-md border border-slate-300 hover:bg-slate-50">
-                                    <i data-lucide="arrow-left" class="w-4 h-4" style="stroke-width:1.5;"></i>
-                                    Geri
-                                </button>
                             </div>
                         </div>
                         <div class="p-5 sm:p-6">
@@ -401,7 +606,7 @@
                                         <label class="block text-sm font-medium text-slate-700 mb-1">İçerik <span class="text-red-600">*</span></label>
                                         <textarea id="c-content" rows="4" required class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400" placeholder="Problemin detaylarını açıklayın..."></textarea>
                                     </div>
-                                    <div>
+                                    <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-slate-700 mb-1">İpucu (opsiyonel)</label>
                                         <input id="c-hint" type="text" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400" placeholder="İpuçları... (opsiyonel)">
                                     </div>
@@ -409,9 +614,9 @@
                                         <label class="block text-sm font-medium text-slate-700 mb-1">Zorluk Seviyesi</label>
                                         <div class="relative">
                                             <select id="c-difficulty" class="w-full appearance-none rounded-md border border-slate-300 bg-white px-3 py-2 pr-9 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                                                <option value="EASY">Kolay (10 puan)</option>
-                                                <option value="MEDIUM" selected>Orta (20 puan)</option>
-                                                <option value="HARD">Zor (30 puan)</option>
+                                                <option value="EASY">Kolay</option>
+                                                <option value="MEDIUM" selected>Orta</option>
+                                                <option value="HARD">Zor</option>
                                             </select>
                                             <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" style="stroke-width:1.5;"></i>
                                         </div>
@@ -481,99 +686,38 @@
                         </div>
                     </div>
 
-                    <!-- Kategoriler -->
-                    <div id="categories" class="hidden rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                        <div class="px-5 pt-5 sm:px-6 sm:pt-6 flex items-center justify-between">
-                            <div>
-                                <h2 class="text-lg font-semibold tracking-tight text-slate-900">Kategoriler</h2>
-                                <p class="text-xs text-slate-500 mt-0.5">Problem kategorilerini yönetin.</p>
-                            </div>
-                            <button type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md">
-                                <i data-lucide="plus" class="w-4 h-4" style="stroke-width:1.5;"></i>
-                                Yeni Kategori
-                            </button>
-                        </div>
-                        <div class="p-5 sm:p-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <div class="bg-slate-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h3 class="font-medium text-slate-900">KDV Hesaplamaları</h3>
-                                            <p class="text-sm text-slate-500">15 problem</p>
-                                        </div>
-                                        <div class="flex gap-1">
-                                            <button class="p-1 text-slate-400 hover:text-slate-600">
-                                                <i data-lucide="edit" class="w-4 h-4"></i>
-                                            </button>
-                                            <button class="p-1 text-slate-400 hover:text-red-600">
-                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h3 class="font-medium text-slate-900">Fatura İşlemleri</h3>
-                                            <p class="text-sm text-slate-500">23 problem</p>
-                                        </div>
-                                        <div class="flex gap-1">
-                                            <button class="p-1 text-slate-400 hover:text-slate-600">
-                                                <i data-lucide="edit" class="w-4 h-4"></i>
-                                            </button>
-                                            <button class="p-1 text-slate-400 hover:text-red-600">
-                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="bg-slate-50 rounded-lg p-4">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <h3 class="font-medium text-slate-900">Muhasebe Kayıtları</h3>
-                                            <p class="text-sm text-slate-500">31 problem</p>
-                                        </div>
-                                        <div class="flex gap-1">
-                                            <button class="p-1 text-slate-400 hover:text-slate-600">
-                                                <i data-lucide="edit" class="w-4 h-4"></i>
-                                            </button>
-                                            <button class="p-1 text-slate-400 hover:text-red-600">
-                                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
                     <!-- Tüm Kullanıcılar -->
                     <div id="all-users" class="hidden rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                        <div class="px-5 pt-5 sm:px-6 sm:pt-6 flex items-center justify-between">
-                            <div>
-                                <h2 class="text-lg font-semibold tracking-tight text-slate-900">Tüm Kullanıcılar</h2>
-                                <p class="text-xs text-slate-500 mt-0.5">Kayıtlı tüm kullanıcıları görüntüleyin ve yönetin.</p>
+                        <div class="px-5 pt-5 sm:px-6 sm:pt-6">
+                            <div class="flex items-center justify-between mb-5">
+                                <div>
+                                    <h2 class="text-lg font-semibold tracking-tight text-slate-900">Tüm Kullanıcılar</h2>
+                                    <p class="text-xs text-slate-500 mt-0.5">Kayıtlı tüm kullanıcıları görüntüleyin ve yönetin.</p>
+                                </div>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <input type="text" placeholder="Kullanıcı ara..." class="px-3 py-2 text-sm border border-slate-300 rounded-md focus:outline-none focus:ring-2 focus:ring-slate-200">
-                                <button type="button" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 rounded-md">
-                                    <i data-lucide="search" class="w-4 h-4" style="stroke-width:1.5;"></i>
+                            <div class="flex items-center gap-2 p-4 bg-slate-50 rounded-xl border border-slate-200">
+                                <div class="flex-1 relative">
+                                    <input type="text" placeholder="Kullanıcı ara..." class="w-full pl-10 pr-3 py-2.5 text-sm border border-slate-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition-all">
+                                    <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" style="stroke-width:2;"></i>
+                                </div>
+                                <button type="button" class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-all hover:shadow-md">
+                                    <i data-lucide="search" class="w-4 h-4" style="stroke-width:2;"></i>
                                     Ara
                                 </button>
                             </div>
                         </div>
                         <div class="mt-4 overflow-x-auto">
-                            <table class="min-w-full divide-y divide-slate-200">
-                                <thead class="bg-slate-50">
-                                <tr>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">Kullanıcı</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">E-posta</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">Rol</th>
-                                    <th class="px-6 py-3 text-left text-xs font-medium text-slate-600 uppercase tracking-wider">Kayıt Tarihi</th>
-                                    <th class="px-6 py-3 text-right text-xs font-medium text-slate-600 uppercase tracking-wider">İşlemler</th>
+                            <table class="min-w-full">
+                                <thead>
+                                <tr class="border-b border-slate-200">
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider bg-slate-50/50">Kullanıcı</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider bg-slate-50/50">E-posta</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider bg-slate-50/50">Rol</th>
+                                    <th class="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider bg-slate-50/50">Kayıt Tarihi</th>
+                                    <th class="px-6 py-4 text-right text-xs font-semibold text-slate-700 uppercase tracking-wider bg-slate-50/50">İşlemler</th>
                                 </tr>
                                 </thead>
-                                <tbody id="usersTbody" class="divide-y divide-slate-100">
+                                <tbody id="usersTbody" class="divide-y divide-slate-100 bg-white">
                                 <!-- Dinamik satırlar -->
                                 </tbody>
                             </table>
@@ -688,7 +832,7 @@
                                         <label class="block text-sm font-medium text-slate-700 mb-1">İçerik <span class="text-red-600">*</span></label>
                                         <textarea id="e-content" rows="4" required class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400"></textarea>
                                     </div>
-                                    <div>
+                                    <div class="md:col-span-2">
                                         <label class="block text-sm font-medium text-slate-700 mb-1">İpucu (opsiyonel)</label>
                                         <input id="e-hint" type="text" class="w-full rounded-md border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
                                     </div>
@@ -696,9 +840,9 @@
                                         <label class="block text-sm font-medium text-slate-700 mb-1">Zorluk Seviyesi</label>
                                         <div class="relative">
                                             <select id="e-difficulty" class="w-full appearance-none rounded-md border border-slate-300 bg-white px-3 py-2 pr-9 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                                                <option value="EASY">Kolay (10 puan)</option>
-                                                <option value="MEDIUM">Orta (20 puan)</option>
-                                                <option value="HARD">Zor (30 puan)</option>
+                                                <option value="EASY">Kolay</option>
+                                                <option value="MEDIUM">Orta</option>
+                                                <option value="HARD">Zor</option>
                                             </select>
                                             <i data-lucide="chevron-down" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none" style="stroke-width:1.5;"></i>
                                         </div>
@@ -771,19 +915,19 @@
                     <!-- Quiz Konular -->
                     <div id="quiz-topics" class="hidden rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                         <div class="px-5 pt-5 sm:px-6 sm:pt-6">
-                            <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center justify-between mb-5">
                                 <div>
                                     <h2 class="text-lg font-semibold tracking-tight text-slate-900">Quiz Konuları</h2>
                                     <p class="text-xs text-slate-500 mt-0.5">Quiz konularını görüntüleyin ve yönetin.</p>
                                 </div>
-                                <button type="button" onclick="showTopicModal()" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm">
-                                    <i data-lucide="plus" class="w-4 h-4" style="stroke-width:1.5;"></i>
+                                <button type="button" onclick="QuizManagement.showTopicModal()" class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-all hover:shadow-md">
+                                    <i data-lucide="plus" class="w-4 h-4" style="stroke-width:2;"></i>
                                     Yeni Konu
                                 </button>
                             </div>
                         </div>
                         <div class="p-5 sm:p-6">
-                            <div id="topicsList" class="space-y-3">
+                            <div id="topicsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 <!-- Topics will be loaded here -->
                             </div>
                         </div>
@@ -792,13 +936,13 @@
                     <!-- Quiz Quizler -->
                     <div id="quiz-quizzes" class="hidden rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
                         <div class="px-5 pt-5 sm:px-6 sm:pt-6">
-                            <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center justify-between mb-5">
                                 <div>
                                     <h2 class="text-lg font-semibold tracking-tight text-slate-900">Quizler</h2>
                                     <p class="text-xs text-slate-500 mt-0.5">Quiz listesini görüntüleyin ve yönetin.</p>
                                 </div>
-                                <button type="button" onclick="showQuizModal()" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm">
-                                    <i data-lucide="plus" class="w-4 h-4" style="stroke-width:1.5;"></i>
+                                <button type="button" onclick="QuizManagement.showQuizModal()" class="inline-flex items-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-white bg-slate-800 hover:bg-slate-700 rounded-lg transition-all hover:shadow-md">
+                                    <i data-lucide="plus" class="w-4 h-4" style="stroke-width:2;"></i>
                                     Yeni Quiz
                                 </button>
                             </div>
@@ -821,15 +965,21 @@
                         <div class="p-5 sm:p-6">
                             <div class="mb-4">
                                 <label class="block text-sm font-medium text-slate-700 mb-2">Quiz Seç</label>
-                                <select id="quizSelect" onchange="loadQuizQuestions()" class="w-full max-w-md px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
+                                <select id="quizSelect" onchange="QuestionManagement.loadQuizQuestions()" class="w-full max-w-md px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
                                     <option value="">Quiz seçin...</option>
                                 </select>
                             </div>
                             <div id="questionsContainer" class="hidden">
-                                <button type="button" onclick="showQuestionModal()" class="mb-4 inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm">
-                                    <i data-lucide="plus" class="w-4 h-4" style="stroke-width:1.5;"></i>
-                                    Yeni Soru Ekle
-                                </button>
+                                <div class="mb-4 flex items-center gap-2">
+                                    <button type="button" onclick="QuestionManagement.showQuestionModal()" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm">
+                                        <i data-lucide="plus" class="w-4 h-4" style="stroke-width:1.5;"></i>
+                                        Yeni Soru Ekle
+                                    </button>
+                                    <button type="button" onclick="QuestionManagement.showBulkImportModal()" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-md transition-colors shadow-sm">
+                                        <i data-lucide="upload" class="w-4 h-4" style="stroke-width:1.5;"></i>
+                                        Toplu İçe Aktar
+                                    </button>
+                                </div>
                                 <div id="questionsList" class="space-y-4">
                                     <!-- Questions will be loaded here -->
                                 </div>
@@ -837,60 +987,41 @@
                         </div>
                     </div>
 
-                    <!-- Study Cards List -->
-                    <div id="study-cards-list" class="hidden rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                        <div class="px-5 pt-5 sm:px-6 sm:pt-6">
-                            <div class="flex items-center justify-between mb-4">
-                                <div>
-                                    <h2 class="text-lg font-semibold tracking-tight text-slate-900">Öğrenme Kartları</h2>
-                                    <p class="text-xs text-slate-500 mt-0.5">Tüm öğrenme kartlarını görüntüleyin ve yönetin.</p>
-                                </div>
-                                <button type="button" onclick="showStudyCardModal()" class="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm">
-                                    <i data-lucide="plus" class="w-4 h-4" style="stroke-width:1.5;"></i>
-                                    Yeni Kart
-                                </button>
-                            </div>
-                        </div>
-                        <div class="p-5 sm:p-6">
-                            <div id="studyCardsList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                                <!-- Study cards will be loaded here -->
+                    <!-- Study Cards CRUD Management -->
+                    <div id="study-cards-crud" class="hidden">
+                        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                            <div class="p-8">
+                                <div id="study-cards-crud-container"></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Card Sections Management -->
-                    <div id="study-card-sections" class="hidden rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-                        <div class="px-5 pt-5 sm:px-6 sm:pt-6">
-                            <div>
-                                <h2 class="text-lg font-semibold tracking-tight text-slate-900">Bölüm Yönetimi</h2>
-                                <p class="text-xs text-slate-500 mt-0.5">Kart bölümlerini yönetin ve düzenleyin.</p>
-                            </div>
-                        </div>
-                        <div class="p-5 sm:p-6">
-                            <div class="mb-4">
-                                <label class="block text-sm font-medium text-slate-700 mb-2">Kart Seç</label>
-                                <select id="cardSelectForSections" onchange="loadCardSectionsForManagement()" class="w-full max-w-md px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                                    <option value="">Kart seçin...</option>
-                                </select>
-                            </div>
-                            <div id="sectionsContainer" class="hidden">
-                                <button type="button" onclick="showCardSectionModal()" class="mb-4 inline-flex items-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-slate-800 hover:bg-slate-700 rounded-md transition-colors shadow-sm">
-                                    <i data-lucide="plus" class="w-4 h-4" style="stroke-width:1.5;"></i>
-                                    Yeni Bölüm Ekle
-                                </button>
-                                <div id="cardSectionsList" class="space-y-3">
-                                    <!-- Sections will be loaded here -->
+                    <!-- Study Sections Management (NEW: Simplified with Rich Text Editor) -->
+                    <div id="study-sections-management" class="hidden">
+                        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                            <div class="p-8">
+                                <div class="mb-6">
+                                    <h2 class="text-2xl font-bold text-gray-900 flex items-center gap-3 mb-2">
+                                        <i data-lucide="layers" class="w-7 h-7 text-indigo-600"></i>
+                                        Bölüm Yönetimi
+                                    </h2>
+                                    <p class="text-gray-600">
+                                        Bölüm oluşturun ve zengin metin editörü veya Word dosyası ile içerik ekleyin.
+                                        Editörde "/" yazarak slash komutlarını kullanabilirsiniz.
+                                    </p>
                                 </div>
+
+                                <!-- New Section Editor Container -->
+                                <div id="section-editor-container"></div>
                             </div>
                         </div>
                     </div>
-                </div>
             </div>
         </section>
     </main>
 
     <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200/80 mt-8">
+    <footer class="bg-white border-t border-slate-200/80">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             <div class="flex items-center justify-between">
                 <a href="index.html" class="flex items-center gap-2 group">
@@ -905,16 +1036,181 @@
 
 <!-- Modals -->
 
+<!-- StudyProblem Modal -->
+<div id="studyProblemModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-slate-900">Özel Problem Oluştur</h3>
+            <button onclick="StudyCardBuilder.closeStudyProblemModal()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <!-- Problem Title -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Problem Başlığı *</label>
+                <input type="text" id="studyProblemTitle"
+                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                       placeholder="Örn: Kasa Alış-Satış İşlemi">
+            </div>
+
+            <!-- Problem Content -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Problem İçeriği (HTML) *</label>
+                <div id="studyProblemContent" contenteditable="true"
+                     class="w-full min-h-[200px] px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 prose max-w-none"
+                     data-placeholder="Problem açıklamasını buraya yazın... '/' ile komutları kullanabilirsiniz."></div>
+            </div>
+
+            <!-- Hint -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">İpucu (Opsiyonel)</label>
+                <textarea id="studyProblemHint" rows="2"
+                          class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          placeholder="Öğrencilere yardımcı olacak bir ipucu..."></textarea>
+            </div>
+
+            <!-- Difficulty -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Zorluk Seviyesi *</label>
+                <select id="studyProblemDifficulty"
+                        class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                    <option value="KOLAY">Kolay</option>
+                    <option value="ORTA" selected>Orta</option>
+                    <option value="ZOR">Zor</option>
+                </select>
+            </div>
+
+            <!-- Correct Entries (Yevmiye Kayıtları) -->
+            <div>
+                <div class="flex items-center justify-between mb-2">
+                    <label class="block text-sm font-medium text-slate-700">Doğru Yevmiye Kayıtları *</label>
+                    <button type="button" onclick="StudyCardBuilder.addCorrectEntry()"
+                            class="px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 flex items-center gap-1">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Kayıt Ekle
+                    </button>
+                </div>
+                <div class="border border-slate-300 rounded-lg overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-slate-100 border-b border-slate-300">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-sm font-semibold" style="width: 120px;">Hesap Kodu</th>
+                                <th class="px-4 py-2 text-left text-sm font-semibold" style="width: 200px;">Hesap Adı</th>
+                                <th class="px-4 py-2 text-right text-sm font-semibold" style="width: 120px;">Borç</th>
+                                <th class="px-4 py-2 text-right text-sm font-semibold" style="width: 120px;">Alacak</th>
+                                <th class="px-4 py-2 text-center" style="width: 60px;">Sil</th>
+                            </tr>
+                        </thead>
+                        <tbody id="correctEntriesTable">
+                            <!-- Entries will be added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">En az bir yevmiye kaydı eklemelisiniz.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sticky bottom-0 bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-end gap-3">
+            <button type="button" onclick="StudyCardBuilder.closeStudyProblemModal()"
+                    class="px-4 py-2 text-slate-700 hover:bg-slate-100 border border-slate-300 rounded-lg">
+                İptal
+            </button>
+            <button type="button" onclick="StudyCardBuilder.saveStudyProblem()"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                Kaydet
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- StudyQuiz Modal -->
+<div id="studyQuizModal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-slate-900">Özel Soru Oluştur</h3>
+            <button onclick="StudyCardBuilder.closeStudyQuizModal()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-6">
+            <!-- Quiz Title -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Soru Başlığı *</label>
+                <input type="text" id="studyQuizTitle"
+                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                       placeholder="Örn: Temel Muhasebe Soruları">
+            </div>
+
+            <!-- Quiz Description -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Açıklama (Opsiyonel)</label>
+                <textarea id="studyQuizDescription" rows="2"
+                          class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          placeholder="Soru seti hakkında kısa açıklama..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <!-- Time Limit -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Süre Limiti (Dakika)</label>
+                    <input type="number" id="studyQuizTimeLimit" min="0"
+                           class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="Örn: 30">
+                </div>
+
+                <!-- Pass Percentage -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Geçme Yüzdesi (%) *</label>
+                    <input type="number" id="studyQuizPassPercentage" min="0" max="100" value="70"
+                           class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+            </div>
+
+            <!-- Questions -->
+            <div>
+                <div class="flex items-center justify-between mb-3">
+                    <label class="block text-sm font-medium text-slate-700">Sorular *</label>
+                    <button type="button" onclick="StudyCardBuilder.addQuizQuestion()"
+                            class="px-3 py-1 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 flex items-center gap-1">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        Soru Ekle
+                    </button>
+                </div>
+                <div id="quizQuestionsList" class="space-y-4">
+                    <!-- Questions will be added here -->
+                </div>
+                <p class="text-xs text-slate-500 mt-2">En az bir soru eklemelisiniz.</p>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sticky bottom-0 bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-end gap-3">
+            <button type="button" onclick="StudyCardBuilder.closeStudyQuizModal()"
+                    class="px-4 py-2 text-slate-700 hover:bg-slate-100 border border-slate-300 rounded-lg">
+                İptal
+            </button>
+            <button type="button" onclick="StudyCardBuilder.saveStudyQuiz()"
+                    class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700">
+                Kaydet
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- Topic Modal -->
 <div id="topicModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-lg max-w-md w-full p-6">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-slate-900" id="topicModalTitle">Yeni Konu</h3>
-            <button onclick="closeTopicModal()" class="text-slate-400 hover:text-slate-600">
+            <button onclick="QuizManagement.closeTopicModal()" class="text-slate-400 hover:text-slate-600">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <form id="topicForm" onsubmit="saveTopic(event)">
+        <form id="topicForm" onsubmit="QuizManagement.saveTopic(event)">
             <input type="hidden" id="topicId">
             <div class="space-y-4">
                 <div>
@@ -927,7 +1223,7 @@
                 </div>
             </div>
             <div class="flex justify-end gap-3 mt-6">
-                <button type="button" onclick="closeTopicModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                <button type="button" onclick="QuizManagement.closeTopicModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
                     İptal
                 </button>
                 <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
@@ -943,11 +1239,11 @@
     <div class="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-slate-900" id="quizModalTitle">Yeni Quiz</h3>
-            <button onclick="closeQuizModal()" class="text-slate-400 hover:text-slate-600">
+            <button onclick="QuizManagement.closeQuizModal()" class="text-slate-400 hover:text-slate-600">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <form id="quizForm" onsubmit="saveQuiz(event)">
+        <form id="quizForm" onsubmit="QuizManagement.saveQuiz(event)">
             <input type="hidden" id="quizId">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2">
@@ -988,7 +1284,7 @@
                 </div>
             </div>
             <div class="flex justify-end gap-3 mt-6">
-                <button type="button" onclick="closeQuizModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                <button type="button" onclick="QuizManagement.closeQuizModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
                     İptal
                 </button>
                 <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
@@ -1004,11 +1300,11 @@
     <div class="bg-white rounded-lg max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-slate-900" id="questionModalTitle">Yeni Soru</h3>
-            <button onclick="closeQuestionModal()" class="text-slate-400 hover:text-slate-600">
+            <button onclick="QuestionManagement.closeQuestionModal()" class="text-slate-400 hover:text-slate-600">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <form id="questionForm" onsubmit="saveQuestion(event)">
+        <form id="questionForm" onsubmit="QuestionManagement.saveQuestion(event)">
             <input type="hidden" id="questionId">
             <input type="hidden" id="questionQuizId">
             <div class="space-y-4">
@@ -1031,7 +1327,7 @@
                 <div>
                     <div class="flex justify-between items-center mb-3">
                         <label class="block text-sm font-medium text-slate-700">Şıklar *</label>
-                        <button type="button" onclick="addOption()" class="text-sm text-slate-600 hover:text-slate-800 flex items-center gap-1">
+                        <button type="button" onclick="QuestionManagement.addOption()" class="text-sm text-slate-600 hover:text-slate-800 flex items-center gap-1">
                             <i data-lucide="plus" class="w-4 h-4"></i>
                             Şık Ekle
                         </button>
@@ -1042,7 +1338,7 @@
                 </div>
             </div>
             <div class="flex justify-end gap-3 mt-6">
-                <button type="button" onclick="closeQuestionModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                <button type="button" onclick="QuestionManagement.closeQuestionModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
                     İptal
                 </button>
                 <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
@@ -1053,142 +1349,708 @@
     </div>
 </div>
 
-<!-- Study Card Modal -->
+<!-- Bulk Question Import Modal -->
+<div id="bulkQuestionImportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center gap-3">
+                <h3 class="text-lg font-semibold text-slate-900">Toplu Soru İçe Aktarma</h3>
+                <div id="questionCounterContainer" class="relative hidden">
+                    <button id="questionCounter" onclick="QuestionManagement.toggleQuestionDropdown()" class="text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full hover:bg-slate-200 transition-colors flex items-center gap-1.5">
+                        <span id="questionCounterText">Soru 1 / 1</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <div id="questionDropdown" class="hidden absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-slate-200 z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
+                        <!-- Dropdown content populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            <div id="viewToggleButtons" class="hidden inline-flex rounded-lg border border-slate-300 overflow-hidden">
+                <button id="singleViewBtn" onclick="QuestionManagement.switchView('single')" class="px-4 py-1.5 text-sm font-medium bg-slate-800 text-white hover:bg-slate-900 transition-colors">
+                    Tek
+                </button>
+                <button id="allViewBtn" onclick="QuestionManagement.switchView('all')" class="px-4 py-1.5 text-sm font-medium bg-white text-slate-700 hover:bg-slate-50 transition-colors">
+                    Tümü
+                </button>
+            </div>
+            <button onclick="QuestionManagement.closeBulkImportModal()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Instructions -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex gap-3">
+                    <i data-lucide="info" class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                    <div class="text-sm text-blue-900">
+                        <p class="font-medium mb-1">JSON Dosyası Yükleme</p>
+                        <p class="text-blue-700">JSON formatında soru dosyası yükleyerek toplu soru ekleyebilirsiniz. Örnek şablon için aşağıdaki linke tıklayın.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download Template -->
+            <div>
+                <a href="/assets/templates/bulk-question-import-template.json" download class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Örnek Şablon İndir
+                </a>
+            </div>
+
+            <!-- Drag & Drop Zone -->
+            <div id="dragDropZone" class="relative border-2 border-dashed border-slate-300 rounded-lg p-8 text-center hover:border-slate-400 transition-colors cursor-pointer bg-slate-50"
+                 ondrop="QuestionManagement.handleDrop(event)"
+                 ondragover="QuestionManagement.handleDragOver(event)"
+                 ondragleave="QuestionManagement.handleDragLeave(event)"
+                 onclick="document.getElementById('bulkQuestionImportFile').click()">
+                <div class="flex flex-col items-center gap-3">
+                    <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center">
+                        <i data-lucide="upload-cloud" class="w-8 h-8 text-slate-600"></i>
+                    </div>
+                    <div>
+                        <p class="text-base font-medium text-slate-900 mb-1">Dosyayı buraya sürükle</p>
+                        <p class="text-sm text-slate-600">veya <span class="text-slate-800 font-medium">tıklayarak seç</span></p>
+                    </div>
+                    <p class="text-xs text-slate-500">Sadece .json dosyaları kabul edilir</p>
+                </div>
+                <input type="file" id="bulkQuestionImportFile" accept=".json" class="hidden" onchange="QuestionManagement.handleFileSelect(event)">
+            </div>
+
+            <!-- Summary Card -->
+            <div id="questionSummaryCard" class="hidden space-y-4">
+                <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-5 border border-slate-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="file-check-2" class="w-5 h-5 text-slate-700"></i>
+                            Dosya Özeti
+                        </h4>
+                        <button onclick="QuestionManagement.directImport()" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors text-sm font-medium">
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                            Direkt İçe Aktar
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-white rounded-lg p-4 border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <i data-lucide="list" class="w-5 h-5 text-blue-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-2xl font-bold text-slate-900" id="summaryQuestionCount">0</p>
+                                    <p class="text-xs text-slate-600">Toplam Soru</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                    <i data-lucide="star" class="w-5 h-5 text-green-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-2xl font-bold text-slate-900" id="summaryTotalPoints">0</p>
+                                    <p class="text-xs text-slate-600">Toplam Puan</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 border border-slate-200">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
+                                    <i data-lucide="trending-up" class="w-5 h-5 text-purple-600"></i>
+                                </div>
+                                <div>
+                                    <p class="text-2xl font-bold text-slate-900" id="summaryAvgPoints">0</p>
+                                    <p class="text-xs text-slate-600">Ortalama Puan</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-slate-200">
+                        <button onclick="QuestionManagement.startPreview()" class="w-full inline-flex items-center justify-center gap-2 px-4 py-2 bg-white border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors text-sm font-medium">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                            Önizleme ile Devam Et
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Area -->
+            <div id="bulkQuestionImportPreview" class="hidden">
+                <div class="border border-slate-200 rounded-lg p-4 bg-white">
+                    <div id="bulkQuestionImportPreviewContent"></div>
+                </div>
+            </div>
+
+            <!-- Import Results -->
+            <div id="bulkQuestionImportResults" class="hidden">
+                <div class="border border-slate-200 rounded-lg p-4">
+                    <h4 class="text-sm font-semibold text-slate-900 mb-3">İçe Aktarma Sonuçları</h4>
+                    <div class="space-y-2 mb-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">Toplam Soru:</span>
+                            <span id="totalQuestions" class="font-medium text-slate-900">0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-green-600">Başarılı:</span>
+                            <span id="successQuestionCount" class="font-medium text-green-700">0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-red-600">Başarısız:</span>
+                            <span id="failureQuestionCount" class="font-medium text-red-700">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Error Details -->
+                    <div id="questionErrorDetails" class="hidden">
+                        <h5 class="text-sm font-medium text-slate-900 mb-2">Hata Detayları</h5>
+                        <div id="questionErrorList" class="space-y-2 max-h-40 overflow-y-auto">
+                            <!-- Errors will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Footer -->
+        <div id="questionNavigation" class="hidden flex justify-between items-center gap-3 mt-6 pt-4 border-t border-slate-200">
+            <button type="button" id="prevQuestionBtn" onclick="QuestionManagement.showPreviousQuestion()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="flex items-center gap-2">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                    Önceki
+                </span>
+            </button>
+            <button type="button" onclick="QuestionManagement.closeBulkImportModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                İptal
+            </button>
+            <button type="button" id="nextQuestionBtn" onclick="QuestionManagement.showNextQuestion()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span id="nextQuestionBtnContent" class="flex items-center gap-2">
+                    İlerle
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </span>
+            </button>
+        </div>
+
+        <!-- Results Footer -->
+        <div id="resultsFooter" class="hidden flex justify-center items-center gap-3 mt-6 pt-4 border-t border-slate-200">
+            <button type="button" onclick="QuestionManagement.closeAfterImport()" class="px-6 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+                Kapat
+            </button>
+        </div>
+
+
+    </div>
+</div>
+
+<!-- Study Card Modal (Enhanced with Dynamic Sections) -->
 <div id="studyCardModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200">
+            <h3 class="text-lg font-semibold text-slate-900" id="studyCardModalTitle">Yeni Öğrenme Kartı</h3>
+            <button onclick="StudyManagement.closeStudyCardModal()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+        <form id="studyCardForm" onsubmit="StudyManagement.saveStudyCardWithSections(event); return false;" class="flex flex-col max-h-[calc(90vh-80px)]">
+            <div class="p-6 overflow-y-auto">
+                <input type="hidden" id="studyCardId">
+
+                <!-- Card Details Section -->
+                <div class="space-y-4 mb-6">
+                    <h4 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                        <i data-lucide="credit-card" class="w-4 h-4"></i>
+                        Kart Bilgileri
+                    </h4>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Başlık *</label>
+                        <input type="text" id="studyCardTitle" required maxlength="200" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-1">Açıklama</label>
+                        <textarea id="studyCardDescription" rows="2" maxlength="500" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400"></textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-700 mb-1">Sıra</label>
+                            <input type="number" id="studyCardOrder" min="0" value="0" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
+                        </div>
+                        <div class="flex items-end">
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="studyCardActive" checked class="w-4 h-4 text-slate-800 border-slate-300 rounded focus:ring-slate-200">
+                                <label for="studyCardActive" class="text-sm font-medium text-slate-700">Aktif</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Sections -->
+                <div class="border-t border-slate-200 pt-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="layers" class="w-4 h-4"></i>
+                            Bölümler
+                            <span class="text-xs font-normal text-slate-500">(İsteğe bağlı)</span>
+                        </h4>
+                        <button type="button" onclick="StudyManagement.addDynamicSection()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-800 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                            Bölüm Ekle
+                        </button>
+                    </div>
+
+                    <!-- Sections Container -->
+                    <div id="dynamicSectionsContainer" class="space-y-3">
+                        <div class="text-center py-8 text-slate-400 text-sm" id="noSectionsMessage">
+                            <i data-lucide="inbox" class="w-8 h-8 mx-auto mb-2 opacity-50"></i>
+                            Henüz bölüm eklenmedi
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="border-t border-slate-200 px-6 py-4 bg-slate-50">
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="StudyManagement.closeStudyCardModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                        İptal
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Card Section Modal (Simplified - Container only) -->
+<div id="cardSectionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-lg max-w-2xl w-full p-6">
         <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold text-slate-900" id="studyCardModalTitle">Yeni Öğrenme Kartı</h3>
-            <button onclick="closeStudyCardModal()" class="text-slate-400 hover:text-slate-600">
-                <i data-lucide="x" class="w-5 h-5"></i>
-            </button>
-        </div>
-        <form id="studyCardForm" onsubmit="saveStudyCard(event)">
-            <input type="hidden" id="studyCardId">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Başlık *</label>
-                    <input type="text" id="studyCardTitle" required maxlength="200" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Açıklama</label>
-                    <textarea id="studyCardDescription" rows="3" maxlength="500" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400"></textarea>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">İkon</label>
-                        <select id="studyCardIcon" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                            <option value="book-open">book-open (📖)</option>
-                            <option value="book">book (📚)</option>
-                            <option value="calculator">calculator (🔢)</option>
-                            <option value="chart-bar">chart-bar (📊)</option>
-                            <option value="file-text">file-text (📄)</option>
-                            <option value="briefcase">briefcase (💼)</option>
-                            <option value="trending-up">trending-up (📈)</option>
-                            <option value="layers">layers (🗂️)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-slate-700 mb-1">Renk</label>
-                        <select id="studyCardColor" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                            <option value="blue">Mavi</option>
-                            <option value="green">Yeşil</option>
-                            <option value="purple">Mor</option>
-                            <option value="orange">Turuncu</option>
-                            <option value="red">Kırmızı</option>
-                            <option value="yellow">Sarı</option>
-                            <option value="pink">Pembe</option>
-                            <option value="indigo">İndigo</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Sıra</label>
-                    <input type="number" id="studyCardOrder" min="0" value="0" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                </div>
-                <div class="flex items-center gap-2">
-                    <input type="checkbox" id="studyCardActive" checked class="w-4 h-4 text-slate-800 border-slate-300 rounded focus:ring-slate-200">
-                    <label for="studyCardActive" class="text-sm font-medium text-slate-700">Aktif</label>
-                </div>
-            </div>
-            <div class="flex justify-end gap-3 mt-6">
-                <button type="button" onclick="closeStudyCardModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
-                    İptal
-                </button>
-                <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
-                    Kaydet
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<!-- Card Section Modal -->
-<div id="cardSectionModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-lg max-w-3xl w-full p-6 max-h-[90vh] overflow-y-auto">
-        <div class="flex justify-between items-center mb-4">
             <h3 class="text-lg font-semibold text-slate-900" id="cardSectionModalTitle">Yeni Bölüm</h3>
-            <button onclick="closeCardSectionModal()" class="text-slate-400 hover:text-slate-600">
+            <button onclick="StudyManagement.closeCardSectionModal()" class="text-slate-400 hover:text-slate-600">
                 <i data-lucide="x" class="w-5 h-5"></i>
             </button>
         </div>
-        <form id="cardSectionForm" onsubmit="saveCardSection(event)">
+        <form id="cardSectionForm" onsubmit="StudyManagement.saveCardSection(event); return false;">
             <input type="hidden" id="cardSectionId">
             <input type="hidden" id="cardSectionCardId">
             <div class="space-y-4">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-start gap-3">
+                        <div class="text-blue-600 mt-0.5">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-blue-900 mb-1">Karma İçerik Sistemi</h4>
+                            <p class="text-sm text-blue-800">Bölüm sadece bir konteynerdir. Bölümü kaydettikten sonra, içine istediğiniz sırada metin, problem ve test ekleyebilirsiniz.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Content Generation Info -->
+                <div class="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-lg p-4 mb-4">
+                    <div class="flex items-start gap-3">
+                        <div class="text-purple-600 mt-0.5">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="font-semibold text-purple-900 mb-1 flex items-center gap-2">
+                                🤖 AI ile İçerik Üretimi
+                                <span class="text-xs bg-purple-200 text-purple-800 px-2 py-0.5 rounded-full font-medium">YENİ</span>
+                            </h4>
+                            <p class="text-sm text-purple-800 mb-2">
+                                ChatGPT veya Claude gibi AI araçlarına vereceğiniz hazır prompt şablonuyla zengin içerik üretebilirsiniz.
+                            </p>
+                            <a href="/assets/templates/AI-CONTENT-GENERATION-PROMPT.md" target="_blank"
+                               class="inline-flex items-center gap-1.5 text-sm font-semibold text-purple-700 hover:text-purple-900 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                </svg>
+                                AI Prompt Şablonunu Görüntüle
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Başlık *</label>
-                    <input type="text" id="cardSectionTitle" required maxlength="200" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-slate-700 mb-1">İçerik Tipi *</label>
-                    <select id="cardSectionContentType" onchange="handleContentTypeChange()" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                        <option value="TEXT">Metin</option>
-                        <option value="PROBLEM">Problem Linki</option>
-                        <option value="QUIZ">Quiz Linki</option>
-                    </select>
-                </div>
-
-                <!-- TEXT Content -->
-                <div id="textContentDiv">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">İçerik (HTML)</label>
-                    <textarea id="cardSectionContent" rows="10" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400 font-mono text-sm"></textarea>
-                    <p class="text-xs text-slate-500 mt-1">HTML formatında içerik girebilirsiniz (h2, p, ul, li, strong vb.)</p>
-                </div>
-
-                <!-- PROBLEM Link -->
-                <div id="problemLinkDiv" class="hidden">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Problem Seç</label>
-                    <select id="cardSectionProblemId" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                        <option value="">Problem seçin...</option>
-                    </select>
-                </div>
-
-                <!-- QUIZ Link -->
-                <div id="quizLinkDiv" class="hidden">
-                    <label class="block text-sm font-medium text-slate-700 mb-1">Quiz Seç</label>
-                    <select id="cardSectionQuizId" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
-                        <option value="">Quiz seçin...</option>
-                    </select>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Bölüm Başlığı *</label>
+                    <input type="text" id="cardSectionTitle" required maxlength="200" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400" placeholder="Örn: Giriş, Tanımlar, Uygulama, Test">
                 </div>
 
                 <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Sıra</label>
                     <input type="number" id="cardSectionOrder" min="0" value="0" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
+                    <p class="text-xs text-slate-500 mt-1">Bölümlerin görüntülenme sırası</p>
                 </div>
+
                 <div class="flex items-center gap-2">
                     <input type="checkbox" id="cardSectionActive" checked class="w-4 h-4 text-slate-800 border-slate-300 rounded focus:ring-slate-200">
                     <label for="cardSectionActive" class="text-sm font-medium text-slate-700">Aktif</label>
                 </div>
             </div>
             <div class="flex justify-end gap-3 mt-6">
-                <button type="button" onclick="closeCardSectionModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                <button type="button" onclick="StudyManagement.closeCardSectionModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
                     İptal
                 </button>
                 <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
-                    Kaydet
+                    <i data-lucide="save" class="w-4 h-4 inline mr-1"></i>
+                    Bölümü Kaydet
                 </button>
             </div>
         </form>
+    </div>
+</div>
+
+<!-- Bulk Study Card Import Modal -->
+<div id="bulkStudyCardImportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white">
+            <div class="flex items-center gap-3">
+                <h3 class="text-lg font-semibold text-slate-900">Toplu Kart İçe Aktarma</h3>
+                <div id="cardCounterContainer" class="relative hidden">
+                    <button id="cardCounter" onclick="StudyManagement.toggleCardDropdown()" class="text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1.5 rounded-full hover:bg-slate-200 transition-colors flex items-center gap-1.5">
+                        <span id="cardCounterText">Kart 1 / 1</span>
+                        <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
+                    </button>
+                    <div id="cardDropdown" class="hidden absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-slate-200 z-10 min-w-[200px] max-h-[300px] overflow-y-auto">
+                        <!-- Dropdown content populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            <div id="viewToggleButtons" class="hidden inline-flex rounded-lg border border-slate-300 overflow-hidden">
+                <button id="singleViewBtn" onclick="StudyManagement.switchView('single')" class="px-4 py-1.5 text-sm font-medium bg-slate-800 text-white hover:bg-slate-900 transition-colors">
+                    Tek
+                </button>
+                <button id="allViewBtn" onclick="StudyManagement.switchView('all')" class="px-4 py-1.5 text-sm font-medium bg-white text-slate-700 hover:bg-slate-50 transition-colors">
+                    Tümü
+                </button>
+            </div>
+            <button onclick="StudyManagement.closeBulkImportModal()" class="text-slate-400 hover:text-slate-600 transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Modal Content -->
+        <div class="p-6 overflow-y-auto max-h-[calc(90vh-140px)]">
+            <!-- File Upload Area -->
+            <div id="fileUploadArea" class="space-y-4">
+                <div id="dragDropZone" class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-slate-400 hover:bg-slate-50 transition-all cursor-pointer">
+                    <i data-lucide="upload-cloud" class="w-12 h-12 mx-auto mb-3 text-slate-400"></i>
+                    <p class="text-sm font-medium text-slate-700 mb-1">JSON dosyasını buraya sürükleyin veya tıklayın</p>
+                    <p class="text-xs text-slate-500">Desteklenen format: .json</p>
+                    <input type="file" id="bulkStudyCardImportFile" accept=".json" class="hidden" onchange="StudyManagement.handleFileSelect(event)">
+                </div>
+
+                <div class="flex items-center justify-center gap-2 text-sm text-slate-600">
+                    <i data-lucide="info" class="w-4 h-4"></i>
+                    <a href="/assets/templates/bulk-study-card-import-template.json" download class="text-slate-800 hover:text-slate-900 font-medium underline">
+                        Örnek JSON şablonunu indirin
+                    </a>
+                </div>
+            </div>
+
+            <!-- Summary Card (hidden initially) -->
+            <div id="cardSummaryCard" class="hidden space-y-4">
+                <div class="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-5 border border-slate-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-sm font-semibold text-slate-900 flex items-center gap-2">
+                            <i data-lucide="file-check-2" class="w-5 h-5 text-slate-700"></i>
+                            Dosya Özeti
+                        </h4>
+                        <button onclick="StudyManagement.directImport()" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-900 transition-colors text-sm font-medium">
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                            Direkt İçe Aktar
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-white rounded-lg p-4 border border-slate-200">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i data-lucide="layers" class="w-4 h-4 text-slate-600"></i>
+                                <span class="text-xs font-medium text-slate-600">Toplam Kart</span>
+                            </div>
+                            <p class="text-2xl font-bold text-slate-900" id="summaryCardCount">0</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 border border-slate-200">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i data-lucide="book-open" class="w-4 h-4 text-slate-600"></i>
+                                <span class="text-xs font-medium text-slate-600">Toplam Bölüm</span>
+                            </div>
+                            <p class="text-2xl font-bold text-slate-900" id="summarySectionCount">0</p>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 border border-slate-200">
+                            <div class="flex items-center gap-2 mb-1">
+                                <i data-lucide="bar-chart-3" class="w-4 h-4 text-slate-600"></i>
+                                <span class="text-xs font-medium text-slate-600">Ortalama Bölüm</span>
+                            </div>
+                            <p class="text-2xl font-bold text-slate-900" id="summaryAvgSections">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview Area -->
+            <div id="bulkCardImportPreview" class="hidden mt-6 space-y-4">
+                <!-- Single Card Preview -->
+                <div id="singleCardPreview" class="border border-slate-200 rounded-xl p-5 bg-white">
+                    <div class="mb-4">
+                        <h4 class="text-base font-semibold text-slate-900" id="previewCardTitle"></h4>
+                        <p class="text-sm text-slate-600 mt-1" id="previewCardDescription"></p>
+                    </div>
+                    <div class="space-y-3" id="previewCardSections">
+                        <!-- Sections will be populated here -->
+                    </div>
+                </div>
+
+                <!-- All Cards Preview -->
+                <div id="allCardsPreview" class="hidden space-y-3 max-h-[500px] overflow-y-auto">
+                    <!-- All cards will be listed here -->
+                </div>
+            </div>
+
+            <!-- Results (hidden initially) -->
+            <div id="importResults" class="hidden mt-6">
+                <div class="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-5">
+                    <div class="flex items-start gap-3">
+                        <i data-lucide="check-circle-2" class="w-6 h-6 text-green-600 flex-shrink-0 mt-0.5"></i>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-semibold text-green-900 mb-1">İçe Aktarma Tamamlandı</h4>
+                            <p class="text-sm text-green-700" id="importSuccessMessage"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Details -->
+                <div id="cardErrorDetails" class="hidden mt-4 bg-red-50 border border-red-200 rounded-xl p-5">
+                    <div class="flex items-start gap-3 mb-3">
+                        <i data-lucide="alert-circle" class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"></i>
+                        <h4 class="text-sm font-semibold text-red-900">Hata Detayları</h4>
+                    </div>
+                    <ul id="cardErrorList" class="space-y-2 text-sm text-red-700 list-none">
+                        <!-- Errors will be populated here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="border-t border-slate-200 px-6 py-4 bg-slate-50">
+            <!-- Upload Footer -->
+            <div id="uploadFooter" class="flex items-center justify-end gap-3">
+                <button type="button" onclick="StudyManagement.closeBulkImportModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                    İptal
+                </button>
+                <button type="button" onclick="document.getElementById('bulkStudyCardImportFile').click()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+                    Dosya Seç
+                </button>
+            </div>
+
+            <!-- Preview Navigation Footer -->
+            <div id="cardNavigation" class="hidden flex items-center justify-between">
+                <button type="button" onclick="StudyManagement.previousCard()" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                    Önceki
+                </button>
+                <button type="button" onclick="StudyManagement.importCards()" class="px-5 py-2 bg-slate-800 text-white rounded-lg text-sm font-semibold hover:bg-slate-700 transition-colors">
+                    İçe Aktar
+                </button>
+                <button type="button" onclick="StudyManagement.nextCard()" class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+                    Sonraki
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+
+            <!-- Results Footer -->
+            <div id="resultsFooter" class="hidden flex items-center justify-end gap-3">
+                <button type="button" onclick="StudyManagement.closeBulkImportModal(); StudyManagement.loadStudyCards();" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+                    Tamam
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bulk Problem Import Modal -->
+<div id="bulkImportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-slate-900">Toplu Problem İçe Aktarma</h3>
+            <button onclick="closeBulkImportModal()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Instructions -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <div class="flex gap-3">
+                    <i data-lucide="info" class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                    <div class="text-sm text-blue-900">
+                        <p class="font-medium mb-1">JSON Dosyası Yükleme</p>
+                        <p class="text-blue-700">JSON formatında problem dosyası yükleyerek toplu problem ekleyebilirsiniz. Örnek şablon için aşağıdaki linke tıklayın.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Download Template -->
+            <div>
+                <a href="/assets/templates/bulk-problem-import-template.json" download class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Örnek Şablon İndir
+                </a>
+            </div>
+
+            <!-- File Upload -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">JSON Dosyası Seçin *</label>
+                <div class="relative">
+                    <input type="file" id="bulkImportFile" accept=".json" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200">
+                </div>
+                <p class="text-xs text-slate-500 mt-1">Sadece .json uzantılı dosyalar kabul edilir</p>
+            </div>
+
+            <!-- Preview Area -->
+            <div id="bulkImportPreview" class="hidden">
+                <label class="block text-sm font-medium text-slate-700 mb-2">Dosya Önizleme</label>
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4 max-h-60 overflow-y-auto">
+                    <pre id="bulkImportPreviewContent" class="text-xs text-slate-700 whitespace-pre-wrap"></pre>
+                </div>
+            </div>
+
+            <!-- Import Results -->
+            <div id="bulkImportResults" class="hidden">
+                <div class="border border-slate-200 rounded-lg p-4">
+                    <h4 class="text-sm font-semibold text-slate-900 mb-3">İçe Aktarma Sonuçları</h4>
+                    <div class="space-y-2 mb-3">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-slate-600">Toplam Problem:</span>
+                            <span id="totalProblems" class="font-medium text-slate-900">0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-green-600">Başarılı:</span>
+                            <span id="successCount" class="font-medium text-green-700">0</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-red-600">Başarısız:</span>
+                            <span id="failureCount" class="font-medium text-red-700">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Error Details -->
+                    <div id="errorDetails" class="hidden">
+                        <h5 class="text-sm font-medium text-slate-900 mb-2">Hata Detayları</h5>
+                        <div id="errorList" class="space-y-2 max-h-40 overflow-y-auto">
+                            <!-- Errors will be displayed here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-end gap-3 mt-6">
+            <button type="button" onclick="closeBulkImportModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                İptal
+            </button>
+            <button type="button" id="bulkImportButton" onclick="showBulkImportPreview()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                <span class="flex items-center gap-2">
+                    <i data-lucide="eye" class="w-4 h-4"></i>
+                    Önizle
+                </span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Problem Preview Modal -->
+<div id="problemPreviewModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg w-[1100px] h-[700px] flex flex-col p-6">
+        <div class="flex justify-between items-center mb-4">
+            <div class="flex items-center gap-3">
+                <h3 class="text-lg font-semibold text-slate-900">Eklenen Soruların Önizlemesi</h3>
+                <span id="problemCounter" class="text-sm font-medium text-slate-600 bg-slate-100 px-3 py-1 rounded-full">Soru 1 / 1</span>
+            </div>
+            <button onclick="closeProblemPreviewModal()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div id="problemPreviewContent" class="flex-1 overflow-y-auto space-y-4 pr-2">
+            <!-- Problem Title -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">Başlık</label>
+                <input type="text" id="previewTitle" class="w-full px-3 py-2 text-base font-semibold text-slate-900 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
+            </div>
+
+            <!-- Problem Content -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-1">İçerik</label>
+                <textarea id="previewContent" rows="4" class="w-full px-3 py-2 text-sm text-slate-700 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400"></textarea>
+            </div>
+
+            <!-- Hint -->
+            <div id="previewHintContainer">
+                <label class="block text-sm font-medium text-slate-700 mb-1">İpucu</label>
+                <textarea id="previewHint" rows="2" class="w-full px-3 py-2 text-sm text-slate-600 bg-white border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400"></textarea>
+            </div>
+
+            <!-- Difficulty and Tags -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Zorluk Seviyesi</label>
+                    <select id="previewDifficulty" class="w-full px-3 py-2 border border-slate-300 rounded-lg bg-white text-sm font-medium focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
+                        <option value="EASY">Kolay</option>
+                        <option value="MEDIUM">Orta</option>
+                        <option value="HARD">Zor</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Etiketler</label>
+                    <input type="text" id="previewTags" placeholder="Etiketleri virgülle ayırın" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200 focus:border-slate-400">
+                </div>
+            </div>
+
+            <!-- Correct Entries -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">Doğru Cevaplar</label>
+                <div class="border border-slate-200 rounded-lg overflow-hidden">
+                    <table class="min-w-full divide-y divide-slate-200">
+                        <thead class="bg-slate-50">
+                            <tr>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-slate-700">Hesap Kodu</th>
+                                <th class="px-4 py-2 text-left text-xs font-medium text-slate-700">Hesap Adı</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium text-slate-700">Borç</th>
+                                <th class="px-4 py-2 text-right text-xs font-medium text-slate-700">Alacak</th>
+                            </tr>
+                        </thead>
+                        <tbody id="previewEntriesBody" class="bg-white divide-y divide-slate-200">
+                            <!-- Entries will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Footer -->
+        <div class="flex justify-between items-center gap-3 mt-6 pt-4 border-t border-slate-200">
+            <button type="button" id="prevProblemBtn" onclick="showPreviousProblem()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span class="flex items-center gap-2">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i>
+                    Önceki
+                </span>
+            </button>
+            <button type="button" onclick="closeProblemPreviewModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                Kapat
+            </button>
+            <button type="button" id="nextProblemBtn" onclick="showNextProblem()" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                <span id="nextBtnContent" class="flex items-center gap-2">
+                    İlerle
+                    <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </span>
+            </button>
+        </div>
     </div>
 </div>
 
@@ -1203,7 +2065,7 @@
                 <div class="text-sm font-medium text-slate-900">Başarılı</div>
                 <div id="successText" class="text-sm text-slate-600 mt-0.5">İşlem başarıyla tamamlandı.</div>
             </div>
-            <button class="p-1.5 rounded-md hover:bg-slate-50" onclick="hideModal('successModal')">
+            <button class="p-1.5 rounded-md hover:bg-slate-50" onclick="UIHelpers.hideModal('successModal')">
                 <i data-lucide="x" class="w-4 h-4 text-slate-600" style="stroke-width:1.5;"></i>
             </button>
         </div>
@@ -1221,9 +2083,425 @@
                 <div class="text-sm font-medium text-slate-900">Hata</div>
                 <div id="errorText" class="text-sm text-slate-600 mt-0.5">Bir sorun oluştu.</div>
             </div>
-            <button class="p-1.5 rounded-md hover:bg-slate-50" onclick="hideModal('errorModal')">
+            <button class="p-1.5 rounded-md hover:bg-slate-50" onclick="UIHelpers.hideModal('errorModal')">
                 <i data-lucide="x" class="w-4 h-4 text-slate-600" style="stroke-width:1.5;"></i>
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- ContentItem Management Modal -->
+<div id="contentItemManagementModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200">
+            <div>
+                <h3 class="text-lg font-semibold text-slate-900">İçerik Yönetimi</h3>
+                <p class="text-sm text-slate-500 mt-0.5" id="contentItemSectionTitle">Bölüm</p>
+            </div>
+            <button onclick="ContentItemManagement.closeManagementModal()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="flex-1 overflow-y-auto p-6">
+            <input type="hidden" id="currentSectionId">
+
+            <!-- Empty State -->
+            <div id="emptyContentState" class="hidden text-center py-12">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-slate-100 flex items-center justify-center">
+                    <i data-lucide="layers" class="w-8 h-8 text-slate-400"></i>
+                </div>
+                <h4 class="text-slate-900 font-semibold mb-1">Henüz içerik eklenmemiş</h4>
+                <p class="text-slate-500 text-sm mb-4">Bu bölüme metin, problem veya test ekleyerek başlayın</p>
+
+                <div class="flex flex-col items-center gap-3 mb-4">
+                    <button onclick="ContentItemManagement.showAddForm()" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        İlk İçeriği Ekle
+                    </button>
+                    <div class="text-sm text-slate-400">veya</div>
+                    <button onclick="ContentItemManagement.showTextImportModal()" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        <i data-lucide="file-text" class="w-4 h-4"></i>
+                        📝 Metin İçe Aktar
+                    </button>
+                </div>
+
+                <a href="/assets/templates/section-template.txt" download class="inline-flex items-center gap-1 text-xs text-slate-500 hover:text-slate-700">
+                    <i data-lucide="download" class="w-3 h-3"></i>
+                    Şablon İndir
+                </a>
+            </div>
+
+            <!-- Content Items List -->
+            <div id="contentItemsList" class="space-y-3">
+                <!-- Items will be populated dynamically -->
+            </div>
+
+            <!-- Add Content Button -->
+            <div id="addContentButton" class="hidden mt-4">
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="ContentItemManagement.showAddForm()" class="px-4 py-3 border-2 border-dashed border-slate-300 rounded-lg text-sm font-medium text-slate-600 hover:border-slate-400 hover:text-slate-700 hover:bg-slate-50 transition-all">
+                        <i data-lucide="plus" class="w-4 h-4 inline mr-2"></i>
+                        Yeni İçerik Ekle
+                    </button>
+                    <button onclick="ContentItemManagement.showTextImportModal()" class="px-4 py-3 border-2 border-dashed border-indigo-300 rounded-lg text-sm font-medium text-indigo-600 hover:border-indigo-400 hover:text-indigo-700 hover:bg-indigo-50 transition-all">
+                        <i data-lucide="file-text" class="w-4 h-4 inline mr-2"></i>
+                        📝 Metin İçe Aktar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-slate-200 bg-slate-50">
+            <div class="flex justify-between items-center">
+                <p class="text-xs text-slate-500">
+                    İpucu: İçerikleri sürükleyerek sıralayabilirsiniz
+                </p>
+                <button onclick="ContentItemManagement.closeManagementModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                    Kapat
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ContentItem Add/Edit Modal -->
+<div id="contentItemModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[60] flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 sticky top-0 bg-white">
+            <h3 class="text-lg font-semibold text-slate-900" id="contentItemModalTitle">Yeni İçerik</h3>
+            <button onclick="ContentItemManagement.closeContentItemModal()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <form id="contentItemForm" onsubmit="ContentItemManagement.saveContentItem(event); return false;" class="p-6">
+            <input type="hidden" id="contentItemId">
+            <input type="hidden" id="contentItemSectionId">
+
+            <div class="space-y-6">
+                <!-- Content Type Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">İçerik Tipi *</label>
+                    <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                        <button type="button" onclick="ContentItemManagement.selectContentType('TEXT')" data-type="TEXT" class="content-type-btn p-4 border-2 border-slate-300 rounded-lg hover:border-slate-400 hover:bg-slate-50 transition-all text-center">
+                            <i data-lucide="file-text" class="w-6 h-6 mx-auto mb-2 text-slate-600"></i>
+                            <div class="text-sm font-medium text-slate-900">Metin</div>
+                        </button>
+                        <button type="button" onclick="ContentItemManagement.selectContentType('PROBLEM')" data-type="PROBLEM" class="content-type-btn p-4 border-2 border-slate-300 rounded-lg hover:border-slate-400 hover:bg-slate-50 transition-all text-center">
+                            <i data-lucide="link" class="w-6 h-6 mx-auto mb-2 text-slate-600"></i>
+                            <div class="text-sm font-medium text-slate-900">Problem</div>
+                        </button>
+                        <button type="button" onclick="ContentItemManagement.selectContentType('QUIZ')" data-type="QUIZ" class="content-type-btn p-4 border-2 border-slate-300 rounded-lg hover:border-slate-400 hover:bg-slate-50 transition-all text-center">
+                            <i data-lucide="link" class="w-6 h-6 mx-auto mb-2 text-slate-600"></i>
+                            <div class="text-sm font-medium text-slate-900">Test</div>
+                        </button>
+                        <button type="button" onclick="ContentItemManagement.selectContentType('STUDY_PROBLEM')" data-type="STUDY_PROBLEM" class="content-type-btn p-4 border-2 border-slate-300 rounded-lg hover:border-slate-400 hover:bg-slate-50 transition-all text-center">
+                            <i data-lucide="calculator" class="w-6 h-6 mx-auto mb-2 text-slate-600"></i>
+                            <div class="text-sm font-medium text-slate-900">Özel Problem</div>
+                        </button>
+                        <button type="button" onclick="ContentItemManagement.selectContentType('STUDY_QUIZ')" data-type="STUDY_QUIZ" class="content-type-btn p-4 border-2 border-slate-300 rounded-lg hover:border-slate-400 hover:bg-slate-50 transition-all text-center">
+                            <i data-lucide="check-square" class="w-6 h-6 mx-auto mb-2 text-slate-600"></i>
+                            <div class="text-sm font-medium text-slate-900">Özel Test</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dynamic Content Form Areas -->
+                <div id="textContentForm" class="hidden">
+                    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-4">
+                        <div class="flex items-start gap-3">
+                            <div class="text-purple-600">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-purple-900 mb-1">Blok Editör</h4>
+                                <p class="text-sm text-purple-800">
+                                    Bir içeriğe <strong>birden fazla</strong> blok ekleyebilirsiniz: başlık, paragraf, liste, tablo, kod, alıntı vb.
+                                    <kbd class="px-1 py-0.5 bg-purple-200 rounded text-xs">/</kbd> yazarak blok menüsünü açın.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <label class="block text-sm font-medium text-slate-700 mb-2">İçerik Blokları *</label>
+                    <div id="blockEditorContainer"></div>
+                    <p class="text-xs text-slate-500 mt-2">
+                        💡 <strong>İpucu:</strong> İçeriği yazarken <kbd class="px-1 py-0.5 bg-slate-200 rounded">/</kbd> tuşuna basarak blok türlerini görebilirsiniz
+                    </p>
+                </div>
+
+                <div id="problemLinkForm" class="hidden">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Problem Seç *</label>
+                    <select id="problemLinkSelect" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200">
+                        <option value="">Problem seçin...</option>
+                    </select>
+                </div>
+
+                <div id="quizLinkForm" class="hidden">
+                    <label class="block text-sm font-medium text-slate-700 mb-2">Test Seç *</label>
+                    <select id="quizLinkSelect" class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-200">
+                        <option value="">Test seçin...</option>
+                    </select>
+                </div>
+
+                <div id="studyProblemForm" class="hidden space-y-4">
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="info" class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"></i>
+                            <div class="text-sm text-blue-900">
+                                <p class="font-medium mb-1">Özel Problem Formu</p>
+                                <p class="text-blue-700">Bu karta özel muhasebe problemi oluşturabilirsiniz. Detaylı form yakında eklenecektir.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Problem Başlığı *</label>
+                        <input type="text" id="studyProblemTitle" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Problem İçeriği *</label>
+                        <textarea id="studyProblemContent" rows="6" class="w-full px-4 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                </div>
+
+                <div id="studyQuizForm" class="hidden space-y-4">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <div class="flex items-start gap-3">
+                            <i data-lucide="info" class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5"></i>
+                            <div class="text-sm text-green-900">
+                                <p class="font-medium mb-1">Özel Test Formu</p>
+                                <p class="text-green-700">Bu karta özel test oluşturabilirsiniz. Detaylı form yakında eklenecektir.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Test Başlığı *</label>
+                        <input type="text" id="studyQuizTitle" class="w-full px-4 py-2 border border-slate-300 rounded-lg">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">Test Açıklaması</label>
+                        <textarea id="studyQuizDescription" rows="4" class="w-full px-4 py-2 border border-slate-300 rounded-lg"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-slate-200">
+                <button type="button" onclick="ContentItemManagement.closeContentItemModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                    İptal
+                </button>
+                <button type="submit" class="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium hover:bg-slate-700 transition-colors">
+                    <i data-lucide="save" class="w-4 h-4 inline mr-1"></i>
+                    Kaydet
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Text Import Modal -->
+<div id="textImportModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-[70] flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200">
+            <div>
+                <h3 class="text-lg font-semibold text-slate-900">📝 Metin İçe Aktar</h3>
+                <p class="text-sm text-slate-500 mt-0.5">Word'den kopyaladığınız metni yapıştırın</p>
+            </div>
+            <button onclick="ContentItemManagement.closeTextImportModal()" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div class="flex-1 overflow-y-auto p-6">
+            <!-- Instructions -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+                <div class="flex items-start gap-3">
+                    <div class="text-blue-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-semibold text-blue-900 mb-2">Nasıl Kullanılır?</h4>
+                        <ol class="text-sm text-blue-800 space-y-1 list-decimal list-inside">
+                            <li><a href="/assets/templates/section-template.txt" download class="underline font-medium">Şablon dosyasını indirin</a></li>
+                            <li>Word'de açın ve içeriğinizi yazın (işaretleyicileri kullanın)</li>
+                            <li>Tüm içeriği kopyalayın (Ctrl+A → Ctrl+C)</li>
+                            <li>Aşağıdaki alana yapıştırın (Ctrl+V)</li>
+                            <li>"İçe Aktar" butonuna tıklayın</li>
+                        </ol>
+                        <div class="mt-3 pt-3 border-t border-blue-200">
+                            <p class="text-sm text-blue-900 font-medium mb-1">📚 İşaretleyiciler:</p>
+                            <div class="grid grid-cols-2 gap-x-4 gap-y-1 text-xs text-blue-700">
+                                <div><kbd class="px-1 bg-blue-100 rounded">##</kbd> Başlık</div>
+                                <div><kbd class="px-1 bg-blue-100 rounded">*</kbd> Liste</div>
+                                <div><kbd class="px-1 bg-blue-100 rounded">```</kbd> Kod</div>
+                                <div><kbd class="px-1 bg-blue-100 rounded">></kbd> Alıntı</div>
+                                <div><kbd class="px-1 bg-blue-100 rounded">|</kbd> Tablo</div>
+                                <div><kbd class="px-1 bg-blue-100 rounded">---</kbd> Ayırıcı</div>
+                            </div>
+                            <a href="/assets/templates/SECTION-CONTENT-TEMPLATE.md" target="_blank" class="inline-block mt-2 text-xs text-blue-700 hover:text-blue-900 underline">
+                                📖 Detaylı Kullanım Kılavuzu
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Text Input Area -->
+            <div>
+                <label class="block text-sm font-medium text-slate-700 mb-2">
+                    İçerik Metni *
+                    <span class="text-xs text-slate-500 ml-2">(Word'den kopyalayıp yapıştırın)</span>
+                </label>
+                <textarea
+                    id="textImportContent"
+                    rows="18"
+                    class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-400 font-mono text-sm"
+                    placeholder="Buraya Word'den kopyaladığınız metni yapıştırın...
+
+Örnek:
+## Ana Başlık
+
+Paragraf metni...
+
+* Madde 1
+* Madde 2
+
+```
+Kod bloğu
+```
+"
+                ></textarea>
+                <p class="text-xs text-slate-500 mt-2">
+                    💡 <strong>İpucu:</strong> Metin yapıştırdıktan sonra önizleme otomatik olarak güncellenecektir
+                </p>
+            </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="px-6 py-4 border-t border-slate-200 bg-slate-50">
+            <div class="flex justify-between items-center">
+                <div class="text-xs text-slate-500">
+                    <span id="importBlockCount">0</span> blok tespit edildi
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="ContentItemManagement.closeTextImportModal()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 transition-colors">
+                        İptal
+                    </button>
+                    <button onclick="ContentItemManagement.parseAndImportText()" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition-colors">
+                        <i data-lucide="upload" class="w-4 h-4 inline mr-1"></i>
+                        İçe Aktar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Learning Cards Manager - Card Modal -->
+<div id="lcmCardModal" class="hidden fixed inset-0 bg-black/50 z-50 items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="sticky top-0 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between">
+            <h3 class="text-xl font-bold text-slate-900">Öğrenme Kartı</h3>
+            <button id="lcmCancelCardBtn" class="text-slate-400 hover:text-slate-600">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <div class="p-6 space-y-4">
+            <input type="hidden" id="lcmCardId">
+
+            <!-- Title -->
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Başlık *</label>
+                <input type="text" id="lcmCardTitle"
+                       class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                       placeholder="Örn: Cari İşlemler" required>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Açıklama</label>
+                <textarea id="lcmCardDescription" rows="3"
+                          class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                          placeholder="Kart açıklaması..."></textarea>
+            </div>
+
+            <!-- Icon & Color -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">İkon</label>
+                    <input type="text" id="lcmCardIcon"
+                           class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="book, calculator...">
+                    <p class="text-xs text-slate-500 mt-1">Lucide icon adı</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Renk</label>
+                    <input type="text" id="lcmCardColor"
+                           class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+                           placeholder="blue, green, purple...">
+                </div>
+            </div>
+
+            <!-- Display Order & Active -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Sıra</label>
+                    <input type="number" id="lcmCardDisplayOrder" min="0"
+                           class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+                </div>
+                <div class="flex items-center pt-8">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="lcmCardIsActive" checked
+                               class="w-5 h-5 text-indigo-600 border-slate-300 rounded focus:ring-indigo-500">
+                        <span class="text-sm font-semibold text-slate-700">Aktif</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="sticky bottom-0 bg-slate-50 border-t border-slate-200 px-6 py-4 flex items-center justify-end gap-3">
+            <button type="button" id="lcmCancelCardBtn2"
+                    class="px-4 py-2 text-slate-700 hover:bg-slate-100 border border-slate-300 rounded-lg">
+                İptal
+            </button>
+            <button type="button" id="lcmSaveCardBtn"
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 font-medium">
+                Kaydet
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirmModal" class="hidden fixed inset-0 z-50 items-center justify-center">
+    <div class="absolute inset-0 bg-slate-900/40"></div>
+    <div class="relative bg-white w-full max-w-md mx-auto rounded-2xl border border-slate-200 shadow-xl p-6">
+        <div class="flex flex-col gap-4">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="alert-triangle" class="w-6 h-6" style="stroke-width:1.5;"></i>
+                </div>
+                <div class="flex-1">
+                    <div class="text-base font-semibold text-slate-900">Emin misiniz?</div>
+                    <div id="confirmText" class="text-sm text-slate-600 mt-1">Bu işlemi gerçekleştirmek istediğinizden emin misiniz?</div>
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 pt-2">
+                <button type="button" onclick="UIHelpers.cancelConfirm()" class="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-800 border border-slate-300 rounded-lg hover:bg-slate-50 transition-colors">
+                    İptal
+                </button>
+                <button type="button" id="confirmButton" onclick="UIHelpers.executeConfirm()" class="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
+                    Sil
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -1232,6 +2510,103 @@
     document.getElementById("year").textContent = new Date().getFullYear();
     lucide.createIcons();
 </script>
-<script src="http://localhost:8080/assets/js/pages/admin.js"></script>
+
+<!-- Core Utilities -->
+<script src="/assets/js/utils/logger.js"></script>
+<script src="/assets/js/utils/storage.js"></script>
+
+<!-- Helper Modules -->
+<script src="/assets/js/modules/admin/formatters.js"></script>
+<script src="/assets/js/modules/admin/ui-helpers.js"></script>
+<script src="/assets/js/modules/admin/account-helpers.js"></script>
+<script src="/assets/js/modules/admin/navigation.js"></script>
+<script src="/assets/js/modules/admin/pagination.js"></script>
+
+<!-- Domain Modules -->
+<script src="/assets/js/modules/admin/user-management.js"></script>
+<script src="/assets/js/modules/admin/problem-management.js"></script>
+<script src="/assets/js/modules/admin/bulk-import.js"></script>
+<script src="/assets/js/modules/admin/quiz-management.js"></script>
+<script src="/assets/js/modules/admin/question-management.js"></script>
+<!-- OLD: Content Item Management (Deprecated) -->
+<!-- <script src="/assets/js/modules/admin/content-item-management.js"></script> -->
+<!-- <script src="/assets/js/modules/admin/simple-block-editor.js"></script> -->
+<!-- <script src="/assets/js/modules/admin/study-section-manager.js"></script> -->
+
+<!-- NEW: Rich Text Editor with Slash Commands -->
+<script src="/assets/js/modules/admin/rich-text-editor.js"></script>
+<script src="/assets/js/modules/admin/word-importer.js"></script>
+<script src="/assets/js/modules/admin/section-editor.js"></script>
+
+<!-- Main Controller (coordinates all modules) -->
+<script src="/assets/js/modules/admin/admin-controller.js"></script>
+
+<!-- Study Card Management Modules -->
+<script src="/assets/js/modules/admin/study-card-crud.js"></script>
+<script>
+    // Initialize Study Card Management with lazy loading
+    document.addEventListener('DOMContentLoaded', async () => {
+        // Track initialization state
+        const initializedSections = new Set();
+
+        // Store original showSection if it exists
+        const originalShowSection = window.showSection;
+
+        // Extend showSection to initialize managers on first show
+        window.showSection = function(sectionId) {
+            // Call original function first
+            if (originalShowSection) {
+                originalShowSection(sectionId);
+            }
+
+            // Force hide/show study-cards-crud section
+            const studyCardsSection = document.getElementById('study-cards-crud');
+            if (studyCardsSection) {
+                if (sectionId === 'study-cards-crud') {
+                    studyCardsSection.style.display = 'block';
+                    studyCardsSection.classList.remove('hidden');
+                } else {
+                    studyCardsSection.style.display = 'none';
+                    studyCardsSection.classList.add('hidden');
+                    // Don't clear innerHTML - just hide to prevent event handler errors
+                }
+            }
+
+            // Force hide/show study-sections-management section
+            const studySectionsSection = document.getElementById('study-sections-management');
+            if (studySectionsSection) {
+                if (sectionId === 'study-sections-management') {
+                    studySectionsSection.style.display = 'block';
+                    studySectionsSection.classList.remove('hidden');
+                } else {
+                    studySectionsSection.style.display = 'none';
+                    studySectionsSection.classList.add('hidden');
+                    // Don't clear innerHTML - just hide to prevent event handler errors
+                }
+            }
+
+            // Initialize managers when their sections are shown for the first time
+            if (sectionId === 'study-cards-crud' && !initializedSections.has(sectionId)) {
+                initializedSections.add(sectionId);
+                if (window.studyCardCRUD) {
+                    console.log('Initializing Study Card CRUD...');
+                    window.studyCardCRUD.init();
+                }
+            } else if (sectionId === 'study-sections-management' && !initializedSections.has(sectionId)) {
+                initializedSections.add(sectionId);
+                // Initialize Section Editor (script already loaded statically)
+                console.log('Initializing Section Editor...');
+                if (window.SectionEditor) {
+                    window.sectionEditor = new SectionEditor();
+                    window.sectionEditor.init().catch(err => console.error('Section Editor init failed:', err));
+                } else {
+                    console.error('SectionEditor class not found');
+                }
+            }
+        };
+
+        console.log('Study Card Management modules ready (lazy loading enabled)');
+    });
+</script>
 </body>
 </html>

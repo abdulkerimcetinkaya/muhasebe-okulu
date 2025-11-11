@@ -73,19 +73,16 @@ public class CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Kategori bulunamadı: " + id));
 
-        // Kategoriye bağlı problemler varsa silme
-        if (category.getProblems() != null && !category.getProblems().isEmpty()) {
-            throw new IllegalStateException("Bu kategoriye bağlı " + category.getProblems().size() +
-                    " problem var. Önce bu problemleri başka kategoriye taşıyın veya silin.");
-        }
+        // Not: Problem-Category relationship has been removed
+        // Categories can now be deleted freely
 
         categoryRepository.delete(category);
     }
 
     private CategoryDTO convertToDTO(Category category) {
         CategoryDTO dto = modelMapper.map(category, CategoryDTO.class);
-        // Problem sayısını set et
-        dto.setProblemCount(category.getProblems() != null ? (long) category.getProblems().size() : 0L);
+        // Problem-Category relationship removed, setting problem count to 0
+        dto.setProblemCount(0L);
         return dto;
     }
 }

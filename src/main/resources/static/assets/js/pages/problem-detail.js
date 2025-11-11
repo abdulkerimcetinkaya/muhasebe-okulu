@@ -16,9 +16,9 @@ const reviewMode = params.get("reviewMode") === "true"; // İnceleme modu
 
 // Difficulty mappings
 const difficultyColors = {
-    EASY: "bg-emerald-100 text-emerald-800",
-    MEDIUM: "bg-amber-100 text-amber-800",
-    HARD: "bg-rose-100 text-rose-800"
+    EASY: "bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-400",
+    MEDIUM: "bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-400",
+    HARD: "bg-rose-100 dark:bg-rose-900/30 text-rose-800 dark:text-rose-400"
 };
 
 const difficultyLabels = {
@@ -158,7 +158,7 @@ function disableProblemForm() {
     // Tüm input'ları disable et
     document.querySelectorAll('#journalEntries input').forEach(input => {
         input.disabled = true;
-        input.classList.add('bg-slate-100', 'cursor-not-allowed');
+        input.classList.add('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
     });
 
     // Tüm butonları disable et
@@ -182,11 +182,11 @@ function disableProblemForm() {
     // Uyarı mesajı göster
     const tableContainer = document.getElementById('journalEntries').parentElement;
     const warningDiv = document.createElement('div');
-    warningDiv.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4';
+    warningDiv.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
     warningDiv.innerHTML = `
         <div class="flex items-start gap-3">
-            <i data-lucide="info" class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5"></i>
-            <div class="text-sm text-blue-800">
+            <i data-lucide="info" class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"></i>
+            <div class="text-sm text-blue-800 dark:text-blue-300">
                 <span class="font-medium">Bu problemi zaten çözdünüz!</span>
                 <p class="mt-1">Aynı problemi birden fazla kez gönderemezsiniz.</p>
             </div>
@@ -302,23 +302,23 @@ function addJournalRow() {
     newRow.className = 'grid grid-cols-12 gap-x-3 p-2 items-center text-sm';
     newRow.innerHTML = `
         <div class="col-span-2">
-            <input type="text" placeholder="100" class="w-full border rounded p-1 text-sm focus:ring-1 focus:ring-blue-300" oninput="updateAccountName(this)">
+            <input type="text" placeholder="100" class="w-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-slate-100 rounded p-1 text-sm focus:ring-1 focus:ring-blue-300 dark:focus:ring-blue-500" oninput="updateAccountName(this)">
         </div>
         <div class="col-span-4">
-            <input type="text" placeholder="Hesap adı otomatik gelecek..." class="w-full border-0 focus:ring-0 p-1 text-sm bg-slate-50 text-slate-600" readonly>
+            <input type="text" placeholder="Hesap adı otomatik gelecek..." class="w-full border-0 focus:ring-0 p-1 text-sm bg-slate-50 dark:bg-slate-700/50 text-slate-600 dark:text-slate-400" readonly>
         </div>
         <div class="col-span-2">
-            <input type="number" step="0.01" min="0" placeholder="0.00" class="debit-input w-full border-0 focus:ring-0 p-1 text-sm text-right" oninput="updateTotals()">
+            <input type="number" step="0.01" min="0" placeholder="0.00" class="debit-input w-full border-0 focus:ring-0 p-1 text-sm text-right bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" oninput="updateTotals()">
         </div>
         <div class="col-span-2">
-            <input type="number" step="0.01" min="0" placeholder="0.00" class="credit-input w-full border-0 focus:ring-0 p-1 text-sm text-right" oninput="updateTotals()">
+            <input type="number" step="0.01" min="0" placeholder="0.00" class="credit-input w-full border-0 focus:ring-0 p-1 text-sm text-right bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100" oninput="updateTotals()">
         </div>
         <div class="col-span-2 flex justify-end gap-2">
-            <button onclick="addJournalRow()" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-600 hover:bg-green-50 border border-green-200 rounded-md">
+            <button onclick="addJournalRow()" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
                 <i data-lucide="plus" class="w-3.5 h-3.5" style="stroke-width: 1.5;"></i>
                 Ekle
             </button>
-            <button onclick="removeJournalRow(this)" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 border border-red-200 rounded-md">
+            <button onclick="removeJournalRow(this)" class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-md">
                 <i data-lucide="trash-2" class="w-3.5 h-3.5" style="stroke-width: 1.5;"></i>
                 Sil
             </button>
@@ -465,17 +465,17 @@ function updateTotals() {
 
     if (difference < 0.01 && totalDebit > 0) {
         balance.innerHTML = '<i data-lucide="check-circle-2" class="w-4 h-4" style="stroke-width: 1.5;"></i><span>Kayıt Dengede</span>';
-        balance.className = 'flex items-center gap-2 text-green-600';
+        balance.className = 'flex items-center gap-2 text-green-600 dark:text-green-400';
     } else if (totalDebit === 0 && totalCredit === 0) {
         balance.innerHTML = '<i data-lucide="minus-circle" class="w-4 h-4" style="stroke-width: 1.5;"></i><span>Kayıt Boş</span>';
-        balance.className = 'flex items-center gap-2 text-slate-500';
+        balance.className = 'flex items-center gap-2 text-slate-500 dark:text-slate-400';
     } else {
         const farkText = difference.toLocaleString('tr-TR', {
             minimumFractionDigits: 2,
             maximumFractionDigits: 2
         });
         balance.innerHTML = '<i data-lucide="alert-triangle" class="w-4 h-4" style="stroke-width: 1.5;"></i><span>Dengesiz (Fark: ' + farkText + '₺)</span>';
-        balance.className = 'flex items-center gap-2 text-amber-600';
+        balance.className = 'flex items-center gap-2 text-amber-600 dark:text-amber-400';
     }
     lucide.createIcons();
 }
@@ -598,7 +598,7 @@ function enableReviewMode() {
     const titleEl = document.querySelector('h1.text-3xl');
     if (titleEl) {
         const badge = document.createElement('span');
-        badge.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 ml-3';
+        badge.className = 'inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-400 ml-3';
         badge.innerHTML = '<i data-lucide="eye" class="w-4 h-4 mr-1"></i>İnceleme Modu';
         titleEl.appendChild(badge);
         lucide.createIcons();
@@ -608,7 +608,7 @@ function enableReviewMode() {
     setTimeout(() => {
         document.querySelectorAll('#journalEntries input').forEach(input => {
             input.setAttribute('readonly', true);
-            input.classList.add('bg-slate-100', 'cursor-not-allowed');
+            input.classList.add('bg-slate-100', 'dark:bg-slate-700', 'cursor-not-allowed');
         });
     }, 500);
 
@@ -630,13 +630,13 @@ function enableReviewMode() {
     const mainContent = document.querySelector('.flex.flex-col.h-screen > div:nth-child(2)');
     if (mainContent) {
         const notice = document.createElement('div');
-        notice.className = 'bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4';
+        notice.className = 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4';
         notice.innerHTML = `
-            <div class="flex items-center gap-2 text-blue-700">
+            <div class="flex items-center gap-2 text-blue-700 dark:text-blue-400">
                 <i data-lucide="info" class="w-5 h-5"></i>
                 <span class="font-medium">İnceleme Modu</span>
             </div>
-            <p class="text-sm text-blue-600 mt-1">
+            <p class="text-sm text-blue-600 dark:text-blue-300 mt-1">
                 Bu problemi daha önce çözdünüz. Cevaplarınızı inceleyebilirsiniz ancak değişiklik yapamazsınız.
             </p>
         `;
@@ -654,28 +654,49 @@ function enableReviewMode() {
  * @param {Object} user - User data from localStorage
  */
 function showUserInterface(user) {
-    // Hide guest layout, show user layout
-    document.getElementById('guestLayout').classList.add('hidden');
-    document.getElementById('guestAuthButtons').classList.add('hidden');
-    document.getElementById('userLayout').classList.remove('hidden');
-    document.getElementById('userProfileMenu').classList.remove('hidden');
+    // Hide auth buttons, show user profile menu
+    const authButtons = document.getElementById('authButtons');
+    const userProfileMenu = document.getElementById('userProfileMenu');
+
+    if (authButtons) authButtons.classList.add('hidden');
+    if (userProfileMenu) userProfileMenu.classList.remove('hidden');
 
     // Set user display name
     const firstName = user.firstName || user.username;
-    const userDisplayName = document.getElementById('userDisplayName');
-    if (userDisplayName) {
-        userDisplayName.textContent = `Hoşgeldin, ${firstName}`;
+    const userNameButton = document.getElementById('userNameButton');
+    if (userNameButton) {
+        userNameButton.textContent = `Hoşgeldin, ${firstName}`;
     }
 
-    // Show admin links if admin
-    if (user.role === 'ADMIN') {
-        const adminDashboardLink = document.getElementById('adminDashboardLink');
-        const adminLink = document.getElementById('adminLink');
-        const adminQuizzesLink = document.getElementById('adminQuizzesLink');
+    // Set user initial
+    const initial = firstName ? firstName.charAt(0).toUpperCase() : 'U';
+    const userInitial = document.getElementById('userInitial');
+    const userInitialDropdown = document.getElementById('userInitialDropdown');
+    if (userInitial) userInitial.textContent = initial;
+    if (userInitialDropdown) userInitialDropdown.textContent = initial;
 
-        if (adminDashboardLink) adminDashboardLink.classList.remove('hidden');
-        if (adminLink) adminLink.classList.remove('hidden');
-        if (adminQuizzesLink) adminQuizzesLink.classList.remove('hidden');
+    // Set user name in dropdown
+    const userName = document.getElementById('userName');
+    if (userName) {
+        userName.textContent = firstName;
+    }
+
+    // Set user role
+    const userRole = document.getElementById('userRole');
+    if (userRole) {
+        if (user.role === 'ADMIN') {
+            userRole.textContent = 'Yönetici';
+        } else if (user.role === 'TEACHER') {
+            userRole.textContent = 'Öğretmen';
+        } else {
+            userRole.textContent = 'Öğrenci';
+        }
+    }
+
+    // Show admin panel link if admin
+    if (user.role === 'ADMIN') {
+        const adminPanelLink = document.getElementById('adminPanelLink');
+        if (adminPanelLink) adminPanelLink.classList.remove('hidden');
     }
 
     lucide.createIcons();
@@ -710,9 +731,23 @@ async function loadUserProfile(user) {
                 console.log('Updated localStorage with firstName:', profile.firstName);
 
                 // Navbar'ı güncelle
-                const userDisplayName = document.getElementById('userDisplayName');
-                if (userDisplayName) {
-                    userDisplayName.textContent = `Hoşgeldin, ${profile.firstName}`;
+                const userNameButton = document.getElementById('userNameButton');
+                const userName = document.getElementById('userName');
+                const initial = profile.firstName.charAt(0).toUpperCase();
+                const userInitial = document.getElementById('userInitial');
+                const userInitialDropdown = document.getElementById('userInitialDropdown');
+
+                if (userNameButton) {
+                    userNameButton.textContent = `Hoşgeldin, ${profile.firstName}`;
+                }
+                if (userName) {
+                    userName.textContent = profile.firstName;
+                }
+                if (userInitial) {
+                    userInitial.textContent = initial;
+                }
+                if (userInitialDropdown) {
+                    userInitialDropdown.textContent = initial;
                 }
             }
         }
@@ -725,10 +760,12 @@ async function loadUserProfile(user) {
  * Show guest interface for non-authenticated users
  */
 function showGuestInterface() {
-    document.getElementById('guestLayout').classList.remove('hidden');
-    document.getElementById('guestAuthButtons').classList.remove('hidden');
-    document.getElementById('userLayout').classList.add('hidden');
-    document.getElementById('userProfileMenu').classList.add('hidden');
+    const authButtons = document.getElementById('authButtons');
+    const userProfileMenu = document.getElementById('userProfileMenu');
+
+    if (authButtons) authButtons.classList.remove('hidden');
+    if (userProfileMenu) userProfileMenu.classList.add('hidden');
+
     lucide.createIcons();
 }
 

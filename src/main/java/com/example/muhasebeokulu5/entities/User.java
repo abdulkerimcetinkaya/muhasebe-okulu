@@ -58,17 +58,36 @@ public class User {
     private String education;           // Eğitim durumu
     private String university;          // Üniversite adı
 
-    // Platform İstatistikleri
+    // Platform İstatistikleri - Yıldız Sistemi
     @Builder.Default
-    private Integer dailyStreak = 0;        // Günlük seri
+    @Column(name = "total_stars")
+    private Integer totalStars = 0;         // Toplam yıldız puanı
     @Builder.Default
-    private Integer maxStreak = 0;          // Maksimum seri
-    private LocalDate lastActiveDate;       // Son aktif olduğu tarih
+    @Column(name = "bonus_stars")
+    private Integer bonusStars = 0;         // Bonus yıldızlar (ilk deneme, streak vb)
+    @Builder.Default
+    @Column(name = "current_streak")
+    private Integer currentStreak = 0;      // Günlük seri
+    @Builder.Default
+    @Column(name = "best_streak")
+    private Integer bestStreak = 0;         // Maksimum seri
+    @Column(name = "last_activity_date")
+    private LocalDate lastActivityDate;     // Son aktivite tarihi
+    @Builder.Default
+    @Column(name = "total_quizzes_completed")
+    private Integer totalQuizzesCompleted = 0;  // Tamamlanan quiz sayısı
     @Builder.Default
     private Integer totalTimeSpent = 0;     // Toplam harcanan süre (dakika)
+
+    // Eski alanlar (geriye dönük uyumluluk için - silinebilir)
     @Builder.Default
-    private Integer badgeCount = 0;         // Kazanılan rozet sayısı
-    private String badges;                  // JSON formatında rozet listesi
+    private Integer dailyStreak = 0;        // Deprecated: currentStreak kullanın
+    @Builder.Default
+    private Integer maxStreak = 0;          // Deprecated: bestStreak kullanın
+    private LocalDate lastActiveDate;       // Deprecated: lastActivityDate kullanın
+    @Builder.Default
+    private Integer badgeCount = 0;         // Deprecated: rozet sistemi kaldırıldı
+    private String badges;                  // Deprecated: rozet sistemi kaldırıldı
 
     // Tercihler
     @Builder.Default
