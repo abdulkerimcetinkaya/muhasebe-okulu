@@ -82,7 +82,9 @@ Her problemde:
 ## 🛠 Teknoloji
 
 **Backend**: Spring Boot 3.5.7, Java 17, PostgreSQL 15, Spring Security + JWT
+
 **Frontend**: Vanilla JavaScript, Tailwind CSS, Lucide Icons
+
 **Güvenlik**: JWT authentication, role-based access control, BCrypt şifreleme
 
 ## 📝 Lisans
