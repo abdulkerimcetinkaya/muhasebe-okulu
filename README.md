@@ -79,14 +79,6 @@ Her problemde:
 - Güçlü ve zayıf yönleriniz
 - Son aktiviteleriniz
 
-## 🎓 Admin Özellikleri
-
-Platform yöneticileri için gelişmiş özellikler:
-- **İçerik Yönetimi**: Problem, quiz ve öğrenme kartları ekleme/düzenleme
-- **Kullanıcı Analitikleri**: Platform kullanım istatistikleri
-- **Bulk Import**: JSON dosyası ile toplu içerik yükleme
-- **Dashboard**: Genel platform metrikleri
-
 ## 🛠 Teknoloji
 
 **Backend**: Spring Boot 3.5.7, Java 17, PostgreSQL 15, Spring Security + JWT
