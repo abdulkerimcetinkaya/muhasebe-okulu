@@ -37,23 +37,6 @@ Kişisel dashboard'unuzda çözdüğünüz problemleri, puanınızı, başarı o
 ### 🌙 Dark Mode
 Modern ve göz dostu karanlık tema ile gece çalışmalarınızı daha konforlu hale getirin. Tek tıkla açık/karanlık tema arasında geçiş yapın.
 
-## 📸 Ekran Görüntüleri
-
-### Ana Sayfa
-![Ana Sayfa](screenshots/homepage.jpg)
-
-### Dashboard
-![Dashboard](screenshots/dashboard-light.jpg)
-
-### Problem Çözme
-![Problem Çözme](screenshots/problem-solving.jpg)
-
-### Quiz Sistemi
-![Quiz](screenshots/quiz.jpg)
-
-### Çalışma Kartları
-![Çalışma Kartları](screenshots/study-cards.jpg)
-
 ## 🚀 Nasıl Kullanılır?
 
 ### 1️⃣ Kayıt Olun
