@@ -6,6 +6,8 @@ import com.example.muhasebeokulu5.entities.SolvedProblem;
 import com.example.muhasebeokulu5.service.ProblemService;
 import com.example.muhasebeokulu5.service.UserService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/problems")
 public class ProblemController {
+
+    private static final Logger log = LoggerFactory.getLogger(ProblemController.class);
 
     private final ProblemService problemService;
     private final ModelMapper modelMapper;
@@ -45,39 +49,33 @@ public class ProblemController {
             @RequestParam(required = false) String status
     ) {
         try {
-            System.out.println("🔍 Filtreleme isteği alındı:");
-            System.out.println("  - Search: " + search);
-            System.out.println("  - Difficulty: " + difficulty);
-            System.out.println("  - Status: " + status);
-            System.out.println("  - Page: " + page + ", Size: " + size);
-            System.out.println("  - Sort: " + sort[0] + ", " + sort[1]);
-            
+            log.debug("Filtreleme isteği alındı: search={}, difficulty={}, status={}, page={}, size={}, sort={},{}",
+                     search, difficulty, status, page, size, sort[0], sort[1]);
+
             Sort.Direction direction = Sort.Direction.fromString(sort[1]);
             Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sort[0]));
 
-            System.out.println("📥 Service çağrılıyor...");
-            
+            log.debug("Service çağrılıyor...");
+
             // Kullanıcı ID'sini al
             java.util.UUID userId = null;
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
                 try {
                     userId = userService.getUserIdByUsername(auth.getName());
-                    System.out.println("🔍 Kullanıcı: " + auth.getName() + " (ID: " + userId + ")");
+                    log.debug("Kullanıcı: {} (ID: {})", auth.getName(), userId);
                 } catch (Exception e) {
-                    System.err.println("❌ Kullanıcı ID alınamadı: " + e.getMessage());
+                    log.error("Kullanıcı ID alınamadı", e);
                 }
             }
-            
+
             Page<ProblemDTO> problemDTOPage = problemService.getFilteredProblemsOptimized(pageable, search, difficulty, status, userId);
-            
-            System.out.println("✅ Service sonucu: " + problemDTOPage.getTotalElements() + " problem bulundu");
-            
+
+            log.debug("Service sonucu: {} problem bulundu", problemDTOPage.getTotalElements());
+
             return ResponseEntity.ok(problemDTOPage);
         } catch (Exception e) {
-            System.err.println("❌ HATA: " + e.getClass().getName());
-            System.err.println("❌ Mesaj: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Problem filtreleme hatası", e);
             throw e;
         }
     }
@@ -98,8 +96,7 @@ public class ProblemController {
             dto.setSolved(isProblemSolvedByUser(problem));
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
-            System.err.println("❌ Problem yükleme hatası: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Problem yükleme hatası: {}", id, e);
             return ResponseEntity.badRequest().body("Problem not found: " + e.getMessage());
         }
     }
@@ -132,43 +129,33 @@ public class ProblemController {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth == null || !auth.isAuthenticated() || "anonymousUser".equals(auth.getPrincipal())) {
-                System.out.println("  ❌ Giriş yapmamış kullanıcı");
+                log.debug("Giriş yapmamış kullanıcı için çözüm kontrolü");
                 return false; // Giriş yapmamış kullanıcı
             }
-            
+
             // Giriş yapmış kullanıcının username'ini al
             String currentUsername = auth.getName();
-            System.out.println("🔍 Kontrol ediliyor - Problem: " + problem.getId() + ", Kullanıcı: " + currentUsername);
-            
+            log.debug("Problem çözüm kontrolü - Problem ID: {}, Kullanıcı: {}", problem.getId(), currentUsername);
+
             // Kullanıcının bu problemi çözüp çözmediğini kontrol et
             List<SolvedProblem> solvedProblems = problem.getSolvedProblems();
-            System.out.println("  📊 SolvedProblems sayısı: " + (solvedProblems != null ? solvedProblems.size() : "null"));
-            
+            log.debug("SolvedProblems sayısı: {}", solvedProblems != null ? solvedProblems.size() : "null");
+
             if (solvedProblems == null || solvedProblems.isEmpty()) {
-                System.out.println("  ❌ Hiç çözüm yok");
+                log.debug("Problem henüz çözülmemiş");
                 return false;
             }
-            
-            // Her solved problem'i kontrol et
-            for (SolvedProblem sp : solvedProblems) {
-                System.out.println("    - SolvedProblem User: " + (sp.getUser() != null ? sp.getUser().getUsername() : "null"));
-                System.out.println("    - Current User: " + currentUsername);
-                System.out.println("    - Match: " + (sp.getUser() != null && 
-                                   sp.getUser().getUsername() != null && 
-                                   sp.getUser().getUsername().equals(currentUsername)));
-            }
-            
+
             // GİRİŞ YAPMIŞ kullanıcının bu problemi çözüp çözmediğini kontrol et
             boolean isSolved = solvedProblems.stream()
-                    .anyMatch(sp -> sp.getUser() != null && 
-                                   sp.getUser().getUsername() != null && 
+                    .anyMatch(sp -> sp.getUser() != null &&
+                                   sp.getUser().getUsername() != null &&
                                    sp.getUser().getUsername().equals(currentUsername));
-            
-            System.out.println("  " + (isSolved ? "✅ Çözülmüş" : "❌ Çözülmemiş"));
+
+            log.debug("Problem çözüm durumu: {}", isSolved ? "Çözülmüş" : "Çözülmemiş");
             return isSolved;
         } catch (Exception e) {
-            System.err.println("Çözüm durumu kontrol hatası: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Çözüm durumu kontrol hatası", e);
             return false;
         }
     }

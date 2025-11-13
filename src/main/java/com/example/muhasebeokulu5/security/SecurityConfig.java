@@ -64,7 +64,9 @@ public class SecurityConfig {
                                 "/api/categories/*",                      // Kategori detayı (PUBLIC)
                                 "/api/quizzes",                           // Quiz listesi (PUBLIC - herkes görebilir)
                                 "/api/quizzes/*",                         // Quiz detayı (PUBLIC)
-                                "/api/study-cards/**",                    // Study cards API (controller handles auth)
+                                "/api/study-cards",                       // Study cards list (PUBLIC)
+                                "/api/study-cards/*/sections",            // Study card sections (PUBLIC)
+                                "/api/study-cards/sections/*",            // Section detail (PUBLIC)
                                 "/actuator/**",                           // Actuator endpoints (development için)
                                 "/*.html",                                // Root level HTML dosyaları
                                 "/h2-console/**"                          // H2 Console (development için)
@@ -73,6 +75,12 @@ public class SecurityConfig {
                         .requestMatchers("/api/users/**").authenticated()
                         // Quiz submission ve user quiz endpointleri authentication gerektirir
                         .requestMatchers("/api/quizzes/submit", "/api/quizzes/users/**").authenticated()
+                        // Study card progress endpoints authentication gerektirir
+                        .requestMatchers("/api/study-cards/sections/*/start",
+                                        "/api/study-cards/sections/*/complete",
+                                        "/api/study-cards/*/progress",
+                                        "/api/study-cards/progress",
+                                        "/api/study-cards/sections/*/progress").authenticated()
                         // Admin endpointleri authentication gerektirir
                         .requestMatchers("/api/admin/**").authenticated()
                         .requestMatchers("/api/correct-entries/**").authenticated()
