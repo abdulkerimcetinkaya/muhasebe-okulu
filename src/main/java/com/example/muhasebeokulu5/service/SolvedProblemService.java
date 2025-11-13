@@ -24,6 +24,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SolvedProblemService {
 
+    // Epsilon tolerance: 0.01 TL (1 kuruş) - Floating point precision hataları için
+    private static final BigDecimal EPSILON = new BigDecimal("0.01");
+
     private final ProblemRepository problemRepository;
     private final CorrectEntryRepository correctEntryRepository;
     private final SolvedProblemRepository solvedProblemRepository;
@@ -208,7 +211,10 @@ public class SolvedProblemService {
                     .map(e -> e.getCredit() != null ? e.getCredit() : BigDecimal.ZERO)
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-            return debit.compareTo(credit) == 0;
+            // Epsilon tolerance ile karşılaştırma - Floating point precision hataları için
+            // Farkın mutlak değeri epsilon'dan küçükse dengeli kabul et
+            BigDecimal difference = debit.subtract(credit).abs();
+            return difference.compareTo(EPSILON) < 0;
         } catch (Exception e) {
             throw new RuntimeException("Denge kontrolü yapılırken hata oluştu: " + e.getMessage(), e);
         }

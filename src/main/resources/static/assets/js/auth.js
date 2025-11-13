@@ -5,9 +5,9 @@
 
 const AuthService = {
     // Login işlemi
-    login: async (username, password) => {
+    login: async (email, password) => {
         try {
-            const response = await ApiService.login({ username, password });
+            const response = await ApiService.login({ email, password });
             
             if (response.token) {
                 // Token'ı localStorage'a kaydet
@@ -132,17 +132,17 @@ const AuthService = {
     },
     
     // Form validation helpers
-    validateLoginForm: (username, password) => {
+    validateLoginForm: (email, password) => {
         const errors = [];
-        
-        if (!username || username.trim().length < 3) {
-            errors.push('Kullanıcı adı en az 3 karakter olmalıdır');
+
+        if (!email || !CommonUtils.validateEmail(email)) {
+            errors.push('Geçerli bir email adresi giriniz');
         }
-        
+
         if (!password || password.length < 6) {
             errors.push('Şifre en az 6 karakter olmalıdır');
         }
-        
+
         return {
             isValid: errors.length === 0,
             errors

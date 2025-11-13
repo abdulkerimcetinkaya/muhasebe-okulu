@@ -1,10 +1,16 @@
 package com.example.muhasebeokulu5.config;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 @Component
+@ConditionalOnProperty(
+    name = "database.constraint.updater.enabled",
+    havingValue = "true",
+    matchIfMissing = true
+)
 public class DatabaseConstraintUpdater {
 
     private final JdbcTemplate jdbcTemplate;
