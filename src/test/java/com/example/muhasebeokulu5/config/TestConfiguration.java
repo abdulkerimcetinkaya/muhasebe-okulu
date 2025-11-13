@@ -7,7 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import static org.mockito.Mockito.mock;
 
 @TestConfiguration
-public class TestConfig {
+public class TestConfiguration {
 
     /**
      * Provide a mock JdbcTemplate for tests that need DatabaseConstraintUpdater

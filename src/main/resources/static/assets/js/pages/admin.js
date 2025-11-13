@@ -589,12 +589,18 @@ document.getElementById('createForm').addEventListener('submit', async (e) => {
             return;
         }
 
+        // 🎯 LEVEL SYSTEM: Get level and category values
+        const levelValue = getValue('c-level');
+        const categoryValue = getValue('c-category').trim();
+
         const problem = {
             title,
             content,
             hint: getValue('c-hint').trim(),
             tags: getValue('c-tags').trim(),
             difficulty: getValue('c-difficulty'),
+            level: levelValue ? parseInt(levelValue) : null, // 🎯 Level (1-10)
+            category: categoryValue || null, // 🎯 Category (optional)
             correctEntries: entries
         };
 

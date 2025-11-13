@@ -35,6 +35,7 @@ async function initDashboardPage() {
     showUserInterface(user);
     await CommonUtils.updateProfileMenu();
     await loadStats();
+    await loadLevelStats(); // 🎯 Load level system stats
     await loadWeeklyActivity();
     await loadRecentlySolved();
     lucide.createIcons();
@@ -153,6 +154,73 @@ async function loadStats() {
 
     } catch (error) {
         console.error('İstatistikler yüklenirken hata:', error);
+    }
+}
+
+/**
+ * 🎯 Load level system statistics
+ * Displays current level, progress, and level-up eligibility
+ */
+async function loadLevelStats() {
+    try {
+        const token = localStorage.getItem('token');
+
+        if (!token) return;
+
+        // Fetch level statistics from API
+        const response = await fetch(`${API_URL}/levels/my-stats`, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        if (response.ok) {
+            const stats = await response.json();
+
+            // Update current level display
+            document.getElementById('currentLevelDisplay').textContent = stats.currentLevel || 1;
+            document.getElementById('currentLevelPoints').textContent = stats.levelPoints || 0;
+
+            // Calculate and update progress
+            const progress = stats.progressPercentage || 0;
+            document.getElementById('levelProgressPercent').textContent = Math.round(progress);
+            document.getElementById('levelProgressBar').style.width = `${progress}%`;
+
+            // Update required points (if not max level)
+            if (!stats.maxLevelReached && stats.pointsRequired) {
+                document.getElementById('requiredLevelPoints').textContent = stats.pointsRequired;
+            } else if (stats.maxLevelReached) {
+                document.getElementById('requiredLevelPoints').textContent = 'MAX';
+            }
+
+            // Update problems solved at current level
+            if (stats.problemsSolved !== undefined) {
+                document.getElementById('problemsSolvedAtLevel').textContent = stats.problemsSolved;
+            }
+
+            // Update average attempts
+            if (stats.averageAttempts) {
+                document.getElementById('averageAttempts').textContent = stats.averageAttempts;
+            } else {
+                document.getElementById('averageAttempts').textContent = '0';
+            }
+
+            // Update level-up badge
+            const canLevelUpBadge = document.getElementById('canLevelUpBadge');
+            if (stats.canLevelUp) {
+                canLevelUpBadge.innerHTML = '<i data-lucide="check-circle" class="w-6 h-6 mx-auto text-green-300"></i>';
+                document.getElementById('levelUpMessage').classList.remove('hidden');
+            } else {
+                canLevelUpBadge.innerHTML = '<i data-lucide="lock" class="w-6 h-6 mx-auto"></i>';
+                document.getElementById('levelUpMessage').classList.add('hidden');
+            }
+
+            lucide.createIcons();
+        }
+
+    } catch (error) {
+        console.error('Seviye istatistikleri yüklenirken hata:', error);
+        // Silently fail - don't disrupt user experience
     }
 }
 

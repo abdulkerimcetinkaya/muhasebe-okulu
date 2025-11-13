@@ -33,6 +33,13 @@ public class SolvedProblem {
     @Column(nullable = false)
     private int earnedPoints;
 
+    // ============================================
+    // 🎯 LEVEL SYSTEM (Seviye Sistemi)
+    // ============================================
+    @Column(name = "attempt_count", nullable = false)
+    private Integer attemptCount = 1;  // Number of attempts before solving correctly (min: 1)
+    // Used for adaptive learning: fewer attempts = better performance
+
     @Column(nullable = false)
     private LocalDateTime solvedAt = LocalDateTime.now();
 }

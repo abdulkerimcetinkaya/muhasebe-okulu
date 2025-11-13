@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seviye Belirleme Testi - MuhasebeOkulu</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+    <!-- Theme initialization -->
+    <script src="/assets/js/utils/theme.js"></script>
+
+    <!-- Tailwind CSS with dark mode -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {}
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Common CSS -->
+    <link rel="stylesheet" href="/assets/css/common.css">
+    <link rel="stylesheet" href="/assets/css/components.css">
+
+    <!-- Common JS -->
+    <script src="/assets/js/common.js"></script>
+    <script src="/assets/js/auth.js"></script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-100 antialiased">
+    <div class="relative min-h-screen">
+        <!-- Background Pattern -->
+        <div
+            class="absolute inset-0 -z-10 h-full w-full bg-white dark:bg-slate-900 bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#1e293b_1px,transparent_1px),linear-gradient(to_bottom,#1e293b_1px,transparent_1px)] bg-[size:6rem_4rem]">
+        </div>
+
+        <div class="container mx-auto px-4 py-8 max-w-4xl">
+            <!-- Header -->
+            <div class="mb-8 text-center">
+                <div class="inline-flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                    <i data-lucide="target" class="w-4 h-4"></i>
+                    <span>Seviye Belirleme Testi</span>
+                </div>
+                <h1 class="text-3xl font-bold mb-2">Başlangıç Seviyenizi Belirleyelim</h1>
+                <p class="text-slate-600 dark:text-slate-400">Size uygun seviyede sorularla başlamanız için kısa bir test</p>
+            </div>
+
+            <!-- Welcome Card -->
+            <div id="welcomeCard" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 mb-6">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="graduation-cap" class="w-10 h-10 text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">Hoş Geldiniz!</h2>
+                    <p class="text-slate-600 dark:text-slate-400">Bu test, muhasebe bilgi seviyenizi belirlemek için tasarlanmıştır.</p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="flex items-start gap-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg">
+                        <i data-lucide="clock" class="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5"></i>
+                        <div>
+                            <h3 class="font-semibold mb-1">Süre</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Test yaklaşık 10-15 dakika sürer, süreli değildir.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg">
+                        <i data-lucide="list-checks" class="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5"></i>
+                        <div>
+                            <h3 class="font-semibold mb-1">Soru Sayısı</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Toplam 7 soru (farklı zorluk seviyelerinden)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start gap-3 bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg">
+                        <i data-lucide="target" class="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5"></i>
+                        <div>
+                            <h3 class="font-semibold mb-1">Sonuç</h3>
+                            <p class="text-sm text-slate-600 dark:text-slate-400">Performansınıza göre başlangıç seviyeniz belirlenecek (Seviye 1-7)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="startTest()"
+                        class="flex-1 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium px-6 py-3 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+                        <span class="flex items-center justify-center gap-2">
+                            <i data-lucide="play" class="w-5 h-5"></i>
+                            Teste Başla
+                        </span>
+                    </button>
+                    <button onclick="skipTest()"
+                        class="flex-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-medium px-6 py-3 rounded-xl transition-all duration-200">
+                        <span class="flex items-center justify-center gap-2">
+                            <i data-lucide="skip-forward" class="w-5 h-5"></i>
+                            Atla, Seviye 1'den Başla
+                        </span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Test Container (Hidden initially) -->
+            <div id="testContainer" class="hidden">
+                <!-- Progress Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-sm font-medium text-slate-600 dark:text-slate-400">İlerleme</span>
+                        <span id="progressText" class="text-sm font-medium text-indigo-600 dark:text-indigo-400">0/7</span>
+                    </div>
+                    <div class="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                        <div id="progressBar" class="bg-gradient-to-r from-indigo-600 to-purple-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Question Card -->
+                <div id="questionCard" class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 mb-6">
+                    <div class="mb-4">
+                        <span id="questionNumber" class="inline-block bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-3 py-1 rounded-full text-sm font-medium mb-2">
+                            Soru 1/7
+                        </span>
+                        <h2 id="questionTitle" class="text-xl font-bold mb-3">Soru yükleniyor...</h2>
+                        <div id="questionContent" class="prose dark:prose-invert max-w-none text-slate-600 dark:text-slate-400">
+                            <!-- Problem content will be inserted here -->
+                        </div>
+                    </div>
+
+                    <!-- Answer Section -->
+                    <div id="answerSection" class="space-y-4">
+                        <p class="text-sm text-slate-500 dark:text-slate-400 italic">
+                            Not: Gerçek test sırasında yevmiye kaydı girebileceksiniz. Şimdilik problemleri inceleyip anlayabildiğinizi değerlendirin.
+                        </p>
+                        <div class="flex gap-3">
+                            <button onclick="answerQuestion(true)"
+                                class="flex-1 bg-green-500 hover:bg-green-600 text-white font-medium px-6 py-3 rounded-xl transition-all duration-200">
+                                ✓ Çözebilirim
+                            </button>
+                            <button onclick="answerQuestion(false)"
+                                class="flex-1 bg-red-500 hover:bg-red-600 text-white font-medium px-6 py-3 rounded-xl transition-all duration-200">
+                                ✗ Çözemem
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation -->
+                <div class="flex justify-between">
+                    <button onclick="skipTest()"
+                        class="text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 font-medium transition-colors">
+                        Testi İptal Et
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Card (Hidden initially) -->
+            <div id="resultsCard" class="hidden bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 text-center">
+                <div class="mb-6">
+                    <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i data-lucide="check-circle" class="w-10 h-10 text-white"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-2">Test Tamamlandı!</h2>
+                    <p class="text-slate-600 dark:text-slate-400">Harika! Başlangıç seviyeniz belirlendi.</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6 mb-6">
+                    <div class="text-sm text-slate-600 dark:text-slate-400 mb-2">Skorunuz</div>
+                    <div id="scoreDisplay" class="text-5xl font-bold text-indigo-600 dark:text-indigo-400 mb-2">0/7</div>
+                    <div class="text-sm text-slate-600 dark:text-slate-400 mb-4">Doğru cevap</div>
+                    <div class="h-px bg-slate-200 dark:bg-slate-700 mb-4"></div>
+                    <div class="text-sm text-slate-600 dark:text-slate-400 mb-2">Başlangıç Seviyeniz</div>
+                    <div id="levelDisplay" class="text-4xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                        Seviye 1
+                    </div>
+                </div>
+
+                <button onclick="goToDashboard()"
+                    class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-medium px-6 py-4 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <span class="flex items-center justify-center gap-2">
+                        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                        Dashboard'a Git
+                    </span>
+                </button>
+            </div>
+
+            <!-- Loading Spinner -->
+            <div id="loadingSpinner" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                <div class="bg-white dark:bg-slate-800 rounded-xl p-6 text-center">
+                    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                    <p class="text-slate-600 dark:text-slate-400">İşleniyor...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Global state
+        let testProblems = [];
+        let currentQuestionIndex = 0;
+        let answers = []; // true = can solve, false = cannot solve
+
+        // Check authentication on page load
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (!isAuthenticated()) {
+                window.location.href = '/login.html';
+                return;
+            }
+
+            // Check if placement test already completed
+            try {
+                const response = await fetch('/api/levels/placement-test/status', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (response.ok) {
+                    const status = await response.json();
+                    if (status.completed) {
+                        // Already completed, redirect to dashboard
+                        window.location.href = '/dashboard.html';
+                        return;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking placement test status:', error);
+            }
+
+            lucide.createIcons();
+        });
+
+        async function startTest() {
+            showLoading(true);
+
+            try {
+                const response = await fetch('/api/levels/placement-test/problems', {
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Test soruları alınamadı');
+                }
+
+                testProblems = await response.json();
+
+                if (testProblems.length === 0) {
+                    alert('Üzgünüz, şu anda test soruları mevcut değil. Seviye 1\'den başlatılacaksınız.');
+                    await skipTest();
+                    return;
+                }
+
+                // Hide welcome, show test
+                document.getElementById('welcomeCard').classList.add('hidden');
+                document.getElementById('testContainer').classList.remove('hidden');
+
+                // Show first question
+                showQuestion(0);
+
+            } catch (error) {
+                console.error('Error starting test:', error);
+                alert('Test başlatılırken bir hata oluştu. Lütfen tekrar deneyin.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function showQuestion(index) {
+            if (index >= testProblems.length) {
+                submitTest();
+                return;
+            }
+
+            const problem = testProblems[index];
+            currentQuestionIndex = index;
+
+            // Update UI
+            document.getElementById('questionNumber').textContent = `Soru ${index + 1}/7`;
+            document.getElementById('questionTitle').textContent = problem.title;
+            document.getElementById('questionContent').innerHTML = problem.content;
+            document.getElementById('progressText').textContent = `${index}/7`;
+            document.getElementById('progressBar').style.width = `${(index / 7) * 100}%`;
+
+            lucide.createIcons();
+        }
+
+        function answerQuestion(canSolve) {
+            answers.push(canSolve);
+            showQuestion(currentQuestionIndex + 1);
+        }
+
+        async function submitTest() {
+            showLoading(true);
+
+            try {
+                const score = answers.filter(a => a === true).length;
+
+                const response = await fetch('/api/levels/placement-test/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    },
+                    body: JSON.stringify({ score })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Test sonuçları gönderilemedi');
+                }
+
+                const result = await response.json();
+
+                // Show results
+                showResults(score, result.assignedLevel);
+
+            } catch (error) {
+                console.error('Error submitting test:', error);
+                alert('Test sonuçları gönderilirken bir hata oluştu.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function showResults(score, level) {
+            // Hide test container
+            document.getElementById('testContainer').classList.add('hidden');
+
+            // Show results
+            document.getElementById('resultsCard').classList.remove('hidden');
+            document.getElementById('scoreDisplay').textContent = `${score}/7`;
+            document.getElementById('levelDisplay').textContent = `Seviye ${level}`;
+
+            lucide.createIcons();
+        }
+
+        async function skipTest() {
+            if (!confirm('Testi atlamak istediğinizden emin misiniz? Seviye 1\'den başlayacaksınız.')) {
+                return;
+            }
+
+            showLoading(true);
+
+            try {
+                const response = await fetch('/api/levels/placement-test/skip', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': 'Bearer ' + localStorage.getItem('token')
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Test atlanamadı');
+                }
+
+                // Redirect to dashboard
+                window.location.href = '/dashboard.html';
+
+            } catch (error) {
+                console.error('Error skipping test:', error);
+                alert('Test atlanırken bir hata oluştu.');
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function goToDashboard() {
+            window.location.href = '/dashboard.html';
+        }
+
+        function showLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            if (show) {
+                spinner.classList.remove('hidden');
+            } else {
+                spinner.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+
+</html>

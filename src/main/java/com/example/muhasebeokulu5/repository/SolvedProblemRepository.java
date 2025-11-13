@@ -68,4 +68,35 @@ public interface SolvedProblemRepository extends JpaRepository<SolvedProblem, UU
 
     @Query("SELECT COUNT(sp) FROM SolvedProblem sp WHERE sp.user.id = :userId AND sp.solvedAt >= :afterDate")
     Long countByUserIdAndSolvedDateAfter(@Param("userId") UUID userId, @Param("afterDate") LocalDateTime afterDate);
+
+    // ============================================
+    // 🎯 LEVEL SYSTEM QUERIES
+    // ============================================
+
+    /**
+     * Find all problems solved by user at a specific level.
+     * Used for level progression calculations.
+     */
+    @Query("SELECT sp FROM SolvedProblem sp WHERE sp.user = :user AND sp.problem.level = :level ORDER BY sp.solvedAt DESC")
+    List<SolvedProblem> findByUserAndProblem_Level(@Param("user") com.example.muhasebeokulu5.entities.User user, @Param("level") Integer level);
+
+    /**
+     * Find last N solved problems by user.
+     * Used for adaptive learning (analyzing recent performance).
+     */
+    @Query("SELECT sp FROM SolvedProblem sp WHERE sp.user = :user ORDER BY sp.solvedAt DESC")
+    List<SolvedProblem> findLastNByUser(@Param("user") com.example.muhasebeokulu5.entities.User user, org.springframework.data.domain.Pageable pageable);
+
+    /**
+     * Find all solved problems by user in a specific category.
+     * Used for category performance tracking.
+     */
+    @Query("SELECT sp FROM SolvedProblem sp WHERE sp.user = :user AND sp.problem.category = :category ORDER BY sp.solvedAt DESC")
+    List<SolvedProblem> findByUserAndProblem_Category(@Param("user") com.example.muhasebeokulu5.entities.User user, @Param("category") String category);
+
+    /**
+     * Count problems solved by user at a specific level.
+     */
+    @Query("SELECT COUNT(sp) FROM SolvedProblem sp WHERE sp.user.id = :userId AND sp.problem.level = :level")
+    Long countByUserIdAndProblemLevel(@Param("userId") UUID userId, @Param("level") Integer level);
 }

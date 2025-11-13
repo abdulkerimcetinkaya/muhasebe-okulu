@@ -152,5 +152,50 @@ public interface ProblemRepository extends JpaRepository<Problem, Long> {
     // Sayfalı - öğretmenin problemleri
     Page<Problem> findByCreatedByOrderByCreatedAtDesc(java.util.UUID createdBy, Pageable pageable);
 
+    // ============================================
+    // 🎯 LEVEL SYSTEM QUERIES
+    // ============================================
+
+    /**
+     * Find all problems at a specific level.
+     */
+    List<Problem> findByLevel(Integer level);
+
+    /**
+     * Count problems at a specific level.
+     */
+    Long countByLevel(Integer level);
+
+    /**
+     * Find problems by level with pagination.
+     */
+    Page<Problem> findByLevel(Integer level, Pageable pageable);
+
+    /**
+     * Find unsolved problems by user at a specific level.
+     */
+    @Query("SELECT p FROM Problem p " +
+           "WHERE p.level = :level AND p.id NOT IN (" +
+           "SELECT sp.problem.id FROM SolvedProblem sp WHERE sp.user.id = :userId)")
+    List<Problem> findUnsolvedProblemsByUserAndLevel(@Param("userId") UUID userId, @Param("level") Integer level);
+
+    /**
+     * Find problems by category.
+     */
+    List<Problem> findByCategory(String category);
+
+    /**
+     * Find unsolved problems by user in a specific category.
+     */
+    @Query("SELECT p FROM Problem p " +
+           "WHERE p.category = :category AND p.id NOT IN (" +
+           "SELECT sp.problem.id FROM SolvedProblem sp WHERE sp.user.id = :userId)")
+    List<Problem> findUnsolvedProblemsByUserAndCategory(@Param("userId") UUID userId, @Param("category") String category);
+
+    /**
+     * Get all unique categories.
+     */
+    @Query("SELECT DISTINCT p.category FROM Problem p WHERE p.category IS NOT NULL ORDER BY p.category")
+    List<String> findAllUniqueCategories();
 
 }

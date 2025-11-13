@@ -109,6 +109,30 @@ public class User {
     @Builder.Default
     private Boolean isEmailVerified = false;  // Email doğrulama
 
+    // ============================================
+    // 🎯 LEVEL SYSTEM (Seviye Sistemi)
+    // ============================================
+    // Progressive difficulty system (1-10 levels)
+    // Users earn points and advance through levels based on performance
+
+    @Builder.Default
+    @Column(name = "current_level")
+    private Integer currentLevel = 1;  // Current level (1-10)
+
+    @Builder.Default
+    @Column(name = "level_points")
+    private Integer levelPoints = 0;  // Points accumulated in current level
+
+    @Builder.Default
+    @Column(name = "placement_test_completed")
+    private Boolean placementTestCompleted = false;  // Has user completed initial placement test?
+
+    @Column(name = "placement_test_score")
+    private Integer placementTestScore;  // Score from placement test (0-7 questions, null if skipped)
+
+    @Column(name = "placement_test_date")
+    private LocalDateTime placementTestDate;  // When placement test was completed
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

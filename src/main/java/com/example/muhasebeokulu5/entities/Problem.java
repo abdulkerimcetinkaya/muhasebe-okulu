@@ -33,6 +33,16 @@ public class Problem {
     @Column(nullable = false)
     private Difficulty difficulty = Difficulty.MEDIUM;
 
+    // ============================================
+    // 🎯 LEVEL SYSTEM (Seviye Sistemi)
+    // ============================================
+    @Column(name = "level")
+    private Integer level;  // Problem level (1-10), set by admin
+
+    @Column(name = "category", length = 100)
+    private String category;  // Problem category (e.g., "Kasa İşlemleri", "Banka İşlemleri")
+    // Admin can create custom categories freely
+
     // ✅ YENİ: Öğretmen tarafından oluşturulan özel problemler
     @Column(name = "created_by")
     private UUID createdBy; // Öğretmen/Admin ID (nullable - eski problemler için)

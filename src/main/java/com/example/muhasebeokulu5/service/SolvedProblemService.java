@@ -8,6 +8,7 @@ import com.example.muhasebeokulu5.exception.BadRequestException;
 import com.example.muhasebeokulu5.repository.*;
 import com.example.muhasebeokulu5.util.RankUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.example.muhasebeokulu5.dto.SolvedProblemSummaryDTO;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 import java.math.BigDecimal;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SolvedProblemService {
@@ -32,6 +34,8 @@ public class SolvedProblemService {
     private final SolvedProblemRepository solvedProblemRepository;
     private final UserRepository userRepository;
     private final UserAnswerRepository userAnswerRepository;
+    private final LevelService levelService;
+    private final UserCategoryPerformanceRepository categoryPerformanceRepository;
 
     public record CheckResult(boolean balanced, boolean correct, String message) {}
 
@@ -96,6 +100,11 @@ public class SolvedProblemService {
                 );
 
                 if (!alreadySolvedCorrectly) {
+                    // 🎯 LEVEL SYSTEM: Calculate attempt count (how many times user tried this problem)
+                    long attemptCount = userAnswerRepository.countByUserIdAndProblemId(user.getId(), problem.getId());
+                    int finalAttemptCount = (int) Math.ceil((double) attemptCount / request.getEntries().size());
+                    if (finalAttemptCount < 1) finalAttemptCount = 1; // Minimum 1 attempt
+
                     // İlk doğru çözüm - puan ve yıldız kazan
                     SolvedProblem solved = new SolvedProblem();
                     solved.setProblem(problem);
@@ -103,14 +112,14 @@ public class SolvedProblemService {
                     solved.setBalanced(true);
                     solved.setCorrect(true);
                     solved.setEarnedPoints(points);
+                    solved.setAttemptCount(finalAttemptCount);  // 🎯 Track attempts
                     solvedProblemRepository.save(solved);
 
                     // ⭐ Yıldız Sistemi - Kazanılan puanlara göre yıldız kazan
                     int starsEarned = RankUtil.getStarsForPoints(points);
 
-                    // 🎯 İlk denemede doğru çözüm bonusu (deneme sayısı UserAnswer'dan alınabilir)
-                    long attemptCount = userAnswerRepository.countByUserIdAndProblemId(user.getId(), problem.getId());
-                    boolean firstTry = (attemptCount == request.getEntries().size()); // İlk deneme
+                    // 🎯 İlk denemede doğru çözüm bonusu (attemptCount zaten yukarıda tanımlı)
+                    boolean firstTry = (finalAttemptCount == 1); // İlk deneme
                     if (firstTry) {
                         starsEarned += RankUtil.getFirstTryBonus();
                     }
@@ -139,13 +148,22 @@ public class SolvedProblemService {
                     // Son aktivite tarihini güncelle
                     user.setLastActivityDate(LocalDate.now());
 
+                    // 🎯 LEVEL SYSTEM: Award points and check for level up
+                    user = levelService.awardPointsAndCheckLevelUp(user, finalAttemptCount);
+
+                    // 🎯 LEVEL SYSTEM: Update category performance (if problem has category)
+                    if (problem.getCategory() != null && !problem.getCategory().isEmpty()) {
+                        updateCategoryPerformance(user, problem.getCategory(), true, finalAttemptCount);
+                    }
+
                     userRepository.save(user);
 
                     // Unvan bilgisini al
                     RankUtil.RankInfo rankInfo = RankUtil.getRankInfo(user.getTotalStars());
 
-                    message = String.format("✅ Tebrikler! Problem doğru çözüldü. ⭐ +%d yıldız kazandınız! (Toplam: %d ⭐ - %s %s)",
-                            starsEarned, user.getTotalStars(), rankInfo.getRankIcon(), rankInfo.getRankName());
+                    // 🎯 Level info eklendi
+                    message = String.format("✅ Tebrikler! Problem doğru çözüldü. ⭐ +%d yıldız kazandınız! (Toplam: %d ⭐ - %s %s) | Seviye: %d",
+                            starsEarned, user.getTotalStars(), rankInfo.getRankIcon(), rankInfo.getRankName(), user.getCurrentLevel());
                 } else {
                     // Daha önce doğru çözmüş - puan ve yıldız yok
                     message = "✅ Tebrikler! Problem doğru çözüldü. (Bu problemi daha önce çözdüğünüz için yıldız kazanmadınız)";
@@ -161,6 +179,26 @@ public class SolvedProblemService {
         } catch (Exception e) {
             throw new RuntimeException("Problem çözümü kontrol edilirken hata oluştu: " + e.getMessage(), e);
         }
+    }
+
+    /**
+     * 🎯 LEVEL SYSTEM: Update user's category performance statistics.
+     * Tracks success rate and average attempts per category for adaptive learning.
+     */
+    private void updateCategoryPerformance(User user, String category, boolean isSuccess, int attemptCount) {
+        UserCategoryPerformance performance = categoryPerformanceRepository
+                .findByUserAndCategory(user, category)
+                .orElse(UserCategoryPerformance.builder()
+                        .user(user)
+                        .category(category)
+                        .build());
+
+        performance.updatePerformance(isSuccess, attemptCount);
+
+        categoryPerformanceRepository.save(performance);
+
+        log.debug("Updated category performance for user {}: category={}, success={}, attempts={}",
+                user.getUsername(), category, isSuccess, attemptCount);
     }
 
     /**

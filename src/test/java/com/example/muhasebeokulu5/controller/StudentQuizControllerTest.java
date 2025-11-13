@@ -21,10 +21,10 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import org.springframework.context.annotation.Import;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import com.example.muhasebeokulu5.config.TestConfig;
+import com.example.muhasebeokulu5.config.TestConfiguration;
 
 @WebMvcTest(StudentQuizController.class)
-@Import(TestConfig.class)
+@Import(TestConfiguration.class)
 @DisplayName("StudentQuizController Tests - Privilege Escalation Prevention")
 class StudentQuizControllerTest {
 
